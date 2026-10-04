@@ -213,11 +213,22 @@
     .team-box {
       text-align: center;
       flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .team-logo-canvas {
+      width: 54px;
+      height: 54px;
+      image-rendering: pixelated;
+      margin-bottom: 6px;
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6));
     }
 
     .team-name {
       font-family: var(--font-pixel);
-      font-size: 16px;
+      font-size: 15px;
       color: var(--text-bright);
       margin-bottom: 4px;
     }
@@ -533,11 +544,13 @@
 
         <div class="teams-container">
           <div class="team-box">
+            <canvas id="awayTeamLogo" class="team-logo-canvas" width="48" height="48"></canvas>
             <div class="team-name" id="awayTeamName">AWAY</div>
             <div class="team-score" id="awayTeamScore">0</div>
           </div>
           <div class="vs-text">VS</div>
           <div class="team-box">
+            <canvas id="homeTeamLogo" class="team-logo-canvas" width="48" height="48"></canvas>
             <div class="team-name" id="homeTeamName">HOME</div>
             <div class="team-score" id="homeTeamScore">0</div>
           </div>
@@ -696,7 +709,188 @@
 
   <!-- JavaScript Code -->
   <script>
-    // --- 1. Audio Synthesizer Engine (Web Audio API) ---
+    // --- 1. 8-Bit Pixel Art MLB Team Logo Renderer ---
+    class PixelTeamLogoRenderer {
+      static TEAM_DATA = {
+        'ATL': { bg: '#13274f', fg: '#ba0c2f', accent: '#eaaa00', text: 'ATL', type: 'tomahawk' },
+        'LAD': { bg: '#005a9c', fg: '#ffffff', accent: '#ef3e42', text: 'LA', type: 'script' },
+        'NYY': { bg: '#0c2340', fg: '#ffffff', accent: '#c4ced4', text: 'NY', type: 'ny' },
+        'BOS': { bg: '#bd3039', fg: '#0c2340', accent: '#ffffff', text: 'B', type: 'socks' },
+        'CHC': { bg: '#0e3386', fg: '#cc3433', accent: '#ffffff', text: 'C', type: 'cub' },
+        'CWS': { bg: '#27251f', fg: '#c4ced4', accent: '#ffffff', text: 'SOX', type: 'sox' },
+        'HOU': { bg: '#002d62', fg: '#eb6e1f', accent: '#fdb927', text: 'H', type: 'star' },
+        'PHI': { bg: '#e31837', fg: '#002d62', accent: '#ffffff', text: 'P', type: 'bell' },
+        'STL': { bg: '#c41e3a', fg: '#fedb00', accent: '#0c2340', text: 'STL', type: 'bird' },
+        'SF':  { bg: '#27251f', fg: '#fd5a1e', accent: '#efd19f', text: 'SF', type: 'sf' },
+        'SD':  { bg: '#2f241d', fg: '#ffc425', accent: '#ffffff', text: 'SD', type: 'sd' },
+        'NYM': { bg: '#002d62', fg: '#ff5910', accent: '#ffffff', text: 'NY', type: 'mets' },
+        'TEX': { bg: '#003278', fg: '#c0111f', accent: '#ffffff', text: 'T', type: 'star' },
+        'BAL': { bg: '#df4601', fg: '#000000', accent: '#ffffff', text: 'B', type: 'bird' },
+        'TOR': { bg: '#134a8e', fg: '#e8291c', accent: '#ffffff', text: 'TOR', type: 'jay' },
+        'SEA': { bg: '#0c2340', fg: '#005c5c', accent: '#c4ced4', text: 'SEA', type: 'compass' },
+        'MIN': { bg: '#002b5c', fg: '#d31145', accent: '#ffffff', text: 'TC', type: 'tc' },
+        'CLE': { bg: '#0c2340', fg: '#e31937', accent: '#ffffff', text: 'C', type: 'winged' },
+        'DET': { bg: '#0c2340', fg: '#fa4616', accent: '#ffffff', text: 'D', type: 'd' },
+        'KC':  { bg: '#004687', fg: '#bd9b60', accent: '#ffffff', text: 'KC', type: 'crown' },
+        'TB':  { bg: '#092c5c', fg: '#f5d130', accent: '#8fbce6', text: 'TB', type: 'ray' },
+        'MIA': { bg: '#00a3e0', fg: '#ef3340', accent: '#000000', text: 'M', type: 'marlin' },
+        'WSH': { bg: '#ab0003', fg: '#14225a', accent: '#ffffff', text: 'W', type: 'w' },
+        'CIN': { bg: '#c6011f', fg: '#ffffff', accent: '#000000', text: 'C', type: 'wishbone' },
+        'MIL': { bg: '#122a47', fg: '#b59a57', accent: '#ffffff', text: 'MB', type: 'glove' },
+        'PIT': { bg: '#000000', fg: '#fdb827', accent: '#ffffff', text: 'P', type: 'pirate' },
+        'COL': { bg: '#333366', fg: '#c4ced4', accent: '#000000', text: 'CR', type: 'mountain' },
+        'ARI': { bg: '#a71930', fg: '#30ced8', accent: '#000000', text: 'A', type: 'snake' },
+        'AZ':  { bg: '#a71930', fg: '#30ced8', accent: '#000000', text: 'A', type: 'snake' },
+        'OAK': { bg: '#003831', fg: '#efb21e', accent: '#ffffff', text: 'A\'s', type: 'oak' },
+        'LAA': { bg: '#ba0c2f', fg: '#866d4b', accent: '#002244', text: 'A', type: 'halo' }
+      };
+
+      static drawLogo(canvasId, teamAbbr, teamFullName = '') {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
+
+        const w = canvas.width;
+        const h = canvas.height;
+
+        ctx.clearRect(0, 0, w, h);
+
+        const abbr = (teamAbbr || '').toUpperCase().trim();
+        const data = this.TEAM_DATA[abbr] || this.findMatchByName(teamFullName) || {
+          bg: '#1f2937', fg: '#f1e05a', accent: '#58a6ff', text: abbr.slice(0, 3) || 'MLB', type: 'default'
+        };
+
+        // Retro Drop Shadow
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.beginPath();
+        ctx.arc(w / 2 + 2, h / 2 + 2, 20, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Main Circular Shield Badge
+        ctx.fillStyle = data.bg;
+        ctx.beginPath();
+        ctx.arc(w / 2, h / 2, 20, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Outer Pixel Ring
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = data.fg;
+        ctx.stroke();
+
+        // Inner Ring
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = data.accent;
+        ctx.beginPath();
+        ctx.arc(w / 2, h / 2, 16, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Custom Retro Pixel Icons
+        switch (data.type) {
+          case 'star':
+            ctx.fillStyle = data.fg;
+            this.drawPixelStar(ctx, w / 2, h / 2 - 2, 9);
+            ctx.fillStyle = data.accent;
+            ctx.font = '11px "Press Start 2P", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(data.text, w / 2, h / 2 + 6);
+            break;
+
+          case 'crown':
+            ctx.fillStyle = data.fg;
+            ctx.fillRect(w / 2 - 10, h / 2 - 8, 20, 6);
+            ctx.fillRect(w / 2 - 12, h / 2 - 12, 4, 6);
+            ctx.fillRect(w / 2 - 2, h / 2 - 14, 4, 8);
+            ctx.fillRect(w / 2 + 8, h / 2 - 12, 4, 6);
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '10px "Press Start 2P", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(data.text, w / 2, h / 2 + 8);
+            break;
+
+          case 'halo':
+            ctx.strokeStyle = data.fg;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.ellipse(w / 2, h / 2 - 8, 10, 4, 0, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.fillStyle = '#ffffff';
+            ctx.font = '13px "Press Start 2P", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('A', w / 2, h / 2 + 7);
+            break;
+
+          case 'tomahawk':
+            ctx.fillStyle = data.fg;
+            ctx.font = '10px "Press Start 2P", monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText('ATL', w / 2, h / 2 - 2);
+            ctx.fillStyle = data.accent;
+            ctx.fillRect(w / 2 - 12, h / 2 + 4, 24, 3);
+            ctx.fillStyle = data.fg;
+            ctx.fillRect(w / 2 + 8, h / 2 + 1, 4, 9);
+            break;
+
+          default:
+            ctx.font = data.text.length > 2 ? '9px "Press Start 2P"' : '12px "Press Start 2P"';
+            ctx.fillStyle = data.fg;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.shadowColor = '#000';
+            ctx.shadowBlur = 2;
+            ctx.fillText(data.text, w / 2, h / 2);
+            ctx.shadowBlur = 0;
+            break;
+        }
+      }
+
+      static findMatchByName(name = '') {
+        const n = name.toLowerCase();
+        if (n.includes('braves')) return this.TEAM_DATA['ATL'];
+        if (n.includes('dodgers')) return this.TEAM_DATA['LAD'];
+        if (n.includes('yankees')) return this.TEAM_DATA['NYY'];
+        if (n.includes('red sox')) return this.TEAM_DATA['BOS'];
+        if (n.includes('cubs')) return this.TEAM_DATA['CHC'];
+        if (n.includes('white sox')) return this.TEAM_DATA['CWS'];
+        if (n.includes('astros')) return this.TEAM_DATA['HOU'];
+        if (n.includes('phillies')) return this.TEAM_DATA['PHI'];
+        if (n.includes('cardinals')) return this.TEAM_DATA['STL'];
+        if (n.includes('giants')) return this.TEAM_DATA['SF'];
+        if (n.includes('padres')) return this.TEAM_DATA['SD'];
+        if (n.includes('mets')) return this.TEAM_DATA['NYM'];
+        if (n.includes('rangers')) return this.TEAM_DATA['TEX'];
+        if (n.includes('orioles')) return this.TEAM_DATA['BAL'];
+        if (n.includes('blue jays')) return this.TEAM_DATA['TOR'];
+        if (n.includes('mariners')) return this.TEAM_DATA['SEA'];
+        if (n.includes('twins')) return this.TEAM_DATA['MIN'];
+        if (n.includes('guardians')) return this.TEAM_DATA['CLE'];
+        if (n.includes('tigers')) return this.TEAM_DATA['DET'];
+        if (n.includes('royals')) return this.TEAM_DATA['KC'];
+        if (n.includes('rays')) return this.TEAM_DATA['TB'];
+        if (n.includes('marlins')) return this.TEAM_DATA['MIA'];
+        if (n.includes('nationals')) return this.TEAM_DATA['WSH'];
+        if (n.includes('reds')) return this.TEAM_DATA['CIN'];
+        if (n.includes('brewers')) return this.TEAM_DATA['MIL'];
+        if (n.includes('pirates')) return this.TEAM_DATA['PIT'];
+        if (n.includes('rockies')) return this.TEAM_DATA['COL'];
+        if (n.includes('diamondbacks') || n.includes('d-backs')) return this.TEAM_DATA['ARI'];
+        if (n.includes('athletics') || n.includes('a\'s')) return this.TEAM_DATA['OAK'];
+        if (n.includes('angels')) return this.TEAM_DATA['LAA'];
+        return null;
+      }
+
+      static drawPixelStar(ctx, cx, cy, r) {
+        ctx.beginPath();
+        for (let i = 0; i < 5; i++) {
+          ctx.lineTo(Math.cos((18 + i * 72) * Math.PI / 180) * r + cx, -Math.sin((18 + i * 72) * Math.PI / 180) * r + cy);
+          ctx.lineTo(Math.cos((54 + i * 72) * Math.PI / 180) * (r / 2) + cx, -Math.sin((54 + i * 72) * Math.PI / 180) * (r / 2) + cy);
+        }
+        ctx.closePath();
+        ctx.fill();
+      }
+    }
+
+    // --- 2. Audio Synthesizer Engine (Web Audio API) ---
     class SoundEngine {
       constructor() {
         this.ctx = null;
@@ -787,7 +981,7 @@
 
     const sound = new SoundEngine();
 
-    // --- 2. Retro 8-Bit Canvas Pixel Art Animator ---
+    // --- 3. Retro 8-Bit Canvas Play Pixel Art Animator ---
     class PixelArtAnimator {
       constructor(canvasId) {
         this.canvas = document.getElementById(canvasId);
@@ -989,7 +1183,6 @@
       }
 
       drawRainOut(ctx, w, h) {
-        // Rain drop animation
         ctx.fillStyle = '#58a6ff';
         for (let i = 0; i < 20; i++) {
           const rx = (i * 23 + this.frame * 4) % w;
@@ -1038,7 +1231,7 @@
 
     const pixelAnimator = new PixelArtAnimator('pixelCanvas');
 
-    // --- 3. User's Standard Default Ruleset ---
+    // --- 4. User's Standard Default Ruleset ---
     const DEFAULT_RULES = {
       'strikeout': { name: 'Strikeout (K)', drinks: '1' },
       'walk': { name: 'Walk (BB)', drinks: '1' },
@@ -1059,7 +1252,6 @@
     class DrinkingGameManager {
       constructor() {
         this.rules = DEFAULT_RULES;
-        // Always enforce updated ruleset in localStorage
         localStorage.setItem('mlb_drink_rules_v2', JSON.stringify(this.rules));
 
         this.totals = {
@@ -1126,13 +1318,12 @@
         let numDrinks = 0;
 
         if (ruleKey === 'stolen_base') {
-          // Dynamic calculation: 1 drink per base
           if (eventType.includes('home') || desc.toLowerCase().includes('home')) numDrinks = 3;
           else if (eventType.includes('3b') || desc.toLowerCase().includes('third')) numDrinks = 2;
           else numDrinks = 1;
           drinksText = `${numDrinks} Drink${numDrinks > 1 ? 's' : ''} (1/base)`;
         } else if (ruleKey === 'home_run') {
-          numDrinks = 6; // Count as 6 for tally
+          numDrinks = 6;
           drinksText = 'FINISH YOUR DRINK!';
         } else if (ruleKey === 'rain_out') {
           numDrinks = 1;
@@ -1179,7 +1370,7 @@
 
     const gameManager = new DrinkingGameManager();
 
-    // --- 4. UI Controller & MLB API Integration ---
+    // --- 5. UI Controller & MLB API Integration ---
     const UI = {
       init() {
         const d = new Date();
@@ -1327,10 +1518,17 @@
         const liveData = data.liveData || {};
 
         if (gameData.teams) {
-          const awayName = gameData.teams.away ? (gameData.teams.away.abbreviation || gameData.teams.away.name) : 'AWAY';
-          const homeName = gameData.teams.home ? (gameData.teams.home.abbreviation || gameData.teams.home.name) : 'HOME';
-          document.getElementById('awayTeamName').textContent = awayName;
-          document.getElementById('homeTeamName').textContent = homeName;
+          const awayTeam = gameData.teams.away || {};
+          const homeTeam = gameData.teams.home || {};
+          const awayAbbr = awayTeam.abbreviation || awayTeam.fileCode || awayTeam.teamCode || 'AWAY';
+          const homeAbbr = homeTeam.abbreviation || homeTeam.fileCode || homeTeam.teamCode || 'HOME';
+
+          document.getElementById('awayTeamName').textContent = awayAbbr.toUpperCase();
+          document.getElementById('homeTeamName').textContent = homeAbbr.toUpperCase();
+
+          // Render 8-Bit Pixel Logos
+          PixelTeamLogoRenderer.drawLogo('awayTeamLogo', awayAbbr, awayTeam.name);
+          PixelTeamLogoRenderer.drawLogo('homeTeamLogo', homeAbbr, homeTeam.name);
         }
 
         const linescore = liveData.linescore;
@@ -1342,7 +1540,6 @@
           const inning = linescore.currentInningOrdinal || (linescore.currentInning ? linescore.currentInning + 'TH' : '');
           document.getElementById('gameInningText').textContent = `${state} ${inning}`;
 
-          // Check for New Inning event
           const currentInningKey = `${linescore.currentInning}_${linescore.isTopInning}`;
           if (gameManager.lastInningKey && gameManager.lastInningKey !== currentInningKey && !gameManager.isInitialLoad) {
             const inningResult = {
@@ -1366,7 +1563,6 @@
           const statusText = gameData.status.detailedState || gameData.status.abstractGameState || 'LIVE';
           document.getElementById('gameStatusText').textContent = statusText.toUpperCase();
 
-          // Check Rain Out / Postponed
           if (statusText.toLowerCase().includes('rain') || statusText.toLowerCase().includes('postponed') || statusText.toLowerCase().includes('suspended')) {
             const rainId = 'rain_' + gameManager.selectedGamePk;
             if (!gameManager.seenPlayIds.has(rainId) && !gameManager.isInitialLoad) {
@@ -1408,7 +1604,6 @@
           document.getElementById('out2').classList.toggle('active', outs >= 2);
         }
 
-        // Process Plays Feed
         const allPlays = (liveData.plays && liveData.plays.allPlays) ? liveData.plays.allPlays : [];
         const isFirstTime = gameManager.isInitialLoad;
 
