@@ -242,7 +242,7 @@
       flex-shrink: 0;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.7));
+      filter: drop-shadow(2px 2px 0px #000000);
     }
 
     .team-name {
@@ -586,7 +586,7 @@
         <div class="teams-container">
           <!-- Away Team: Logo next to team name/score -->
           <div class="team-box away-box">
-            <canvas id="awayTeamLogo" class="team-logo-canvas" width="48" height="48"></canvas>
+            <canvas id="awayTeamLogo" class="team-logo-canvas" width="96" height="96"></canvas>
             <div class="team-info">
               <div class="team-name" id="awayTeamName">NYY</div>
               <div class="team-score" id="awayTeamScore">0</div>
@@ -601,7 +601,7 @@
               <div class="team-name" id="homeTeamName">LAD</div>
               <div class="team-score" id="homeTeamScore">0</div>
             </div>
-            <canvas id="homeTeamLogo" class="team-logo-canvas" width="48" height="48"></canvas>
+            <canvas id="homeTeamLogo" class="team-logo-canvas" width="96" height="96"></canvas>
           </div>
         </div>
 
@@ -827,8 +827,8 @@
         img.src = logoUrl;
 
         img.onload = () => {
-          // Offscreen downsampling to 24x24 for authentic 8-bit retro arcade pixelation
-          const pixelGrid = 24;
+          // Offscreen 36x36 grid for crisp, sharp retro arcade pixelation
+          const pixelGrid = 36;
           const offCanvas = document.createElement('canvas');
           offCanvas.width = pixelGrid;
           offCanvas.height = pixelGrid;
@@ -838,10 +838,9 @@
           offCtx.webkitImageSmoothingEnabled = false;
 
           offCtx.clearRect(0, 0, pixelGrid, pixelGrid);
-          // Scale slightly inside offscreen grid so retro edges are preserved nicely
-          offCtx.drawImage(img, 1, 1, pixelGrid - 2, pixelGrid - 2);
+          offCtx.drawImage(img, 0, 0, pixelGrid, pixelGrid);
 
-          // Clear target canvas & draw retro pixelated sprite scaled up to 48x48
+          // Clear target canvas & draw crisp pixelated sprite scaled up to 96x96
           ctx.clearRect(0, 0, w, h);
           ctx.imageSmoothingEnabled = false;
           ctx.msImageSmoothingEnabled = false;
@@ -854,7 +853,7 @@
           ctx.fillStyle = '#161b22';
           ctx.fillRect(0, 0, w, h);
           ctx.fillStyle = '#f1e05a';
-          ctx.font = '10px "Press Start 2P", monospace';
+          ctx.font = '16px "Press Start 2P", monospace';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
           ctx.fillText((teamAbbr || 'MLB').slice(0, 3), w / 2, h / 2);
