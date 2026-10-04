@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>MLB Real-Time Play Drinking Game</title>
+  <title>Retro Sports Real-Time Drinking Game</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0d1117">
   <!-- Retro Fonts -->
@@ -21,10 +21,21 @@
       --accent-red: #da3633;
       --accent-cyan: #58a6ff;
       --accent-orange: #f0883e;
+      --accent-sport: #58a6ff;
       --text-main: #c9d1d9;
       --text-bright: #ffffff;
       --font-pixel: 'Press Start 2P', cursive, monospace;
       --font-arcade: 'VT323', monospace;
+    }
+
+    /* Sport Themes */
+    body.theme-nfl {
+      --accent-sport: #f0883e;
+      --panel-border: #442d19;
+    }
+    body.theme-mlb {
+      --accent-sport: #58a6ff;
+      --panel-border: #30363d;
     }
 
     * {
@@ -62,6 +73,7 @@
       display: flex;
       align-items: center;
       gap: 10px;
+      cursor: pointer;
     }
 
     .brand h1 {
@@ -92,7 +104,7 @@
     }
 
     button:hover, select:hover, input[type="date"]:hover {
-      border-color: var(--accent-cyan);
+      border-color: var(--accent-sport);
       background: #30363d;
     }
 
@@ -127,6 +139,11 @@
     .btn-warning {
       background: var(--accent-orange);
       box-shadow: 0 4px 0 #9f4f14;
+    }
+
+    .btn-sport {
+      background: #1f6feb;
+      box-shadow: 0 4px 0 #0d419d;
     }
 
     /* Main Container */
@@ -171,7 +188,7 @@
     .panel-title {
       font-family: var(--font-pixel);
       font-size: 12px;
-      color: var(--accent-cyan);
+      color: var(--accent-sport);
       border-bottom: 2px dashed var(--panel-border);
       padding-bottom: 8px;
       margin-bottom: 12px;
@@ -183,7 +200,7 @@
     /* Scoreboard Display */
     .scoreboard {
       background: #040d1a;
-      border: 3px solid var(--accent-cyan);
+      border: 3px solid var(--accent-sport);
       border-radius: 6px;
       padding: 16px;
       margin-bottom: 16px;
@@ -200,7 +217,7 @@
       margin-bottom: 12px;
     }
 
-    /* Game Status Icon */
+    /* Game Status Icons */
     .status-icon {
       display: inline-flex;
       align-items: center;
@@ -209,7 +226,6 @@
       vertical-align: middle;
     }
 
-    /* Live / In Progress: Pulsing Green Dot with Glow */
     .status-icon.in-progress {
       width: 10px;
       height: 10px;
@@ -225,7 +241,6 @@
       }
     }
 
-    /* Scheduled: Animated Gold Clock Icon */
     .status-icon.scheduled {
       width: 12px;
       height: 12px;
@@ -250,7 +265,6 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Final: Solid Red Dot */
     .status-icon.final {
       width: 10px;
       height: 10px;
@@ -259,7 +273,6 @@
       box-shadow: 0 0 4px var(--accent-red);
     }
 
-    /* Postponed: Warning Orange Amber Flash */
     .status-icon.postponed {
       width: 10px;
       height: 10px;
@@ -273,7 +286,6 @@
       to { opacity: 1; transform: scale(1.1); }
     }
 
-    /* None Selected: Dim Grey */
     .status-icon.none {
       width: 8px;
       height: 8px;
@@ -282,7 +294,7 @@
       opacity: 0.5;
     }
 
-    /* Centered Scoreboard Banner Layout */
+    /* Scoreboard Layout */
     .teams-container {
       display: flex;
       justify-content: center;
@@ -348,28 +360,15 @@
     }
 
     @media (max-width: 480px) {
-      .teams-container {
-        gap: 8px;
-      }
-      .team-box {
-        gap: 10px;
-      }
-      .team-logo-canvas {
-        width: 38px;
-        height: 38px;
-      }
-      .team-name {
-        font-size: 11px;
-      }
-      .team-score {
-        font-size: 24px;
-      }
-      .vs-text {
-        font-size: 9px;
-      }
+      .teams-container { gap: 8px; }
+      .team-box { gap: 10px; }
+      .team-logo-canvas { width: 38px; height: 38px; }
+      .team-name { font-size: 11px; }
+      .team-score { font-size: 24px; }
+      .vs-text { font-size: 9px; }
     }
 
-    /* Base Diamond & Count */
+    /* MLB Diamond & Count Display */
     .field-status {
       display: flex;
       justify-content: space-around;
@@ -432,6 +431,54 @@
     .dot.ball.active { background: var(--accent-green); }
     .dot.strike.active { background: var(--accent-red); }
     .dot.out.active { background: var(--accent-gold); }
+
+    /* NFL Gridiron Status Display */
+    .nfl-status-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .gridiron-bar {
+      width: 100%;
+      height: 24px;
+      background: #1e532b;
+      border: 2px solid #30363d;
+      border-radius: 4px;
+      position: relative;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 8px;
+      box-sizing: border-box;
+      background-image: repeating-linear-gradient(90deg, #1e532b, #1e532b 18px, #2ea043 18px, #2ea043 20px);
+    }
+
+    .gridiron-down-text {
+      font-family: var(--font-pixel);
+      font-size: 11px;
+      color: var(--accent-gold);
+      text-shadow: 1px 1px #000;
+    }
+
+    .gridiron-clock-text {
+      font-family: var(--font-pixel);
+      font-size: 11px;
+      color: var(--text-bright);
+      text-shadow: 1px 1px #000;
+    }
+
+    .possession-dot {
+      width: 10px;
+      height: 10px;
+      background: var(--accent-orange);
+      border-radius: 50%;
+      box-shadow: 0 0 6px var(--accent-orange);
+      display: inline-block;
+      margin-left: 6px;
+    }
 
     /* Pixel Art Alert Overlay Modal */
     #alertOverlay {
@@ -533,7 +580,7 @@
     .play-item {
       background: #21262d;
       border: 2px solid var(--panel-border);
-      border-left: 6px solid var(--accent-cyan);
+      border-left: 6px solid var(--accent-sport);
       border-radius: 4px;
       padding: 10px 12px;
       display: flex;
@@ -603,16 +650,6 @@
       color: var(--accent-gold);
     }
 
-    .rules-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      max-height: 60vh;
-      overflow-y: auto;
-      padding-right: 6px;
-      margin: 12px 0 16px 0;
-    }
-
     .rule-row {
       display: flex;
       justify-content: space-between;
@@ -626,7 +663,7 @@
     }
 
     .rule-row:hover {
-      border-color: var(--accent-cyan);
+      border-color: var(--accent-sport);
     }
 
     .rule-label {
@@ -656,23 +693,23 @@
       background: #161b22;
     }
 
-    /* Modal for Rules */
-    #rulesModal {
+    /* Modal dialogs */
+    #rulesModal, #sportModal {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(3px);
+      background: rgba(0,0,0,0.88);
+      backdrop-filter: blur(4px);
       z-index: 999;
       display: none;
       justify-content: center;
       align-items: center;
     }
 
-    #rulesModal.active { display: flex; }
+    #rulesModal.active, #sportModal.active { display: flex; }
 
     .modal-content {
       background: var(--panel-bg);
-      border: 3px solid var(--accent-cyan);
+      border: 3px solid var(--accent-sport);
       border-radius: 10px;
       width: 92%;
       max-width: 580px;
@@ -683,24 +720,70 @@
       box-shadow: 0 10px 30px rgba(0,0,0,0.7);
     }
 
+    .sport-cards-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .sport-card {
+      background: #21262d;
+      border: 3px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .sport-card:hover {
+      border-color: var(--accent-gold);
+      transform: translateY(-2px);
+      background: #30363d;
+    }
+
+    .sport-card-icon {
+      font-size: 38px;
+    }
+
+    .sport-card-info h3 {
+      font-family: var(--font-pixel);
+      font-size: 14px;
+      color: var(--accent-gold);
+      margin-bottom: 4px;
+    }
+
+    .sport-card-info p {
+      font-size: 18px;
+      color: #8b949e;
+    }
+
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #161b22; }
     ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-sport); }
   </style>
 </head>
-<body>
+<body class="theme-mlb">
 
   <header>
-    <div class="brand">
-      <span style="font-size: 28px;">⚾🍺</span>
+    <div class="brand" id="brandBtn">
+      <span style="font-size: 28px;" id="brandIcon">⚾🍺</span>
       <div>
-        <h1>MLB DRINK TRACKER</h1>
-        <div style="font-size: 14px; color: #8b949e;">REAL-TIME PLAY DRINK ASSIGNER</div>
+        <h1>RETRO SPORTS DRINKING GAME</h1>
+        <div style="font-size: 14px; color: #8b949e;" id="brandSubtitle">REAL-TIME PLAY DRINK ASSIGNER</div>
       </div>
     </div>
 
     <div class="header-controls">
+      <select id="sportSelect">
+        <option value="mlb">⚾ MLB BASEBALL</option>
+        <option value="nfl">🏈 NFL FOOTBALL</option>
+      </select>
+
       <input type="date" id="datePicker">
       <select id="gameSelect">
         <option value="">-- Select Game --</option>
@@ -727,7 +810,7 @@
           <div class="team-box away-box">
             <canvas id="awayTeamLogo" class="team-logo-canvas" width="96" height="96"></canvas>
             <div class="team-info">
-              <div class="team-name" id="awayTeamName">NYY</div>
+              <div class="team-name" id="awayTeamName">AWAY</div>
               <div class="team-score" id="awayTeamScore">0</div>
             </div>
           </div>
@@ -737,14 +820,15 @@
           <!-- Home Team: Logo next to team name/score -->
           <div class="team-box home-box">
             <div class="team-info">
-              <div class="team-name" id="homeTeamName">LAD</div>
+              <div class="team-name" id="homeTeamName">HOME</div>
               <div class="team-score" id="homeTeamScore">0</div>
             </div>
             <canvas id="homeTeamLogo" class="team-logo-canvas" width="96" height="96"></canvas>
           </div>
         </div>
 
-        <div class="field-status">
+        <!-- MLB Field Status -->
+        <div class="field-status" id="mlbFieldStatus">
           <div class="diamond-container">
             <div class="base base-1st" id="base1"></div>
             <div class="base base-2nd" id="base2"></div>
@@ -776,6 +860,16 @@
             </div>
           </div>
         </div>
+
+        <!-- NFL Field Status -->
+        <div class="field-status" id="nflFieldStatus" style="display: none;">
+          <div class="nfl-status-container">
+            <div class="gridiron-bar">
+              <span class="gridiron-down-text" id="nflDownDistText">DOWN & DISTANCE: --</span>
+              <span class="gridiron-clock-text" id="nflClockText">Q1 15:00</span>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- Live Plays Panel -->
@@ -802,47 +896,30 @@
           <div style="font-size: 18px; color: var(--accent-gold);" id="lastDrinkAlert">No drinks assigned yet</div>
         </div>
 
-        <div style="margin-top: 12px;">
-          <div class="stat-row">
-            <span>Strikeouts (K)</span>
-            <span class="stat-val" id="statK">0</span>
-          </div>
-          <div class="stat-row">
-            <span>Walks (BB)</span>
-            <span class="stat-val" id="statBB">0</span>
-          </div>
-          <div class="stat-row">
-            <span>Hits (1B / 2B / 3B)</span>
-            <span class="stat-val" id="statHits">0</span>
-          </div>
-          <div class="stat-row">
-            <span>Home Runs (HR)</span>
-            <span class="stat-val" id="statHR">0</span>
-          </div>
-          <div class="stat-row">
-            <span>Hit By Pitch (HBP)</span>
-            <span class="stat-val" id="statHBP">0</span>
-          </div>
-          <div class="stat-row">
-            <span>Errors (3rror)</span>
-            <span class="stat-val" id="statERR">0</span>
-          </div>
-          <div class="stat-row">
-            <span>Double/Triple Plays</span>
-            <span class="stat-val" id="statDP">0</span>
-          </div>
-          <div class="stat-row">
-            <span>Stolen Bases</span>
-            <span class="stat-val" id="statSB">0</span>
-          </div>
-          <div class="stat-row">
-            <span>Balks / Special</span>
-            <span class="stat-val" id="statBalk">0</span>
-          </div>
-          <div class="stat-row">
-            <span>New Innings</span>
-            <span class="stat-val" id="statInning">0</span>
-          </div>
+        <!-- MLB Stat Rows -->
+        <div id="mlbStatRows" style="margin-top: 12px;">
+          <div class="stat-row"><span>Strikeouts (K)</span><span class="stat-val" id="statK">0</span></div>
+          <div class="stat-row"><span>Walks (BB)</span><span class="stat-val" id="statBB">0</span></div>
+          <div class="stat-row"><span>Hits (1B / 2B / 3B)</span><span class="stat-val" id="statHits">0</span></div>
+          <div class="stat-row"><span>Home Runs (HR)</span><span class="stat-val" id="statHR">0</span></div>
+          <div class="stat-row"><span>Hit By Pitch (HBP)</span><span class="stat-val" id="statHBP">0</span></div>
+          <div class="stat-row"><span>Errors (3rror)</span><span class="stat-val" id="statERR">0</span></div>
+          <div class="stat-row"><span>Double/Triple Plays</span><span class="stat-val" id="statDP">0</span></div>
+          <div class="stat-row"><span>Stolen Bases</span><span class="stat-val" id="statSB">0</span></div>
+          <div class="stat-row"><span>Balks / Special</span><span class="stat-val" id="statBalk">0</span></div>
+          <div class="stat-row"><span>New Innings</span><span class="stat-val" id="statInning">0</span></div>
+        </div>
+
+        <!-- NFL Stat Rows -->
+        <div id="nflStatRows" style="margin-top: 12px; display: none;">
+          <div class="stat-row"><span>Touchdowns (TD)</span><span class="stat-val" id="statTD">0</span></div>
+          <div class="stat-row"><span>Interceptions (INT)</span><span class="stat-val" id="statINT">0</span></div>
+          <div class="stat-row"><span>Fumbles</span><span class="stat-val" id="statFumble">0</span></div>
+          <div class="stat-row"><span>Field Goals (FG)</span><span class="stat-val" id="statFG">0</span></div>
+          <div class="stat-row"><span>First Downs</span><span class="stat-val" id="statFirstDown">0</span></div>
+          <div class="stat-row"><span>Timeouts</span><span class="stat-val" id="statTimeout">0</span></div>
+          <div class="stat-row"><span>Quarter Changes</span><span class="stat-val" id="statQuarter">0</span></div>
+          <div class="stat-row"><span>Safeties / Special</span><span class="stat-val" id="statSafety">0</span></div>
         </div>
 
         <button class="btn-pixel btn-danger" id="resetDrinksBtn" style="width: 100%; margin-top: 14px;">RESET DRINK COUNTER</button>
@@ -856,6 +933,34 @@
       </div>
     </section>
   </main>
+
+  <!-- Initial Sport Selector Modal -->
+  <div id="sportModal">
+    <div class="modal-content" style="text-align: center;">
+      <div class="panel-title" style="justify-content: center; font-size: 14px;">
+        <span>🏆 CHOOSE YOUR SPORT 🍺</span>
+      </div>
+      <p style="font-size: 18px; color: #8b949e; margin-bottom: 12px;">Select a league to load real-time feeds & custom drink rules:</p>
+
+      <div class="sport-cards-container">
+        <div class="sport-card" id="selectMlbBtn">
+          <div class="sport-card-icon">⚾</div>
+          <div class="sport-card-info" style="text-align: left;">
+            <h3>MLB BASEBALL</h3>
+            <p>Strikeouts, Homeruns, Stolen Bases, Errors & Innings.</p>
+          </div>
+        </div>
+
+        <div class="sport-card" id="selectNflBtn">
+          <div class="sport-card-icon">🏈</div>
+          <div class="sport-card-info" style="text-align: left;">
+            <h3>NFL FOOTBALL</h3>
+            <p>Touchdowns, Interceptions, Fumbles, Field Goals, 1st Downs & Timeouts.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Animated Pixel Art Overlay Modal -->
   <div id="alertOverlay">
@@ -894,66 +999,54 @@
 
   <!-- JavaScript Code -->
   <script>
-    // --- 1. Official MLB Vector Team Logo Renderer ---
+    // --- 1. Vector & Static Team Logo Renderer ---
     class TeamLogoRenderer {
-      static TEAM_IDS = {
-        'LAA': 108, 'ANGELS': 108,
-        'ARI': 109, 'AZ': 109, 'DIAMONDBACKS': 109, 'D-BACKS': 109,
-        'BAL': 110, 'ORIOLES': 110,
-        'BOS': 111, 'RED SOX': 111,
-        'CHC': 112, 'CUBS': 112,
-        'CIN': 113, 'REDS': 113,
-        'CLE': 114, 'GUARDIANS': 114,
-        'COL': 115, 'ROCKIES': 115,
-        'DET': 116, 'TIGERS': 116,
-        'HOU': 117, 'ASTROS': 117,
-        'KC':  118, 'ROYALS': 118,
-        'LAD': 119, 'DODGERS': 119,
-        'WSH': 120, 'WAS': 120, 'NATIONALS': 120,
-        'NYM': 121, 'METS': 121,
-        'OAK': 133, 'ATH': 133, 'ATHLETICS': 133, "A'S": 133,
-        'PIT': 134, 'PIRATES': 134,
-        'SD':  135, 'PADRES': 135,
-        'SEA': 136, 'MARINERS': 136,
-        'SF':  137, 'GIANTS': 137,
-        'STL': 138, 'CARDINALS': 138,
-        'TB':  139, 'RAYS': 139,
-        'TEX': 140, 'RANGERS': 140,
-        'TOR': 141, 'BLUE JAYS': 141,
-        'MIN': 142, 'TWINS': 142,
-        'PHI': 143, 'PHILLIES': 143,
-        'ATL': 144, 'BRAVES': 144,
-        'CWS': 145, 'CHW': 145, 'WHITE SOX': 145,
-        'MIA': 146, 'MARLINS': 146,
-        'NYY': 147, 'YANKEES': 147,
-        'MIL': 158, 'BREWERS': 158
+      static MLB_TEAM_IDS = {
+        'LAA': 108, 'ANGELS': 108, 'ARI': 109, 'AZ': 109, 'DIAMONDBACKS': 109,
+        'BAL': 110, 'ORIOLES': 110, 'BOS': 111, 'RED SOX': 111, 'CHC': 112, 'CUBS': 112,
+        'CIN': 113, 'REDS': 113, 'CLE': 114, 'GUARDIANS': 114, 'COL': 115, 'ROCKIES': 115,
+        'DET': 116, 'TIGERS': 116, 'HOU': 117, 'ASTROS': 117, 'KC': 118, 'ROYALS': 118,
+        'LAD': 119, 'DODGERS': 119, 'WSH': 120, 'WAS': 120, 'NATIONALS': 120,
+        'NYM': 121, 'METS': 121, 'OAK': 133, 'ATH': 133, 'ATHLETICS': 133, "A'S": 133,
+        'PIT': 134, 'PIRATES': 134, 'SD': 135, 'PADRES': 135, 'SEA': 136, 'MARINERS': 136,
+        'SF': 137, 'GIANTS': 137, 'STL': 138, 'CARDINALS': 138, 'TB': 139, 'RAYS': 139,
+        'TEX': 140, 'RANGERS': 140, 'TOR': 141, 'BLUE JAYS': 141, 'MIN': 142, 'TWINS': 142,
+        'PHI': 143, 'PHILLIES': 143, 'ATL': 144, 'BRAVES': 144, 'CWS': 145, 'CHW': 145,
+        'MIA': 146, 'MARLINS': 146, 'NYY': 147, 'YANKEES': 147, 'MIL': 158, 'BREWERS': 158
       };
 
-      static getLogoUrl(teamObj = {}, teamAbbr = '', teamFullName = '') {
-        if (teamObj && teamObj.id) {
-          return `https://www.mlbstatic.com/team-logos/${teamObj.id}.svg`;
-        }
-        const abbr = (teamAbbr || '').toUpperCase().trim();
-        if (this.TEAM_IDS[abbr]) {
-          return `https://www.mlbstatic.com/team-logos/${this.TEAM_IDS[abbr]}.svg`;
-        }
-        const name = (teamFullName || '').toUpperCase().trim();
-        for (const [key, id] of Object.entries(this.TEAM_IDS)) {
-          if (name.includes(key)) {
-            return `https://www.mlbstatic.com/team-logos/${id}.svg`;
+      static getLogoUrl(teamObj = {}, teamAbbr = '', teamFullName = '', sport = 'mlb') {
+        if (sport === 'mlb') {
+          if (teamObj && teamObj.id) {
+            return `https://www.mlbstatic.com/team-logos/${teamObj.id}.svg`;
           }
+          const abbr = (teamAbbr || '').toUpperCase().trim();
+          if (this.MLB_TEAM_IDS[abbr]) {
+            return `https://www.mlbstatic.com/team-logos/${this.MLB_TEAM_IDS[abbr]}.svg`;
+          }
+          return 'https://www.mlbstatic.com/team-logos/league-on-dark/1.svg';
+        } else {
+          // NFL Team Logo Resolution
+          if (teamObj && teamObj.logo) return teamObj.logo;
+          if (teamObj && teamObj.logos && teamObj.logos[0] && teamObj.logos[0].href) {
+            return teamObj.logos[0].href;
+          }
+          const abbr = (teamAbbr || '').toLowerCase().trim();
+          if (abbr) {
+            return `https://a.espncdn.com/i/teamlogos/nfl/500/${abbr}.png`;
+          }
+          return 'https://a.espncdn.com/i/teamlogos/nfl/500/scoreboard/nfl.png';
         }
-        return 'https://www.mlbstatic.com/team-logos/league-on-dark/1.svg';
       }
 
-      static updateLogo(canvasId, teamObj = {}, teamAbbr = '', teamFullName = '') {
+      static updateLogo(canvasId, teamObj = {}, teamAbbr = '', teamFullName = '', sport = 'mlb') {
         const canvas = document.getElementById(canvasId);
         if (!canvas) return;
         const ctx = canvas.getContext('2d');
         const w = canvas.width;
         const h = canvas.height;
 
-        const logoUrl = this.getLogoUrl(teamObj, teamAbbr, teamFullName);
+        const logoUrl = this.getLogoUrl(teamObj, teamAbbr, teamFullName, sport);
         canvas.dataset.currentTeamUrl = logoUrl;
 
         ctx.imageSmoothingEnabled = false;
@@ -967,7 +1060,7 @@
         img.onload = () => {
           if (canvas.dataset.currentTeamUrl !== logoUrl) return;
 
-          // Offscreen 36x36 grid for crisp, sharp retro arcade pixelation
+          // Offscreen 36x36 pixel grid canvas for sharp 8-bit retro arcade pixelation
           const pixelGrid = 36;
           const offCanvas = document.createElement('canvas');
           offCanvas.width = pixelGrid;
@@ -980,7 +1073,6 @@
           offCtx.clearRect(0, 0, pixelGrid, pixelGrid);
           offCtx.drawImage(img, 0, 0, pixelGrid, pixelGrid);
 
-          // Clear target canvas & draw crisp pixelated sprite scaled up to 96x96
           ctx.clearRect(0, 0, w, h);
           ctx.imageSmoothingEnabled = false;
           ctx.msImageSmoothingEnabled = false;
@@ -996,12 +1088,12 @@
           ctx.font = '16px "Press Start 2P", monospace';
           ctx.textAlign = 'center';
           ctx.textBaseline = 'middle';
-          ctx.fillText((teamAbbr || 'MLB').slice(0, 3), w / 2, h / 2);
+          ctx.fillText((teamAbbr || (sport === 'nfl' ? 'NFL' : 'MLB')).slice(0, 3), w / 2, h / 2);
         };
       }
     }
 
-    // --- 2. Audio Synthesizer Engine (Web Audio API) ---
+    // --- 2. Web Audio Synthesizer Engine ---
     class SoundEngine {
       constructor() {
         this.ctx = null;
@@ -1088,6 +1180,22 @@
         osc.start();
         osc.stop(this.ctx.currentTime + 0.35);
       }
+
+      playWhistle() {
+        if (this.muted) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1800, this.ctx.currentTime);
+        osc.frequency.setValueAtTime(2200, this.ctx.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.3);
+      }
     }
 
     const sound = new SoundEngine();
@@ -1115,7 +1223,7 @@
         this.frame = 0;
         this.lastTime = performance.now();
         const render = (now) => {
-          if (now - this.lastTime > 32) { // Smooth ~30 FPS retro arcade timing
+          if (now - this.lastTime > 32) {
             this.frame++;
             this.lastTime = now;
           }
@@ -1125,63 +1233,80 @@
         this.animId = requestAnimationFrame(render);
       }
 
-      drawBackground(ctx, w, h) {
-        // Deep stadium night sky
-        ctx.fillStyle = '#0b1326';
-        ctx.fillRect(0, 0, w, h);
+      drawBackground(ctx, w, h, isGridiron = false) {
+        if (!isGridiron) {
+          // Baseball stadium night sky & field
+          ctx.fillStyle = '#0b1326';
+          ctx.fillRect(0, 0, w, h);
 
-        // Twinkling stars in sky
-        ctx.fillStyle = '#ffffff';
-        const starPositions = [[40, 15], [120, 25], [200, 10], [320, 30], [400, 18], [450, 35]];
-        starPositions.forEach(([sx, sy], idx) => {
-          const alpha = (Math.sin(this.frame * 0.05 + idx) + 1) * 0.4 + 0.2;
-          ctx.globalAlpha = alpha;
-          ctx.fillRect(sx, sy, 2, 2);
-        });
-        ctx.globalAlpha = 1.0;
+          ctx.fillStyle = '#ffffff';
+          const starPositions = [[40, 15], [120, 25], [200, 10], [320, 30], [400, 18], [450, 35]];
+          starPositions.forEach(([sx, sy], idx) => {
+            const alpha = (Math.sin(this.frame * 0.05 + idx) + 1) * 0.4 + 0.2;
+            ctx.globalAlpha = alpha;
+            ctx.fillRect(sx, sy, 2, 2);
+          });
+          ctx.globalAlpha = 1.0;
 
-        // Stadium floodlights on top corners
-        ctx.fillStyle = '#fffae6';
-        ctx.fillRect(15, 8, 16, 6);
-        ctx.fillRect(w - 31, 8, 16, 6);
+          ctx.fillStyle = '#fffae6';
+          ctx.fillRect(15, 8, 16, 6);
+          ctx.fillRect(w - 31, 8, 16, 6);
 
-        // Light beams
-        ctx.fillStyle = 'rgba(255, 250, 230, 0.04)';
-        ctx.beginPath();
-        ctx.moveTo(23, 14);
-        ctx.lineTo(0, h);
-        ctx.lineTo(160, h);
-        ctx.closePath();
-        ctx.fill();
+          ctx.fillStyle = '#163820';
+          ctx.fillRect(0, 95, w, 25);
+          ctx.fillStyle = '#f1e05a';
+          ctx.fillRect(0, 95, w, 3);
 
-        ctx.beginPath();
-        ctx.moveTo(w - 23, 14);
-        ctx.lineTo(w, h);
-        ctx.lineTo(w - 160, h);
-        ctx.closePath();
-        ctx.fill();
+          ctx.fillStyle = '#1e532b';
+          ctx.fillRect(0, 120, w, h - 120);
 
-        // Outfield wall
-        ctx.fillStyle = '#163820';
-        ctx.fillRect(0, 95, w, 25);
-        ctx.fillStyle = '#f1e05a'; // Yellow top wall line
-        ctx.fillRect(0, 95, w, 3);
+          ctx.fillStyle = '#235f32';
+          for (let x = 0; x < w; x += 40) {
+            ctx.fillRect(x, 120, 20, h - 120);
+          }
 
-        // Outfield Grass
-        ctx.fillStyle = '#1e532b';
-        ctx.fillRect(0, 120, w, h - 120);
+          ctx.fillStyle = '#8b5a2b';
+          ctx.beginPath();
+          ctx.ellipse(w / 2, h - 20, 140, 45, 0, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          // Football Gridiron stadium & turf
+          ctx.fillStyle = '#0b1326';
+          ctx.fillRect(0, 0, w, h);
 
-        // Grass lawn stripes
-        ctx.fillStyle = '#235f32';
-        for (let x = 0; x < w; x += 40) {
-          ctx.fillRect(x, 120, 20, h - 120);
+          // Stadium lights
+          ctx.fillStyle = '#fffae6';
+          ctx.fillRect(20, 10, 24, 8);
+          ctx.fillRect(w - 44, 10, 24, 8);
+
+          // Turf Field
+          ctx.fillStyle = '#1e532b';
+          ctx.fillRect(0, 80, w, h - 80);
+
+          // Gridiron Yard Lines
+          ctx.fillStyle = '#2ea043';
+          for (let x = 0; x < w; x += 40) {
+            ctx.fillRect(x, 80, 20, h - 80);
+          }
+
+          // White Yard Line Stripes
+          ctx.fillStyle = '#ffffff';
+          for (let x = 20; x < w; x += 40) {
+            ctx.fillRect(x, 80, 3, h - 80);
+          }
+
+          // End Zone Goalposts (Yellow)
+          ctx.fillStyle = '#f1e05a';
+          ctx.fillRect(25, 45, 6, 45);
+          ctx.fillRect(10, 45, 36, 4);
+          ctx.fillRect(10, 25, 5, 20);
+          ctx.fillRect(41, 25, 5, 20);
+
+          ctx.fillRect(w - 31, 45, 6, 45);
+          ctx.fillRect(w - 46, 45, 36, 4);
+          ctx.fillRect(w - 46, 25, 5, 20);
+          ctx.fillRect(w - 15, 25, 5, 20);
         }
-
-        // Infield dirt area
-        ctx.fillStyle = '#8b5a2b';
-        ctx.beginPath();
-        ctx.ellipse(w / 2, h - 20, 140, 45, 0, 0, Math.PI * 2);
-        ctx.fill();
       }
 
       draw(playType) {
@@ -1189,45 +1314,41 @@
         const h = this.canvas.height || 220;
         const ctx = this.ctx;
 
-        this.drawBackground(ctx, w, h);
+        const isNflPlay = ['touchdown', 'interception', 'fumble', 'field_goal', 'first_down', 'timeout', 'quarter_change', 'safety'].includes(playType);
+        this.drawBackground(ctx, w, h, isNflPlay);
 
         switch (playType) {
-          case 'strikeout':
-            this.drawStrikeout(ctx, w, h);
-            break;
-          case 'error':
-            this.drawError(ctx, w, h);
-            break;
-          case 'home_run':
-            this.drawHomeRun(ctx, w, h);
-            break;
-          case 'stolen_base':
-            this.drawStolenBase(ctx, w, h);
-            break;
-          case 'walk':
-            this.drawWalk(ctx, w, h);
-            break;
-          case 'hit_by_pitch':
-            this.drawHitByPitch(ctx, w, h);
-            break;
-          case 'rain_out':
-            this.drawRainOut(ctx, w, h);
-            break;
-          default:
-            this.drawGenericDrink(ctx, w, h);
-            break;
+          // MLB Plays
+          case 'strikeout': this.drawStrikeout(ctx, w, h); break;
+          case 'error': this.drawError(ctx, w, h); break;
+          case 'home_run': this.drawHomeRun(ctx, w, h); break;
+          case 'stolen_base': this.drawStolenBase(ctx, w, h); break;
+          case 'walk': this.drawWalk(ctx, w, h); break;
+          case 'hit_by_pitch': this.drawHitByPitch(ctx, w, h); break;
+          case 'rain_out': this.drawRainOut(ctx, w, h); break;
+
+          // NFL Plays
+          case 'touchdown': this.drawTouchdown(ctx, w, h); break;
+          case 'interception': this.drawInterception(ctx, w, h); break;
+          case 'fumble': this.drawFumble(ctx, w, h); break;
+          case 'field_goal': this.drawFieldGoal(ctx, w, h); break;
+          case 'first_down': this.drawFirstDown(ctx, w, h); break;
+          case 'timeout': this.drawTimeout(ctx, w, h); break;
+          case 'quarter_change': this.drawQuarterChange(ctx, w, h); break;
+          case 'safety': this.drawSafety(ctx, w, h); break;
+
+          default: this.drawGenericDrink(ctx, w, h); break;
         }
       }
 
+      // MLB Scenes
       drawStrikeout(ctx, w, h) {
         const t = this.frame * 0.08;
         const swingProgress = Math.min(1, (t % 2));
         const swingAngle = Math.sin(swingProgress * Math.PI) * 1.2;
-
         const batterX = w / 2 - 30;
         const batterY = h - 75;
 
-        // Batter body
         ctx.fillStyle = '#58a6ff';
         ctx.fillRect(batterX, batterY, 18, 28);
         ctx.fillStyle = '#ffcca6';
@@ -1235,7 +1356,6 @@
         ctx.fillStyle = '#1f6feb';
         ctx.fillRect(batterX + 1, batterY - 16, 16, 5);
 
-        // Bat swing
         ctx.fillStyle = '#d4a373';
         ctx.save();
         ctx.translate(batterX + 14, batterY + 8);
@@ -1243,7 +1363,6 @@
         ctx.fillRect(0, -3, 30, 5);
         ctx.restore();
 
-        // Big retro flashing "K"
         const kScale = 1 + Math.sin(t * 2) * 0.08;
         ctx.save();
         ctx.translate(w / 2, 55);
@@ -1265,12 +1384,9 @@
       drawHomeRun(ctx, w, h) {
         const cycle = 120;
         const progress = (this.frame % cycle) / cycle;
-
-        // Ball Arc trajectory
         const ballX = progress * (w + 40) - 20;
         const ballY = (h - 50) - Math.sin(progress * Math.PI) * 110;
 
-        // Rainbow particle trail
         for (let i = 1; i <= 8; i++) {
           const trailX = ballX - i * 7;
           const trailY = ballY + Math.sin((progress - i * 0.02) * Math.PI) * 4 + i * 1.5;
@@ -1279,26 +1395,12 @@
           ctx.fillRect(trailX, trailY, 6 - i * 0.5, 6 - i * 0.5);
         }
 
-        // Baseball
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(ballX, ballY, 10, 10);
         ctx.fillStyle = '#da3633';
         ctx.fillRect(ballX + 2, ballY + 4, 6, 2);
 
-        // Fireworks burst in sky
-        if (progress > 0.4) {
-          const fx = w / 2 + Math.sin(this.frame * 0.1) * 80;
-          const fy = 45 + Math.cos(this.frame * 0.1) * 15;
-          ctx.fillStyle = (this.frame % 4 === 0) ? '#f1e05a' : '#58a6ff';
-          ctx.fillRect(fx - 12, fy, 4, 4);
-          ctx.fillRect(fx + 12, fy, 4, 4);
-          ctx.fillRect(fx, fy - 12, 4, 4);
-          ctx.fillRect(fx, fy + 12, 4, 4);
-        }
-
-        const colors = ['#f1e05a', '#58a6ff', '#2ea043', '#da3633'];
-        const bannerColor = colors[Math.floor(this.frame / 8) % colors.length];
-
+        const bannerColor = ['#f1e05a', '#58a6ff', '#2ea043', '#da3633'][Math.floor(this.frame / 8) % 4];
         ctx.font = '22px "Press Start 2P"';
         ctx.fillStyle = '#000000';
         ctx.textAlign = 'center';
@@ -1317,27 +1419,10 @@
         const slideX = 60 + progress * (w - 140);
         const slideY = h - 60;
 
-        // Base bag at end
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(w - 80, slideY, 18, 18);
-        ctx.fillStyle = '#30363d';
-        ctx.fillRect(w - 80, slideY + 18, 18, 3);
-
-        // Dust cloud behind slider
-        if (progress > 0.3) {
-          ctx.fillStyle = 'rgba(212, 163, 115, 0.7)';
-          const dustSize = Math.sin(this.frame * 0.2) * 6 + 14;
-          ctx.fillRect(slideX - 25, slideY + 4, dustSize, dustSize - 4);
-          ctx.fillRect(slideX - 40, slideY + 8, dustSize * 0.8, dustSize * 0.6);
-        }
-
-        // Sliding Runner
         ctx.fillStyle = '#2ea043';
         ctx.fillRect(slideX, slideY + 4, 28, 14);
-        ctx.fillStyle = '#ffcca6';
-        ctx.fillRect(slideX + 24, slideY + 2, 10, 10);
-        ctx.fillStyle = '#1f6feb';
-        ctx.fillRect(slideX + 22, slideY, 12, 5);
 
         ctx.font = '22px "Press Start 2P", monospace';
         ctx.fillStyle = '#000';
@@ -1345,10 +1430,6 @@
         ctx.fillText('⚡ STOLEN BASE! ⚡', w / 2 + 2, 47);
         ctx.fillStyle = '#2ea043';
         ctx.fillText('⚡ STOLEN BASE! ⚡', w / 2, 45);
-
-        ctx.font = '18px "VT323", monospace';
-        ctx.fillStyle = '#f1e05a';
-        ctx.fillText('1 DRINK PER BASE!', w / 2, 75);
       }
 
       drawError(ctx, w, h) {
@@ -1356,114 +1437,197 @@
         const x = w / 2 - 10 + wobble;
         const y = h - 70;
 
-        // Fielder
         ctx.fillStyle = '#f0883e';
         ctx.fillRect(x, y, 18, 28);
-        ctx.fillStyle = '#ffcca6';
-        ctx.fillRect(x + 3, y - 14, 12, 12);
-        ctx.fillStyle = '#1f6feb';
-        ctx.fillRect(x + 1, y - 16, 16, 5);
-
-        // Bouncing Ball off glove
-        const ballY = y - 20 - Math.abs(Math.sin(this.frame * 0.12)) * 35;
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(x + 28, ballY, 10, 10);
-
-        // Exclamation Mark above head
-        ctx.font = '24px "Press Start 2P"';
-        ctx.fillStyle = '#da3633';
-        ctx.textAlign = 'center';
-        ctx.fillText('❗', x + 9, y - 24);
-
         ctx.font = '22px "Press Start 2P", monospace';
         ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
         ctx.fillText('3RROR! OOPS!', w / 2 + 2, 47);
         ctx.fillStyle = '#da3633';
         ctx.fillText('3RROR! OOPS!', w / 2, 45);
-
-        ctx.font = '18px "VT323", monospace';
-        ctx.fillStyle = '#f1e05a';
-        ctx.fillText('FIELDING FUMBLE - TAKE A DRINK!', w / 2, 75);
       }
 
       drawWalk(ctx, w, h) {
-        const progress = ((this.frame * 0.6) % 100) / 100;
-        const walkX = 40 + progress * (w - 120);
-        const walkY = h - 75;
-
-        // Walking Batter
-        ctx.fillStyle = '#58a6ff';
-        ctx.fillRect(walkX, walkY, 18, 28);
-        ctx.fillStyle = '#ffcca6';
-        ctx.fillRect(walkX + 3, walkY - 14, 12, 12);
-        ctx.fillStyle = '#1f6feb';
-        ctx.fillRect(walkX + 1, walkY - 16, 16, 5);
-
         ctx.font = '22px "Press Start 2P", monospace';
         ctx.fillStyle = '#000';
         ctx.textAlign = 'center';
         ctx.fillText('BASE ON BALLS', w / 2 + 2, 47);
         ctx.fillStyle = '#58a6ff';
         ctx.fillText('BASE ON BALLS', w / 2, 45);
-
-        ctx.font = '18px "VT323", monospace';
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText('TAKE YOUR BASE - TAKE 1 DRINK!', w / 2, 75);
       }
 
       drawHitByPitch(ctx, w, h) {
-        const batterX = w / 2 - 20;
-        const batterY = h - 75;
-
-        // Batter
-        ctx.fillStyle = '#e63946';
-        ctx.fillRect(batterX, batterY, 18, 28);
-        ctx.fillStyle = '#ffcca6';
-        ctx.fillRect(batterX + 3, batterY - 14, 12, 12);
-
-        // Ouch / Impact flash
-        if (this.frame % 10 < 5) {
-          ctx.fillStyle = '#f1e05a';
-          ctx.fillRect(batterX + 16, batterY + 4, 12, 12);
-        }
-
         ctx.font = '22px "Press Start 2P", monospace';
         ctx.fillStyle = '#000';
         ctx.textAlign = 'center';
         ctx.fillText('HIT BY PITCH!', w / 2 + 2, 47);
         ctx.fillStyle = '#e63946';
         ctx.fillText('HIT BY PITCH!', w / 2, 45);
-
-        ctx.font = '18px "VT323", monospace';
-        ctx.fillStyle = '#f1e05a';
-        ctx.fillText('TAKE 5 DRINKS!', w / 2, 75);
       }
 
       drawRainOut(ctx, w, h) {
-        // Stormy clouds
-        ctx.fillStyle = '#21262d';
-        ctx.fillRect(0, 0, w, 40);
-
-        // Falling rain drops
-        ctx.fillStyle = '#58a6ff';
-        for (let i = 0; i < 25; i++) {
-          const rx = (i * 21 + this.frame * 2) % w;
-          const ry = (i * 13 + this.frame * 5) % (h - 40) + 30;
-          ctx.fillRect(rx, ry, 2, 9);
-        }
-
-        // Lightning flash every 4 seconds
-        if (this.frame % 120 > 115) {
-          ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
-          ctx.fillRect(0, 0, w, h);
-        }
-
         ctx.font = '20px "Press Start 2P", monospace';
         ctx.fillStyle = '#000';
         ctx.textAlign = 'center';
         ctx.fillText('🌧️ RAIN OUT! 🌧️', w / 2 + 2, 47);
         ctx.fillStyle = '#58a6ff';
         ctx.fillText('🌧️ RAIN OUT! 🌧️', w / 2, 45);
+      }
+
+      // NFL Scenes
+      drawTouchdown(ctx, w, h) {
+        const progress = ((this.frame * 0.8) % 100) / 100;
+        const ballX = progress * (w - 100) + 30;
+        const ballY = (h - 60) - Math.sin(progress * Math.PI) * 80;
+
+        // Football
+        ctx.fillStyle = '#8b4513';
+        ctx.fillRect(ballX, ballY, 14, 10);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(ballX + 5, ballY + 2, 4, 6);
+
+        // Fireworks burst in end zone
+        if (progress > 0.6) {
+          const fx = w - 60 + Math.sin(this.frame * 0.1) * 20;
+          const fy = 40 + Math.cos(this.frame * 0.1) * 15;
+          ctx.fillStyle = (this.frame % 4 === 0) ? '#f1e05a' : '#f0883e';
+          ctx.fillRect(fx - 10, fy, 4, 4);
+          ctx.fillRect(fx + 10, fy, 4, 4);
+          ctx.fillRect(fx, fy - 10, 4, 4);
+          ctx.fillRect(fx, fy + 10, 4, 4);
+        }
+
+        const bannerColor = ['#f1e05a', '#f0883e', '#e63946'][Math.floor(this.frame / 8) % 3];
+        ctx.font = '22px "Press Start 2P", monospace';
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.fillText('🏈 TOUCHDOWN! 🏈', w / 2 + 2, 47);
+        ctx.fillStyle = bannerColor;
+        ctx.fillText('🏈 TOUCHDOWN! 🏈', w / 2, 45);
+
+        ctx.font = '16px "Press Start 2P", monospace';
+        ctx.fillStyle = '#da3633';
+        ctx.fillText('FINISH YOUR DRINK!', w / 2, 80);
+      }
+
+      drawInterception(ctx, w, h) {
+        const wobble = Math.sin(this.frame * 0.2) * 6;
+        const x = w / 2 + wobble;
+        const y = h - 65;
+
+        // DB Player Catch
+        ctx.fillStyle = '#f0883e';
+        ctx.fillRect(x - 10, y, 20, 26);
+        ctx.fillStyle = '#8b4513';
+        ctx.fillRect(x - 5, y - 12, 10, 8); // Intercepted ball overhead
+
+        ctx.font = '22px "Press Start 2P", monospace';
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.fillText('⚡ INTERCEPTION! ⚡', w / 2 + 2, 47);
+        ctx.fillStyle = '#da3633';
+        ctx.fillText('⚡ INTERCEPTION! ⚡', w / 2, 45);
+
+        ctx.font = '18px "VT323", monospace';
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillText('TURNOVER - TAKE 3 DRINKS!', w / 2, 75);
+      }
+
+      drawFumble(ctx, w, h) {
+        const bounceY = h - 60 - Math.abs(Math.sin(this.frame * 0.15)) * 30;
+        const ballX = w / 2 + Math.cos(this.frame * 0.1) * 40;
+
+        // Bouncing Football
+        ctx.fillStyle = '#8b4513';
+        ctx.fillRect(ballX, bounceY, 14, 10);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(ballX + 5, bounceY + 2, 4, 6);
+
+        ctx.font = '22px "Press Start 2P", monospace';
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.fillText('💥 FUMBLE! 💥', w / 2 + 2, 47);
+        ctx.fillStyle = '#f0883e';
+        ctx.fillText('💥 FUMBLE! 💥', w / 2, 45);
+
+        ctx.font = '18px "VT323", monospace';
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillText('LOOSE BALL - TAKE 2 DRINKS!', w / 2, 75);
+      }
+
+      drawFieldGoal(ctx, w, h) {
+        const progress = ((this.frame * 0.7) % 100) / 100;
+        const ballX = w / 2;
+        const ballY = (h - 40) - progress * 100;
+
+        // Football sailing into uprights
+        ctx.fillStyle = '#8b4513';
+        ctx.fillRect(ballX - 6, ballY, 12, 8);
+
+        ctx.font = '22px "Press Start 2P", monospace';
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.fillText('⚽ FIELD GOAL GOOD! ⚽', w / 2 + 2, 47);
+        ctx.fillStyle = '#2ea043';
+        ctx.fillText('⚽ FIELD GOAL GOOD! ⚽', w / 2, 45);
+
+        ctx.font = '18px "VT323", monospace';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('IT IS GOOD! TAKE 2 DRINKS!', w / 2, 75);
+      }
+
+      drawFirstDown(ctx, w, h) {
+        const slideX = (this.frame * 4) % w;
+
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillRect(slideX, h - 50, 4, 30);
+        ctx.fillRect(slideX - 10, h - 50, 20, 4);
+
+        ctx.font = '22px "Press Start 2P", monospace';
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.fillText('🏃 1ST DOWN! 🏃', w / 2 + 2, 47);
+        ctx.fillStyle = '#58a6ff';
+        ctx.fillText('🏃 1ST DOWN! 🏃', w / 2, 45);
+
+        ctx.font = '18px "VT323", monospace';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('CHAINS MOVE - TAKE 1 DRINK!', w / 2, 75);
+      }
+
+      drawTimeout(ctx, w, h) {
+        ctx.font = '22px "Press Start 2P", monospace';
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.fillText('⏱️ TIMEOUT ⏱️', w / 2 + 2, 47);
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillText('⏱️ TIMEOUT ⏱️', w / 2, 45);
+
+        ctx.font = '18px "VT323", monospace';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('CLOCK STOPPED - TAKE 1 DRINK!', w / 2, 75);
+      }
+
+      drawQuarterChange(ctx, w, h) {
+        ctx.font = '20px "Press Start 2P", monospace';
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.fillText('🏈 QUARTER ENDED 🏈', w / 2 + 2, 47);
+        ctx.fillStyle = '#f0883e';
+        ctx.fillText('🏈 QUARTER ENDED 🏈', w / 2, 45);
+
+        ctx.font = '18px "VT323", monospace';
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillText('NEW QUARTER - TAKE 1 DRINK!', w / 2, 75);
+      }
+
+      drawSafety(ctx, w, h) {
+        ctx.font = '22px "Press Start 2P", monospace';
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.fillText('⚠️ SAFETY! ⚠️', w / 2 + 2, 47);
+        ctx.fillStyle = '#da3633';
+        ctx.fillText('⚠️ SAFETY! ⚠️', w / 2, 45);
 
         ctx.font = '18px "Press Start 2P", monospace';
         ctx.fillStyle = '#f1e05a';
@@ -1474,35 +1638,17 @@
         const mugX = w / 2 - 18;
         const mugY = 65;
 
-        // Mug Handle
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(mugX - 10, mugY + 8, 10, 24);
         ctx.fillStyle = '#0b1326';
         ctx.fillRect(mugX - 6, mugY + 12, 6, 16);
 
-        // Glass Body
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(mugX, mugY, 36, 44);
 
-        // Liquid fill animation
         const fillHeight = 10 + Math.min(28, (this.frame * 0.4) % 32);
         ctx.fillStyle = '#f1e05a';
         ctx.fillRect(mugX + 4, mugY + 40 - fillHeight, 28, fillHeight);
-
-        // Light Highlight
-        ctx.fillStyle = '#fff59d';
-        ctx.fillRect(mugX + 6, mugY + 40 - fillHeight, 4, fillHeight);
-
-        // Foam Head
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(mugX - 2, mugY - 6, 40, 10);
-
-        // Rising Bubbles
-        const bubbleY1 = mugY - 8 - (this.frame * 0.8) % 30;
-        const bubbleY2 = mugY - 4 - (this.frame * 0.6) % 35;
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(mugX + 8, bubbleY1, 4, 4);
-        ctx.fillRect(mugX + 22, bubbleY2, 4, 4);
 
         ctx.font = '22px "Press Start 2P", monospace';
         ctx.fillStyle = '#000';
@@ -1515,8 +1661,8 @@
 
     const pixelAnimator = new PixelArtAnimator('pixelCanvas');
 
-    // --- 4. User's Standard Default Ruleset ---
-    const DEFAULT_RULES = {
+    // --- 4. Default Rulesets ---
+    const DEFAULT_MLB_RULES = {
       'strikeout': { name: 'Strikeout (K)', drinks: '1' },
       'walk': { name: 'Walk (BB)', drinks: '1' },
       'single': { name: 'Single (1B)', drinks: '2' },
@@ -1533,36 +1679,51 @@
       'rain_out': { name: 'Rain Out', drinks: 'Take a shot' }
     };
 
+    const DEFAULT_NFL_RULES = {
+      'touchdown': { name: 'Touchdown (TD)', drinks: 'Finish Drink' },
+      'interception': { name: 'Interception (INT)', drinks: '3' },
+      'fumble': { name: 'Fumble Turnover', drinks: '2' },
+      'field_goal': { name: 'Field Goal (FG)', drinks: '2' },
+      'first_down': { name: 'First Down', drinks: '1' },
+      'timeout': { name: 'Timeout', drinks: '1' },
+      'quarter_change': { name: 'Quarter Change', drinks: '1' },
+      'safety': { name: 'Safety', drinks: 'Take a shot' }
+    };
+
     class DrinkingGameManager {
       constructor() {
-        this.rules = DEFAULT_RULES;
-        localStorage.setItem('mlb_drink_rules_v2', JSON.stringify(this.rules));
+        this.currentSport = localStorage.getItem('selected_sport') || 'mlb';
 
-        this.totals = {
-          totalDrinks: 0,
-          k: 0,
-          bb: 0,
-          hits: 0,
-          hr: 0,
-          hbp: 0,
-          err: 0,
-          dp: 0,
-          sb: 0,
-          balk: 0,
-          new_inning: 0
-        };
+        this.mlbRules = JSON.parse(localStorage.getItem('mlb_drink_rules_v2')) || JSON.parse(JSON.stringify(DEFAULT_MLB_RULES));
+        this.nflRules = JSON.parse(localStorage.getItem('nfl_drink_rules_v1')) || JSON.parse(JSON.stringify(DEFAULT_NFL_RULES));
+
+        this.mlbTotals = { totalDrinks: 0, k: 0, bb: 0, hits: 0, hr: 0, hbp: 0, err: 0, dp: 0, sb: 0, balk: 0, new_inning: 0 };
+        this.nflTotals = { totalDrinks: 0, td: 0, int: 0, fumble: 0, fg: 0, firstDown: 0, timeout: 0, quarterChange: 0, safety: 0 };
+
         this.seenPlayIds = new Set();
         this.selectedGamePk = null;
         this.pollingInterval = null;
         this.isInitialLoad = true;
-        this.lastInningKey = null;
+        this.lastNFLQuarter = null;
+      }
+
+      get rules() {
+        return this.currentSport === 'mlb' ? this.mlbRules : this.nflRules;
+      }
+
+      get totals() {
+        return this.currentSport === 'mlb' ? this.mlbTotals : this.nflTotals;
       }
 
       saveRules() {
-        localStorage.setItem('mlb_drink_rules_v2', JSON.stringify(this.rules));
+        if (this.currentSport === 'mlb') {
+          localStorage.setItem('mlb_drink_rules_v2', JSON.stringify(this.mlbRules));
+        } else {
+          localStorage.setItem('nfl_drink_rules_v1', JSON.stringify(this.nflRules));
+        }
       }
 
-      // Evaluates sub-events inside playEvents (Stolen Bases, Balks, Pitching Changes, Wild Pitches)
+      // MLB Sub-Events
       evaluateSubEvent(pe, play) {
         const details = pe.details || {};
         const eventType = (details.eventType || '').toLowerCase();
@@ -1570,14 +1731,9 @@
         const desc = details.description || details.event || 'Action occurred';
 
         let ruleKey = null;
-
-        if (eventType.includes('stolen_base') || eventText.includes('stolen base')) {
-          ruleKey = 'stolen_base';
-        } else if (eventType.includes('balk') || eventText.includes('balk')) {
-          ruleKey = 'balk';
-        } else if (eventType.includes('error') || eventText.includes('error')) {
-          ruleKey = 'error';
-        }
+        if (eventType.includes('stolen_base') || eventText.includes('stolen base')) ruleKey = 'stolen_base';
+        else if (eventType.includes('balk') || eventText.includes('balk')) ruleKey = 'balk';
+        else if (eventType.includes('error') || eventText.includes('error')) ruleKey = 'error';
 
         if (!ruleKey || !this.rules[ruleKey]) return null;
 
@@ -1594,69 +1750,31 @@
           numDrinks = parseInt(rule ? rule.drinks : 0, 10) || 0;
         }
 
-        return {
-          isDrink: true,
-          ruleKey,
-          ruleName: rule ? rule.name : (details.event || 'Action Event'),
-          drinksText,
-          numDrinks,
-          desc,
-          play
-        };
+        return { isDrink: true, ruleKey, ruleName: rule ? rule.name : (details.event || 'Action Event'), drinksText, numDrinks, desc, play };
       }
 
-      getPlayDescription(play) {
-        const res = play.result || {};
-        if (res.description && res.description.trim().length > 0) {
-          return res.description.trim();
-        }
-        const batterName = play.matchup && play.matchup.batter ? play.matchup.batter.fullName : '';
-        const eventName = res.event || res.eventType || '';
-        if (batterName && eventName) {
-          return `${batterName} - ${eventName}`;
-        }
-        if (eventName) {
-          return eventName;
-        }
-        return null;
-      }
-
-      // Evaluates main atBat result (Strikeouts, Singles, Doubles, HRs, Walks, Errors, DPs, Flyouts, Groundouts)
+      // MLB Main Plays
       evaluatePlay(play) {
-        const desc = this.getPlayDescription(play);
+        const res = play.result || {};
+        const desc = res.description || (play.matchup && play.matchup.batter ? `${play.matchup.batter.fullName} - ${res.event || ''}` : res.event);
         if (!desc) return null;
 
-        const resultObj = play.result || {};
-        const eventType = (resultObj.eventType || '').toLowerCase();
-        const eventText = (resultObj.event || '').toLowerCase();
+        const eventType = (res.eventType || '').toLowerCase();
+        const eventText = (res.event || '').toLowerCase();
 
         let ruleKey = null;
-
-        if (eventType.includes('strikeout') || eventText.includes('strikeout')) {
-          ruleKey = 'strikeout';
-        } else if (eventType.includes('error') || eventText.includes('error')) {
-          ruleKey = 'error';
-        } else if (eventType === 'home_run' || eventText.includes('home run')) {
-          ruleKey = 'home_run';
-        } else if (eventType === 'triple' || eventText.includes('triple')) {
-          ruleKey = 'triple';
-        } else if (eventType === 'double' || eventText.includes('double')) {
-          ruleKey = 'double';
-        } else if (eventType === 'single' || eventText.includes('single')) {
-          ruleKey = 'single';
-        } else if (eventType === 'walk' || eventType === 'intent_walk' || eventText.includes('walk')) {
-          ruleKey = 'walk';
-        } else if (eventType === 'hit_by_pitch' || eventText.includes('hit by pitch')) {
-          ruleKey = 'hit_by_pitch';
-        } else if (eventType.includes('balk') || eventText.includes('balk')) {
-          ruleKey = 'balk';
-        } else if (eventType.includes('stolen_base') || eventText.includes('stolen base')) {
-          ruleKey = 'stolen_base';
-        } else if (eventType.includes('double_play') || eventText.includes('double play') || eventText.includes('grounded into dp')) {
-          ruleKey = 'double_play';
-        } else if (eventType.includes('triple_play') || eventText.includes('triple play')) {
-          ruleKey = 'triple_play';
-        }
+        if (eventType.includes('strikeout') || eventText.includes('strikeout')) ruleKey = 'strikeout';
+        else if (eventType.includes('error') || eventText.includes('error')) ruleKey = 'error';
+        else if (eventType === 'home_run' || eventText.includes('home run')) ruleKey = 'home_run';
+        else if (eventType === 'triple' || eventText.includes('triple')) ruleKey = 'triple';
+        else if (eventType === 'double' || eventText.includes('double')) ruleKey = 'double';
+        else if (eventType === 'single' || eventText.includes('single')) ruleKey = 'single';
+        else if (eventType === 'walk' || eventType === 'intent_walk' || eventText.includes('walk')) ruleKey = 'walk';
+        else if (eventType === 'hit_by_pitch' || eventText.includes('hit by pitch')) ruleKey = 'hit_by_pitch';
+        else if (eventType.includes('balk') || eventText.includes('balk')) ruleKey = 'balk';
+        else if (eventType.includes('stolen_base') || eventText.includes('stolen base')) ruleKey = 'stolen_base';
+        else if (eventType.includes('double_play') || eventText.includes('double play') || eventText.includes('grounded into dp')) ruleKey = 'double_play';
+        else if (eventType.includes('triple_play') || eventText.includes('triple play')) ruleKey = 'triple_play';
 
         const isDrink = !!(ruleKey && this.rules[ruleKey]);
         const rule = isDrink ? this.rules[ruleKey] : null;
@@ -1679,47 +1797,98 @@
           numDrinks = parseInt(rule ? rule.drinks : 0, 10) || 0;
         }
 
-        const ruleName = isDrink ? rule.name : (resultObj.event || 'PLAY');
+        return { isDrink, ruleKey: ruleKey || 'play', ruleName: isDrink ? rule.name : (res.event || 'PLAY'), drinksText, numDrinks, desc, play };
+      }
 
-        return {
-          isDrink,
-          ruleKey: ruleKey || 'play',
-          ruleName,
-          drinksText,
-          numDrinks,
-          desc,
-          play
-        };
+      // NFL Play Evaluator
+      evaluateNFLPlay(play) {
+        const text = play.text || '';
+        const typeText = (play.type && play.type.text) ? play.type.text : '';
+        const scoringType = play.scoringType ? play.scoringType.name : '';
+        const isScoring = play.scoringPlay;
+
+        let ruleKey = null;
+
+        if (isScoring && (scoringType === 'touchdown' || typeText.toLowerCase().includes('touchdown') || text.toUpperCase().includes('TOUCHDOWN'))) {
+          ruleKey = 'touchdown';
+        } else if (typeText.toLowerCase().includes('interception') || text.toUpperCase().includes('INTERCEPTED')) {
+          ruleKey = 'interception';
+        } else if (typeText.toLowerCase().includes('fumble') || text.toLowerCase().includes('fumbled') || text.toLowerCase().includes('fumble recovery')) {
+          ruleKey = 'fumble';
+        } else if (isScoring && (scoringType === 'field-goal' || typeText.toLowerCase().includes('field goal') || text.toLowerCase().includes('field goal is good'))) {
+          ruleKey = 'field_goal';
+        } else if (typeText.toLowerCase().includes('safety') || scoringType === 'safety' || text.toUpperCase().includes('SAFETY')) {
+          ruleKey = 'safety';
+        } else if (typeText.toLowerCase().includes('timeout') || text.toLowerCase().includes('timeout')) {
+          ruleKey = 'timeout';
+        } else if (typeText === 'End Period' || typeText === 'End of Half' || typeText === 'End of Quarter') {
+          ruleKey = 'quarter_change';
+        } else if ((play.end && play.end.shortDownDistanceText && play.end.shortDownDistanceText.startsWith('1st')) || text.includes('1st Down') || (play.start && play.start.down && play.start.down <= 3 && play.statYardage >= play.start.distance)) {
+          ruleKey = 'first_down';
+        }
+
+        const isDrink = !!(ruleKey && this.rules[ruleKey]);
+        const rule = isDrink ? this.rules[ruleKey] : null;
+
+        let drinksText = isDrink ? rule.drinks : '0';
+        let numDrinks = 0;
+
+        if (ruleKey === 'touchdown') {
+          numDrinks = 6;
+          drinksText = 'FINISH YOUR DRINK!';
+        } else if (ruleKey === 'safety') {
+          numDrinks = 1;
+          drinksText = 'TAKE A SHOT! 🥃';
+        } else {
+          numDrinks = parseInt(rule ? rule.drinks : 0, 10) || 0;
+        }
+
+        return { isDrink, ruleKey: ruleKey || 'play', ruleName: isDrink ? rule.name : (typeText || 'NFL PLAY'), drinksText, numDrinks, desc: text, play };
       }
 
       applyDrinkResult(result) {
         if (!result.isDrink) return;
         const drinks = result.numDrinks || 0;
-        this.totals.totalDrinks += drinks;
-        const key = result.ruleKey;
-        if (key === 'strikeout') this.totals.k += drinks;
-        if (key === 'walk') this.totals.bb += drinks;
-        if (key === 'single' || key === 'double' || key === 'triple') this.totals.hits += drinks;
-        if (key === 'home_run') this.totals.hr += drinks;
-        if (key === 'hit_by_pitch') this.totals.hbp += drinks;
-        if (key === 'error') this.totals.err += drinks;
-        if (key === 'double_play' || key === 'triple_play') this.totals.dp += drinks;
-        if (key === 'stolen_base') this.totals.sb += drinks;
-        if (key === 'balk' || key === 'rain_out') this.totals.balk += drinks;
-        if (key === 'new_inning') this.totals.new_inning += drinks;
+
+        if (this.currentSport === 'mlb') {
+          this.mlbTotals.totalDrinks += drinks;
+          const key = result.ruleKey;
+          if (key === 'strikeout') this.mlbTotals.k += drinks;
+          if (key === 'walk') this.mlbTotals.bb += drinks;
+          if (key === 'single' || key === 'double' || key === 'triple') this.mlbTotals.hits += drinks;
+          if (key === 'home_run') this.mlbTotals.hr += drinks;
+          if (key === 'hit_by_pitch') this.mlbTotals.hbp += drinks;
+          if (key === 'error') this.mlbTotals.err += drinks;
+          if (key === 'double_play' || key === 'triple_play') this.mlbTotals.dp += drinks;
+          if (key === 'stolen_base') this.mlbTotals.sb += drinks;
+          if (key === 'balk' || key === 'rain_out') this.mlbTotals.balk += drinks;
+          if (key === 'new_inning') this.mlbTotals.new_inning += drinks;
+        } else {
+          this.nflTotals.totalDrinks += drinks;
+          const key = result.ruleKey;
+          if (key === 'touchdown') this.nflTotals.td += drinks;
+          if (key === 'interception') this.nflTotals.int += drinks;
+          if (key === 'fumble') this.nflTotals.fumble += drinks;
+          if (key === 'field_goal') this.nflTotals.fg += drinks;
+          if (key === 'first_down') this.nflTotals.firstDown += drinks;
+          if (key === 'timeout') this.nflTotals.timeout += drinks;
+          if (key === 'quarter_change') this.nflTotals.quarterChange += drinks;
+          if (key === 'safety') this.nflTotals.safety += drinks;
+        }
       }
 
       resetCounter() {
-        this.totals = { totalDrinks: 0, k: 0, bb: 0, hits: 0, hr: 0, hbp: 0, err: 0, dp: 0, sb: 0, balk: 0, new_inning: 0 };
+        this.mlbTotals = { totalDrinks: 0, k: 0, bb: 0, hits: 0, hr: 0, hbp: 0, err: 0, dp: 0, sb: 0, balk: 0, new_inning: 0 };
+        this.nflTotals = { totalDrinks: 0, td: 0, int: 0, fumble: 0, fg: 0, firstDown: 0, timeout: 0, quarterChange: 0, safety: 0 };
         this.seenPlayIds.clear();
         this.isInitialLoad = true;
-        this.lastInningKey = null;
+        this.lastNFLQuarter = null;
       }
     }
 
     const gameManager = new DrinkingGameManager();
 
-    // --- 5. UI Controller & MLB API Integration ---
+    // --- 5. UI Controller & Multi-Sport API Integration ---
     const UI = {
       init() {
         const d = new Date();
@@ -1730,14 +1899,58 @@
 
         document.getElementById('datePicker').value = localToday;
 
-        this.resetToNoGameSelected();
+        this.applySportTheme(gameManager.currentSport);
         this.bindEvents();
+
+        if (!localStorage.getItem('selected_sport')) {
+          document.getElementById('sportModal').classList.add('active');
+        } else {
+          this.fetchSchedule(localToday);
+        }
+      },
+
+      applySportTheme(sport) {
+        gameManager.currentSport = sport;
+        localStorage.setItem('selected_sport', sport);
+
+        document.body.className = sport === 'nfl' ? 'theme-nfl' : 'theme-mlb';
+        document.getElementById('sportSelect').value = sport;
+        document.getElementById('brandIcon').textContent = sport === 'nfl' ? '🏈🍺' : '⚾🍺';
+        document.getElementById('brandSubtitle').textContent = sport === 'nfl' ? 'NFL REAL-TIME PLAY DRINK ASSIGNER' : 'MLB REAL-TIME PLAY DRINK ASSIGNER';
+
+        document.getElementById('mlbFieldStatus').style.display = sport === 'mlb' ? 'flex' : 'none';
+        document.getElementById('nflFieldStatus').style.display = sport === 'nfl' ? 'flex' : 'none';
+
+        document.getElementById('mlbStatRows').style.display = sport === 'mlb' ? 'block' : 'none';
+        document.getElementById('nflStatRows').style.display = sport === 'nfl' ? 'block' : 'none';
+
         this.renderRulesModal();
         this.renderCurrentRulesPanel();
-        this.fetchSchedule(localToday);
+        this.resetToNoGameSelected();
       },
 
       bindEvents() {
+        document.getElementById('brandBtn').addEventListener('click', () => {
+          document.getElementById('sportModal').classList.add('active');
+        });
+
+        document.getElementById('selectMlbBtn').addEventListener('click', () => {
+          document.getElementById('sportModal').classList.remove('active');
+          this.applySportTheme('mlb');
+          this.fetchSchedule(document.getElementById('datePicker').value);
+        });
+
+        document.getElementById('selectNflBtn').addEventListener('click', () => {
+          document.getElementById('sportModal').classList.remove('active');
+          this.applySportTheme('nfl');
+          this.fetchSchedule(document.getElementById('datePicker').value);
+        });
+
+        document.getElementById('sportSelect').addEventListener('change', (e) => {
+          this.applySportTheme(e.target.value);
+          this.fetchSchedule(document.getElementById('datePicker').value);
+        });
+
         document.getElementById('datePicker').addEventListener('change', (e) => {
           this.fetchSchedule(e.target.value);
         });
@@ -1770,7 +1983,11 @@
         });
 
         document.getElementById('restoreDefaultsBtn').addEventListener('click', () => {
-          gameManager.rules = JSON.parse(JSON.stringify(DEFAULT_RULES));
+          if (gameManager.currentSport === 'mlb') {
+            gameManager.mlbRules = JSON.parse(JSON.stringify(DEFAULT_MLB_RULES));
+          } else {
+            gameManager.nflRules = JSON.parse(JSON.stringify(DEFAULT_NFL_RULES));
+          }
           gameManager.saveRules();
           this.renderRulesModal();
           this.renderCurrentRulesPanel();
@@ -1799,51 +2016,81 @@
         const select = document.getElementById('gameSelect');
         select.innerHTML = '<option value="">Loading schedule...</option>';
 
-        try {
-          const res = await fetch(`https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=${dateStr}`);
-          const data = await res.json();
+        if (gameManager.currentSport === 'mlb') {
+          // MLB Schedule API
+          try {
+            const res = await fetch(`https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=${dateStr}`);
+            const data = await res.json();
+            select.innerHTML = '<option value="">-- Select Game --</option>';
 
-          select.innerHTML = '<option value="">-- Select Game --</option>';
+            let foundGames = false;
+            if (data.dates && data.dates.length > 0) {
+              data.dates.forEach((d) => {
+                if (d.games && d.games.length > 0) {
+                  foundGames = true;
+                  d.games.forEach((g) => {
+                    const away = g.teams.away.team.name;
+                    const home = g.teams.home.team.name;
+                    const statusObj = g.status || {};
+                    const abstractState = (statusObj.abstractGameState || '').toLowerCase();
+                    const detailedState = (statusObj.detailedState || '').toLowerCase();
 
-          let foundGames = false;
-          if (data.dates && data.dates.length > 0) {
-            data.dates.forEach((d) => {
-              if (d.games && d.games.length > 0) {
-                foundGames = true;
-                d.games.forEach((g) => {
-                  const away = g.teams.away.team.name;
-                  const home = g.teams.home.team.name;
-                  
-                  const statusObj = g.status || {};
-                  const abstractState = (statusObj.abstractGameState || '').toLowerCase();
-                  const detailedState = (statusObj.detailedState || '').toLowerCase();
+                    let statusText = 'IN PROGRESS';
+                    if (detailedState.includes('postponed') || detailedState.includes('cancelled')) statusText = 'POSTPONED';
+                    else if (abstractState === 'final' || detailedState.includes('final') || detailedState.includes('completed')) statusText = 'COMPLETED';
+                    else if (abstractState === 'preview' || detailedState.includes('scheduled')) statusText = 'SCHEDULED';
 
-                  let statusText = 'IN PROGRESS';
-                  if (detailedState.includes('postponed') || detailedState.includes('cancelled') || detailedState.includes('suspended')) {
-                    statusText = 'POSTPONED';
-                  } else if (abstractState === 'final' || detailedState.includes('final') || detailedState.includes('completed') || detailedState.includes('game over')) {
-                    statusText = 'COMPLETED';
-                  } else if (abstractState === 'preview' || detailedState.includes('scheduled') || detailedState.includes('pre-game')) {
-                    statusText = 'SCHEDULED';
-                  } else {
-                    statusText = 'IN PROGRESS';
-                  }
-
-                  const opt = document.createElement('option');
-                  opt.value = g.gamePk;
-                  opt.textContent = `[${statusText}] ${away} @ ${home}`;
-                  select.appendChild(opt);
-                });
-              }
-            });
+                    const opt = document.createElement('option');
+                    opt.value = g.gamePk;
+                    opt.textContent = `[${statusText}] ${away} @ ${home}`;
+                    select.appendChild(opt);
+                  });
+                }
+              });
+            }
+            if (!foundGames) select.innerHTML = `<option value="">No MLB games found for ${dateStr}.</option>`;
+          } catch (err) {
+            console.error('Failed to fetch MLB schedule:', err);
+            select.innerHTML = '<option value="">Error loading MLB schedule</option>';
           }
+        } else {
+          // NFL Schedule via ESPN API
+          try {
+            const formattedDate = dateStr.replace(/-/g, '');
+            const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard?dates=${formattedDate}`);
+            const data = await res.json();
+            select.innerHTML = '<option value="">-- Select Game --</option>';
 
-          if (!foundGames) {
-            select.innerHTML = `<option value="">No games found for ${dateStr}. Change date above!</option>`;
+            let foundGames = false;
+            if (data.events && data.events.length > 0) {
+              foundGames = true;
+              data.events.forEach((e) => {
+                const comp = e.competitions ? e.competitions[0] : {};
+                const competitors = comp.competitors || [];
+                const away = competitors.find(c => c.homeAway === 'away') || competitors[1] || {};
+                const home = competitors.find(c => c.homeAway === 'home') || competitors[0] || {};
+
+                const awayName = away.team ? away.team.displayName : 'AWAY';
+                const homeName = home.team ? home.team.displayName : 'HOME';
+
+                const statusObj = e.status || {};
+                const statusType = statusObj.type || {};
+                let statusText = 'IN PROGRESS';
+
+                if (statusType.completed) statusText = 'COMPLETED';
+                else if (statusType.name === 'STATUS_SCHEDULED' || statusType.state === 'pre') statusText = 'SCHEDULED';
+
+                const opt = document.createElement('option');
+                opt.value = e.id;
+                opt.textContent = `[${statusText}] ${awayName} @ ${homeName}`;
+                select.appendChild(opt);
+              });
+            }
+            if (!foundGames) select.innerHTML = `<option value="">No NFL games found for ${dateStr}. Try a Sunday/Monday date!</option>`;
+          } catch (err) {
+            console.error('Failed to fetch NFL schedule:', err);
+            select.innerHTML = '<option value="">Error loading NFL schedule</option>';
           }
-        } catch (err) {
-          console.error('Failed to fetch MLB schedule:', err);
-          select.innerHTML = '<option value="">Error loading schedule</option>';
         }
       },
 
@@ -1901,6 +2148,9 @@
           if (el) el.classList.remove('active');
         });
 
+        document.getElementById('nflDownDistText').textContent = 'DOWN & DISTANCE: --';
+        document.getElementById('nflClockText').textContent = 'Q1 15:00';
+
         document.getElementById('playFeed').innerHTML = '<div style="text-align: center; color: #8b949e; padding: 20px;">Select a live or archived game above to start tracking plays!</div>';
         this.updateStatsUI();
       },
@@ -1909,37 +2159,44 @@
         if (!gameManager.selectedGamePk) return;
 
         try {
-          const res = await fetch(`https://statsapi.mlb.com/api/v1.1/game/${gameManager.selectedGamePk}/feed/live`);
-          if (!res.ok) throw new Error(`HTTP error ${res.status}`);
-          const data = await res.json();
-          this.updateGameDashboard(data);
+          if (gameManager.currentSport === 'mlb') {
+            const res = await fetch(`https://statsapi.mlb.com/api/v1.1/game/${gameManager.selectedGamePk}/feed/live`);
+            if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+            const data = await res.json();
+            this.updateMlbDashboard(data);
+          } else {
+            const res = await fetch(`https://site.api.espn.com/apis/site/v2/sports/football/nfl/summary?event=${gameManager.selectedGamePk}`);
+            if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+            const data = await res.json();
+            this.updateNflDashboard(data);
+          }
         } catch (err) {
           console.error('Error polling game feed:', err);
           document.getElementById('pollStatus').textContent = 'POLLING: RETRYING...';
         }
       },
 
-      updateGameDashboard(data) {
+      updateMlbDashboard(data) {
         const gameData = data.gameData || {};
         const liveData = data.liveData || {};
 
         if (gameData.teams) {
           const awayTeam = gameData.teams.away || {};
           const homeTeam = gameData.teams.home || {};
-          const awayAbbr = awayTeam.abbreviation || awayTeam.fileCode || awayTeam.teamCode || 'AWAY';
-          const homeAbbr = homeTeam.abbreviation || homeTeam.fileCode || homeTeam.teamCode || 'HOME';
+          const awayAbbr = awayTeam.abbreviation || 'AWAY';
+          const homeAbbr = homeTeam.abbreviation || 'HOME';
 
           document.getElementById('awayTeamName').textContent = awayAbbr.toUpperCase();
           document.getElementById('homeTeamName').textContent = homeAbbr.toUpperCase();
 
-          TeamLogoRenderer.updateLogo('awayTeamLogo', awayTeam, awayAbbr, awayTeam.name);
-          TeamLogoRenderer.updateLogo('homeTeamLogo', homeTeam, homeAbbr, homeTeam.name);
+          TeamLogoRenderer.updateLogo('awayTeamLogo', awayTeam, awayAbbr, awayTeam.name, 'mlb');
+          TeamLogoRenderer.updateLogo('homeTeamLogo', homeTeam, homeAbbr, homeTeam.name, 'mlb');
         }
 
         const statusObj = gameData.status || {};
         const abstractState = (statusObj.abstractGameState || '').toLowerCase();
         const detailedState = (statusObj.detailedState || '').toLowerCase();
-        const isFinal = abstractState === 'final' || detailedState.includes('final') || detailedState.includes('completed') || detailedState.includes('game over');
+        const isFinal = abstractState === 'final' || detailedState.includes('final') || detailedState.includes('completed');
 
         const linescore = liveData.linescore;
         if (linescore && linescore.teams) {
@@ -1953,196 +2210,140 @@
             const inning = linescore.currentInningOrdinal || (linescore.currentInning ? linescore.currentInning + 'TH' : '');
             document.getElementById('gameInningText').textContent = `${state} ${inning}`;
           }
-
-          // Live inning transition check (in case no plays are logged yet in a new half-inning)
-          if (linescore.currentInning && !isFinal) {
-            const state = linescore.inningState || (linescore.isTopInning ? 'TOP' : 'BOT');
-            const inning = linescore.currentInningOrdinal || (linescore.currentInning ? linescore.currentInning + 'TH' : '');
-            const liveInningId = `inning_${linescore.isTopInning ? 'top' : 'bot'}_${linescore.currentInning}`;
-            if (!gameManager.seenPlayIds.has(liveInningId) && !gameManager.isInitialLoad) {
-              gameManager.seenPlayIds.add(liveInningId);
-              const inningResult = {
-                isDrink: true,
-                ruleKey: 'new_inning',
-                ruleName: 'NEW INNING',
-                drinksText: '1 Drink',
-                numDrinks: 1,
-                desc: `New Inning Started: ${state} ${inning}! Take 1 drink.`,
-                play: { about: { halfInning: state, inning: linescore.currentInning } }
-              };
-              gameManager.applyDrinkResult(inningResult);
-              this.addPlayToFeed(inningResult);
-              this.triggerDrinkAlert(inningResult);
-              this.updateStatsUI();
-            }
-          }
         }
 
-        if (gameData.status) {
-          const statusText = gameData.status.detailedState || gameData.status.abstractGameState || 'LIVE';
-          const liveDot = document.getElementById('liveDot');
-
-          if (isFinal) {
-            const extraInnings = (linescore && linescore.currentInning && linescore.currentInning > 9) ? `/${linescore.currentInning}` : '';
-            document.getElementById('gameStatusText').textContent = `FINAL${extraInnings}`;
-            if (liveDot) liveDot.className = 'status-icon final';
-          } else if (statusText.toLowerCase().includes('rain') || statusText.toLowerCase().includes('postponed') || statusText.toLowerCase().includes('suspended')) {
-            document.getElementById('gameStatusText').textContent = statusText.toUpperCase();
-            if (liveDot) liveDot.className = 'status-icon postponed';
-          } else if (statusText.toLowerCase().includes('scheduled') || statusText.toLowerCase().includes('pre-game') || statusText.toLowerCase().includes('preview')) {
-            document.getElementById('gameStatusText').textContent = statusText.toUpperCase();
-            if (liveDot) liveDot.className = 'status-icon scheduled';
-          } else {
-            document.getElementById('gameStatusText').textContent = statusText.toUpperCase();
-            if (liveDot) liveDot.className = 'status-icon in-progress';
-          }
-
-          if (statusText.toLowerCase().includes('rain') || statusText.toLowerCase().includes('postponed') || statusText.toLowerCase().includes('suspended')) {
-            const rainId = 'rain_' + gameManager.selectedGamePk;
-            if (!gameManager.seenPlayIds.has(rainId) && !gameManager.isInitialLoad) {
-              gameManager.seenPlayIds.add(rainId);
-              const rainResult = {
-                isDrink: true,
-                ruleKey: 'rain_out',
-                ruleName: 'RAIN OUT / DELAY',
-                drinksText: 'TAKE A SHOT! 🥃',
-                numDrinks: 1,
-                desc: `Game Status: ${statusText}! TAKE A SHOT!`,
-                play: { about: { halfInning: 'LIVE', inning: '' } }
-              };
-              gameManager.applyDrinkResult(rainResult);
-              this.addPlayToFeed(rainResult);
-              this.triggerDrinkAlert(rainResult);
-              this.updateStatsUI();
-            }
-          }
-        }
-
-        if (linescore && linescore.offense) {
-          if (isFinal) {
-            ['base1', 'base2', 'base3'].forEach((id) => {
-              const el = document.getElementById(id);
-              if (el) el.classList.remove('occupied');
-            });
-            ['ball1', 'ball2', 'ball3', 'strike1', 'strike2', 'out1', 'out2'].forEach((id) => {
-              const el = document.getElementById(id);
-              if (el) el.classList.remove('active');
-            });
-          } else {
-            document.getElementById('base1').classList.toggle('occupied', !!linescore.offense.first);
-            document.getElementById('base2').classList.toggle('occupied', !!linescore.offense.second);
-            document.getElementById('base3').classList.toggle('occupied', !!linescore.offense.third);
-
-            const balls = linescore.balls || 0;
-            const strikes = linescore.strikes || 0;
-            const outs = linescore.outs || 0;
-
-            document.getElementById('ball1').classList.toggle('active', balls >= 1);
-            document.getElementById('ball2').classList.toggle('active', balls >= 2);
-            document.getElementById('ball3').classList.toggle('active', balls >= 3);
-
-            document.getElementById('strike1').classList.toggle('active', strikes >= 1);
-            document.getElementById('strike2').classList.toggle('active', strikes >= 2);
-
-            document.getElementById('out1').classList.toggle('active', outs >= 1);
-            document.getElementById('out2').classList.toggle('active', outs >= 2);
-          }
-        }
+        const liveDot = document.getElementById('liveDot');
+        const statusText = gameData.status ? (gameData.status.detailedState || gameData.status.abstractGameState || 'LIVE') : 'LIVE';
+        document.getElementById('gameStatusText').textContent = statusText.toUpperCase();
+        if (isFinal && liveDot) liveDot.className = 'status-icon final';
+        else if (liveDot) liveDot.className = 'status-icon in-progress';
 
         const allPlays = (liveData.plays && liveData.plays.allPlays) ? liveData.plays.allPlays : [];
         const isFirstTime = gameManager.isInitialLoad;
 
         if (allPlays.length > 0) {
           const feed = document.getElementById('playFeed');
-          if (isFirstTime) {
-            feed.innerHTML = '';
-          }
+          if (isFirstTime) feed.innerHTML = '';
 
           allPlays.forEach((play) => {
             const about = play.about || {};
             const atBatIdx = about.atBatIndex ?? 0;
-            const halfInning = (about.halfInning || 'top').toLowerCase();
-            const inningNum = about.inning || 1;
 
-            // Track New Inning for every half-inning in the game
-            const inningId = `inning_${halfInning}_${inningNum}`;
-            if (!gameManager.seenPlayIds.has(inningId)) {
-              gameManager.seenPlayIds.add(inningId);
-              const stateText = halfInning.toUpperCase();
-              const ordText = about.inningOrdinal || `${inningNum}TH`;
-              const inningResult = {
-                isDrink: true,
-                ruleKey: 'new_inning',
-                ruleName: 'NEW INNING',
-                drinksText: '1 Drink',
-                numDrinks: 1,
-                desc: `New Inning Started: ${stateText} ${ordText}! Take 1 drink.`,
-                play: { about: { halfInning: stateText, inning: inningNum } }
-              };
-              gameManager.applyDrinkResult(inningResult);
-              this.addPlayToFeed(inningResult);
-              if (!isFirstTime) {
-                this.triggerDrinkAlert(inningResult);
-              }
-              this.updateStatsUI();
-            }
-
-            // 1. Process sub-events in playEvents (Stolen Bases, Balks, Errors)
             if (play.playEvents && play.playEvents.length > 0) {
               play.playEvents.forEach((pe) => {
-                if (pe.details && (pe.details.eventType || pe.details.event || pe.type === 'action')) {
+                if (pe.details) {
                   const subEventId = `${atBatIdx}_sub_${pe.index}_${pe.details.eventType || pe.details.event}`;
-
                   if (!gameManager.seenPlayIds.has(subEventId)) {
                     gameManager.seenPlayIds.add(subEventId);
-
                     const subResult = gameManager.evaluateSubEvent(pe, play);
                     if (subResult && subResult.isDrink) {
                       this.addPlayToFeed(subResult);
                       gameManager.applyDrinkResult(subResult);
                       this.updateStatsUI();
-
-                      if (!isFirstTime) {
-                        this.triggerDrinkAlert(subResult);
-                      } else {
-                        document.getElementById('lastDrinkAlert').textContent = `Last: ${subResult.ruleName} (${subResult.drinksText})`;
-                      }
+                      if (!isFirstTime) this.triggerDrinkAlert(subResult);
                     }
                   }
                 }
               });
             }
 
-            // 2. Process main atBat result (Strikeouts, Singles, Doubles, HRs, Walks, Errors, DPs)
             const eventType = (play.result && play.result.eventType) ? play.result.eventType : '';
-            if (eventType || (play.about && play.about.isComplete) || (play.result && play.result.description)) {
+            if (eventType || (play.about && play.about.isComplete)) {
               const mainPlayId = `${atBatIdx}_res_${eventType || 'completed'}`;
-
               if (!gameManager.seenPlayIds.has(mainPlayId)) {
                 const result = gameManager.evaluatePlay(play);
-
                 if (result && result.desc) {
                   gameManager.seenPlayIds.add(mainPlayId);
                   this.addPlayToFeed(result);
-
                   if (result.isDrink) {
                     gameManager.applyDrinkResult(result);
                     this.updateStatsUI();
-
-                    if (!isFirstTime) {
-                      this.triggerDrinkAlert(result);
-                    } else {
-                      document.getElementById('lastDrinkAlert').textContent = `Last: ${result.ruleName} (${result.drinksText})`;
-                    }
+                    if (!isFirstTime) this.triggerDrinkAlert(result);
                   }
                 }
               }
             }
           });
-
           gameManager.isInitialLoad = false;
         } else {
           document.getElementById('playFeed').innerHTML = '<div style="text-align: center; color: #8b949e; padding: 20px;">Game selected! Waiting for first play...</div>';
+        }
+      },
+
+      updateNflDashboard(data) {
+        const header = data.header || {};
+        const competition = header.competitions ? header.competitions[0] : {};
+        const competitors = competition.competitors || [];
+        const awayComp = competitors.find(c => c.homeAway === 'away') || competitors[1] || {};
+        const homeComp = competitors.find(c => c.homeAway === 'home') || competitors[0] || {};
+
+        const awayTeam = awayComp.team || {};
+        const homeTeam = homeComp.team || {};
+        const awayAbbr = awayTeam.abbreviation || 'AWAY';
+        const homeAbbr = homeTeam.abbreviation || 'HOME';
+
+        document.getElementById('awayTeamName').textContent = awayAbbr.toUpperCase();
+        document.getElementById('homeTeamName').textContent = homeAbbr.toUpperCase();
+        document.getElementById('awayTeamScore').textContent = awayComp.score ?? 0;
+        document.getElementById('homeTeamScore').textContent = homeComp.score ?? 0;
+
+        TeamLogoRenderer.updateLogo('awayTeamLogo', awayTeam, awayAbbr, awayTeam.displayName, 'nfl');
+        TeamLogoRenderer.updateLogo('homeTeamLogo', homeTeam, homeAbbr, homeTeam.displayName, 'nfl');
+
+        const statusObj = competition.status || {};
+        const statusType = statusObj.type || {};
+        const isFinal = statusType.completed || statusType.name === 'STATUS_FINAL';
+        const statusDesc = statusType.description || statusType.detail || 'LIVE';
+
+        document.getElementById('gameStatusText').textContent = statusDesc.toUpperCase();
+        const liveDot = document.getElementById('liveDot');
+        if (isFinal && liveDot) liveDot.className = 'status-icon final';
+        else if (liveDot) liveDot.className = 'status-icon in-progress';
+
+        const clock = statusObj.displayClock || '15:00';
+        const period = statusObj.period || 1;
+        document.getElementById('nflClockText').textContent = `Q${period} ${clock}`;
+
+        const situation = competition.situation || {};
+        const downDist = situation.downDistanceText || (situation.shortDownDistanceText ? `${situation.shortDownDistanceText} at ${situation.possessionText || ''}` : '1st & 10');
+        document.getElementById('nflDownDistText').textContent = downDist.toUpperCase();
+
+        const drives = data.drives || {};
+        const allDrives = [...(drives.previous || [])];
+        if (drives.current) allDrives.push(drives.current);
+
+        const isFirstTime = gameManager.isInitialLoad;
+        const feed = document.getElementById('playFeed');
+        if (isFirstTime) feed.innerHTML = '';
+
+        let foundPlays = false;
+
+        allDrives.forEach((drive) => {
+          if (drive.plays && drive.plays.length > 0) {
+            drive.plays.forEach((play) => {
+              foundPlays = true;
+              const playId = play.id || `${drive.id}_${play.sequenceNumber}`;
+
+              if (!gameManager.seenPlayIds.has(playId)) {
+                gameManager.seenPlayIds.add(playId);
+                const result = gameManager.evaluateNFLPlay(play);
+
+                if (result && result.desc) {
+                  this.addPlayToFeed(result);
+                  if (result.isDrink) {
+                    gameManager.applyDrinkResult(result);
+                    this.updateStatsUI();
+                    if (!isFirstTime) this.triggerDrinkAlert(result);
+                  }
+                }
+              }
+            });
+          }
+        });
+
+        gameManager.isInitialLoad = false;
+        if (!foundPlays) {
+          feed.innerHTML = '<div style="text-align: center; color: #8b949e; padding: 20px;">NFL Game selected! Waiting for plays...</div>';
         }
       },
 
@@ -2151,10 +2352,8 @@
         const item = document.createElement('div');
         item.className = 'play-item' + (result.isDrink ? ' has-drinks' : '');
 
-        const inningInfo = result.play.about ? `[${(result.play.about.halfInning || '').toUpperCase()} ${result.play.about.inning || ''}]` : '[LIVE]';
-
         const beerSvgIcon = `<svg class="badge-icon" viewBox="0 0 16 16" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M 3 2 H 11 V 5 H 3 Z" fill="#FFFFFF"/><path d="M 3 5 H 10 V 14 H 3 Z" fill="#F1E05A"/><path d="M 4 6 H 6 V 13 H 4 Z" fill="#FFF59D"/><path d="M 10 6 H 13 V 7 H 14 V 11 H 13 V 12 H 10 V 11 H 12 V 7 H 10 Z" fill="#FFFFFF"/><path d="M 2 2 H 3 V 14 H 10 V 15 H 2 Z" fill="#000000" opacity="0.3"/></svg>`;
-        
+
         let badgeNumber = result.numDrinks;
         if (!badgeNumber || badgeNumber <= 0) {
           const parsed = parseInt(result.drinksText, 10);
@@ -2163,8 +2362,8 @@
 
         item.innerHTML = `
           <div class="play-item-header">
-            <span>${inningInfo} ${result.ruleName.toUpperCase()}</span>
-            <span>${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+            <span>[${gameManager.currentSport.toUpperCase()}] ${result.ruleName.toUpperCase()}</span>
+            <span>${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
           </div>
           <div class="play-item-desc">${result.desc}</div>
           ${result.isDrink ? `<div class="drink-badge">${beerSvgIcon}<span>${badgeNumber}</span></div>` : ''}
@@ -2180,9 +2379,10 @@
 
         document.getElementById('lastDrinkAlert').textContent = `Last: ${result.ruleName} (${result.drinksText})`;
 
-        if (result.ruleKey === 'strikeout') sound.playWhiff();
-        else if (result.ruleKey === 'error') sound.playBuzzer();
-        else if (result.ruleKey === 'home_run') sound.playFanfare();
+        if (result.ruleKey === 'strikeout' || result.ruleKey === 'interception') sound.playWhiff();
+        else if (result.ruleKey === 'error' || result.ruleKey === 'fumble') sound.playBuzzer();
+        else if (result.ruleKey === 'home_run' || result.ruleKey === 'touchdown') sound.playFanfare();
+        else if (result.ruleKey === 'timeout') sound.playWhistle();
         else sound.playChime();
 
         pixelAnimator.start(result.ruleKey);
@@ -2196,16 +2396,28 @@
 
       updateStatsUI() {
         document.getElementById('totalDrinksCount').textContent = gameManager.totals.totalDrinks;
-        document.getElementById('statK').textContent = gameManager.totals.k;
-        document.getElementById('statBB').textContent = gameManager.totals.bb;
-        document.getElementById('statHits').textContent = gameManager.totals.hits;
-        document.getElementById('statHR').textContent = gameManager.totals.hr;
-        document.getElementById('statHBP').textContent = gameManager.totals.hbp;
-        document.getElementById('statERR').textContent = gameManager.totals.err;
-        document.getElementById('statDP').textContent = gameManager.totals.dp;
-        document.getElementById('statSB').textContent = gameManager.totals.sb;
-        document.getElementById('statBalk').textContent = gameManager.totals.balk;
-        document.getElementById('statInning').textContent = gameManager.totals.new_inning;
+
+        if (gameManager.currentSport === 'mlb') {
+          document.getElementById('statK').textContent = gameManager.mlbTotals.k;
+          document.getElementById('statBB').textContent = gameManager.mlbTotals.bb;
+          document.getElementById('statHits').textContent = gameManager.mlbTotals.hits;
+          document.getElementById('statHR').textContent = gameManager.mlbTotals.hr;
+          document.getElementById('statHBP').textContent = gameManager.mlbTotals.hbp;
+          document.getElementById('statERR').textContent = gameManager.mlbTotals.err;
+          document.getElementById('statDP').textContent = gameManager.mlbTotals.dp;
+          document.getElementById('statSB').textContent = gameManager.mlbTotals.sb;
+          document.getElementById('statBalk').textContent = gameManager.mlbTotals.balk;
+          document.getElementById('statInning').textContent = gameManager.mlbTotals.new_inning;
+        } else {
+          document.getElementById('statTD').textContent = gameManager.nflTotals.td;
+          document.getElementById('statINT').textContent = gameManager.nflTotals.int;
+          document.getElementById('statFumble').textContent = gameManager.nflTotals.fumble;
+          document.getElementById('statFG').textContent = gameManager.nflTotals.fg;
+          document.getElementById('statFirstDown').textContent = gameManager.nflTotals.firstDown;
+          document.getElementById('statTimeout').textContent = gameManager.nflTotals.timeout;
+          document.getElementById('statQuarter').textContent = gameManager.nflTotals.quarterChange;
+          document.getElementById('statSafety').textContent = gameManager.nflTotals.safety;
+        }
       },
 
       renderRulesModal() {
@@ -2214,7 +2426,6 @@
 
         Object.keys(gameManager.rules).forEach((key) => {
           const r = gameManager.rules[key];
-
           const row = document.createElement('div');
           row.className = 'rule-row';
 
@@ -2271,53 +2482,60 @@
       },
 
       triggerDemoPlay() {
-        const demoPlays = [
-          { key: 'strikeout', desc: 'Batter strikes out swinging on a 98mph fastball!' },
-          { key: 'single', desc: 'Base hit single to center field!' },
-          { key: 'double', desc: 'Line drive into the gap for a Double!' },
-          { key: 'triple', desc: 'Deep fly ball off the wall... Triple!' },
-          { key: 'home_run', desc: 'DEEP FLY BALL TO LEFT FIELD... THAT BALL IS OUTTA HERE! HOMERUN!' },
-          { key: 'hit_by_pitch', desc: 'Batter hit by pitch! Take 5 drinks!' },
-          { key: 'balk', desc: 'Pitcher balks! Runners advance.' },
-          { key: 'error', desc: '3rror by shortstop on ground ball!' },
-          { key: 'stolen_base', desc: 'Runner slides into second base... SAFE! Stolen base!' },
-          { key: 'rain_out', desc: 'Rain Out / Game Delay! TAKE A SHOT!' }
-        ];
+        let demoPlays = [];
+        if (gameManager.currentSport === 'mlb') {
+          demoPlays = [
+            { key: 'strikeout', desc: 'Batter strikes out swinging on a 98mph fastball!' },
+            { key: 'single', desc: 'Base hit single to center field!' },
+            { key: 'double', desc: 'Line drive into the gap for a Double!' },
+            { key: 'triple', desc: 'Deep fly ball off the wall... Triple!' },
+            { key: 'home_run', desc: 'DEEP FLY BALL TO LEFT FIELD... HOMERUN!' },
+            { key: 'hit_by_pitch', desc: 'Batter hit by pitch! Take 5 drinks!' },
+            { key: 'error', desc: '3rror by shortstop on ground ball!' },
+            { key: 'stolen_base', desc: 'Runner slides into second base... SAFE!' }
+          ];
+        } else {
+          demoPlays = [
+            { key: 'touchdown', desc: 'PASS COMPLETE IN THE END ZONE... TOUCHDOWN!' },
+            { key: 'interception', desc: 'INTERCEPTED AT THE 20 YARD LINE!' },
+            { key: 'fumble', desc: 'FUMBLE ON THE PLAY! RECOVERED BY DEFENSE!' },
+            { key: 'field_goal', desc: '52-YARD FIELD GOAL IS GOOD!' },
+            { key: 'first_down', desc: 'RUSH FOR 12 YARDS AND A FIRST DOWN!' },
+            { key: 'timeout', desc: 'TIMEOUT CALLED BY OFFENSE.' },
+            { key: 'quarter_change', desc: 'END OF THE 1ST QUARTER.' },
+            { key: 'safety', desc: 'SACKED IN THE END ZONE... SAFETY!' }
+          ];
+        }
 
         const pick = demoPlays[Math.floor(Math.random() * demoPlays.length)];
         const rule = gameManager.rules[pick.key];
         let drinksText = rule ? rule.drinks : '1 Drink';
         let numDrinks = 1;
 
-        if (pick.key === 'home_run') { drinksText = 'FINISH YOUR DRINK!'; numDrinks = 6; }
-        else if (pick.key === 'stolen_base') { drinksText = '1 Drink (1/base)'; numDrinks = 1; }
-        else if (pick.key === 'rain_out') { drinksText = 'TAKE A SHOT! 🥃'; numDrinks = 1; }
+        if (pick.key === 'home_run' || pick.key === 'touchdown') { drinksText = 'FINISH YOUR DRINK!'; numDrinks = 6; }
+        else if (pick.key === 'safety') { drinksText = 'TAKE A SHOT! 🥃'; numDrinks = 1; }
         else { numDrinks = parseInt(rule ? rule.drinks : '1', 10) || 1; }
 
         const demoResult = {
           isDrink: true,
           ruleKey: pick.key,
-          ruleName: rule ? rule.name : 'Demo Play',
+          ruleName: rule ? rule.name : pick.key.toUpperCase(),
           drinksText,
           numDrinks,
-          desc: pick.desc,
-          play: { about: { halfInning: 'top', inning: 7 } }
+          desc: `[DEMO PLAY] ${pick.desc}`,
+          play: {}
         };
 
-        gameManager.applyDrinkResult(demoResult);
         this.addPlayToFeed(demoResult);
-        this.triggerDrinkAlert(demoResult);
+        gameManager.applyDrinkResult(demoResult);
         this.updateStatsUI();
+        this.triggerDrinkAlert(demoResult);
       }
     };
 
-    window.addEventListener('DOMContentLoaded', () => UI.init());
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').then(reg => {
-        reg.update();
-      }).catch(err => console.log('SW Registration failed:', err));
-    }
+    window.addEventListener('DOMContentLoaded', () => {
+      UI.init();
+    });
   </script>
 </body>
 </html>
