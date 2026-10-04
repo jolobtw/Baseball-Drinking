@@ -1882,8 +1882,7 @@
           document.getElementById('homeTeamScore').textContent = linescore.teams.home.runs ?? 0;
 
           if (isFinal) {
-            const extraInnings = (linescore.currentInning && linescore.currentInning > 9) ? `/${linescore.currentInning}` : '';
-            document.getElementById('gameInningText').textContent = `FINAL${extraInnings}`;
+            document.getElementById('gameInningText').textContent = '';
           } else {
             const state = linescore.inningState || (linescore.isTopInning ? 'TOP' : 'BOT');
             const inning = linescore.currentInningOrdinal || (linescore.currentInning ? linescore.currentInning + 'TH' : '');
@@ -1915,8 +1914,13 @@
         }
 
         if (gameData.status) {
-          const statusText = gameData.status.detailedState || gameData.status.abstractGameState || 'LIVE';
-          document.getElementById('gameStatusText').textContent = statusText.toUpperCase();
+          if (isFinal) {
+            const extraInnings = (linescore && linescore.currentInning && linescore.currentInning > 9) ? `/${linescore.currentInning}` : '';
+            document.getElementById('gameStatusText').textContent = `FINAL${extraInnings}`;
+          } else {
+            const statusText = gameData.status.detailedState || gameData.status.abstractGameState || 'LIVE';
+            document.getElementById('gameStatusText').textContent = statusText.toUpperCase();
+          }
 
           if (statusText.toLowerCase().includes('rain') || statusText.toLowerCase().includes('postponed') || statusText.toLowerCase().includes('suspended')) {
             const rainId = 'rain_' + gameManager.selectedGamePk;
