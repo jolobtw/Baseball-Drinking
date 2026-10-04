@@ -1316,12 +1316,28 @@
         };
       }
 
-      // Evaluates main atBat result (Strikeout, Single, Double, Triple, Homerun, Walk, HBP, Error, DP)
+      getPlayDescription(play) {
+        const res = play.result || {};
+        if (res.description && res.description.trim().length > 0) {
+          return res.description.trim();
+        }
+        const batterName = play.matchup && play.matchup.batter ? play.matchup.batter.fullName : '';
+        const eventName = res.event || res.eventType || '';
+        if (batterName && eventName) {
+          return `${batterName} - ${eventName}`;
+        }
+        if (eventName) {
+          return eventName;
+        }
+        return 'Play completed';
+      }
+
+      // Evaluates main atBat result (Strikeouts, Singles, Doubles, HRs, Walks, Errors, DPs, Flyouts, Groundouts)
       evaluatePlay(play) {
         const resultObj = play.result || {};
         const eventType = (resultObj.eventType || '').toLowerCase();
         const eventText = (resultObj.event || '').toLowerCase();
-        const desc = resultObj.description || 'Play completed';
+        const desc = this.getPlayDescription(play);
 
         let ruleKey = null;
 
@@ -1372,7 +1388,7 @@
           numDrinks = parseInt(rule ? rule.drinks : 0, 10) || 0;
         }
 
-        const ruleName = isDrink ? rule.name : (resultObj.event || 'Play');
+        const ruleName = isDrink ? rule.name : (resultObj.event || 'PLAY');
 
         return {
           isDrink,
@@ -1756,15 +1772,18 @@
               gameManager.seenPlayIds.add(mainPlayId);
               const result = gameManager.evaluatePlay(play);
 
-              if (result && result.isDrink) {
+              if (result) {
                 this.addPlayToFeed(result);
-                gameManager.applyDrinkResult(result);
-                this.updateStatsUI();
 
-                if (!isFirstTime) {
-                  this.triggerDrinkAlert(result);
-                } else {
-                  document.getElementById('lastDrinkAlert').textContent = `Last: ${result.ruleName} (${result.drinksText})`;
+                if (result.isDrink) {
+                  gameManager.applyDrinkResult(result);
+                  this.updateStatsUI();
+
+                  if (!isFirstTime) {
+                    this.triggerDrinkAlert(result);
+                  } else {
+                    document.getElementById('lastDrinkAlert').textContent = `Last: ${result.ruleName} (${result.drinksText})`;
+                  }
                 }
               }
             }
