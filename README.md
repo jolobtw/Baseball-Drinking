@@ -12,7 +12,7 @@ A standalone Progressive Web App (PWA) that connects directly to the official **
 - **🎨 30 FPS Retro Canvas Pixel Art**: Self-contained, 30 FPS retro stadium canvas graphics with twinkling night stars, floodlights, and custom event scenes:
   - **Strikeouts / Homeruns / Stolen Bases / Errors / Walks / Hit By Pitch / Rain Delays**: Animated 8-bit retro arcade scenes & banners.
 - **🔊 Web Audio Chiptune SFX**: 8-bit sound synthesizers (whiff, buzzer, fanfare, drink chime) built directly in JS with no external audio file dependencies.
-- **⚙️ Redesigned Ruleset Editor**: Edit drink amounts per play type in real-time with responsive row cards and wide input fields that fit custom text (`Finish Drink`, `1 per base`, `Take a shot`).
+- **⚙️ Customizable Ruleset Editor**: Edit drink amounts per play type in real time with responsive row cards and input fields supporting custom text (`Finish Drink`, `1 per base`, `Take a shot`).
 - **⚾ Smart Scoreboard & Dynamic Status Icons**:
   - **Dynamic Status Icons**: Live pulsing green radar dot for in-progress games, rotating gold clock for scheduled games, solid red dot for finished games, and amber flash for postponed games.
   - Displays `[IN PROGRESS]` for live games and `[COMPLETED]` for finished games in dropdown.
