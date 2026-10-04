@@ -203,30 +203,31 @@
       to { opacity: 1; }
     }
 
-    /* Teams & Outside Logos Banner Layout */
+    /* Centered Scoreboard Banner Layout */
     .teams-container {
       display: flex;
-      justify-content: space-between;
+      justify-content: center;
       align-items: center;
-      margin-bottom: 16px;
-      gap: 10px;
+      margin: 0 auto 16px auto;
+      gap: 14px;
+      max-width: 480px;
     }
 
     .team-box {
       flex: 1;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .team-box.away-box {
-      justify-content: flex-start;
-      text-align: left;
+      justify-content: flex-end;
+      text-align: right;
     }
 
     .team-box.home-box {
-      justify-content: flex-end;
-      text-align: right;
+      justify-content: flex-start;
+      text-align: left;
     }
 
     .team-info {
@@ -236,16 +237,16 @@
     }
 
     .team-logo-canvas {
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       flex-shrink: 0;
       image-rendering: pixelated;
-      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6));
+      filter: drop-shadow(0 3px 5px rgba(0,0,0,0.6));
     }
 
     .team-name {
       font-family: var(--font-pixel);
-      font-size: 14px;
+      font-size: 13px;
       color: var(--text-bright);
       margin-bottom: 2px;
       white-space: nowrap;
@@ -253,7 +254,7 @@
 
     .team-score {
       font-family: var(--font-pixel);
-      font-size: 32px;
+      font-size: 30px;
       color: var(--accent-gold);
       text-shadow: 2px 2px 0 #000;
     }
@@ -266,7 +267,10 @@
       padding: 0 4px;
     }
 
-    @media (max-width: 500px) {
+    @media (max-width: 480px) {
+      .teams-container {
+        gap: 8px;
+      }
       .team-logo-canvas {
         width: 36px;
         height: 36px;
@@ -279,9 +283,6 @@
       }
       .vs-text {
         font-size: 9px;
-      }
-      .team-box {
-        gap: 6px;
       }
     }
 
@@ -582,7 +583,7 @@
         </div>
 
         <div class="teams-container">
-          <!-- Away Team: Logo on far left -->
+          <!-- Away Team: Logo next to team name/score -->
           <div class="team-box away-box">
             <canvas id="awayTeamLogo" class="team-logo-canvas" width="48" height="48"></canvas>
             <div class="team-info">
@@ -593,7 +594,7 @@
 
           <div class="vs-text">VS</div>
 
-          <!-- Home Team: Logo on far right -->
+          <!-- Home Team: Logo next to team name/score -->
           <div class="team-box home-box">
             <div class="team-info">
               <div class="team-name" id="homeTeamName">HOME</div>
@@ -756,11 +757,11 @@
 
   <!-- JavaScript Code -->
   <script>
-    // --- 1. 8-Bit Pixel Art MLB Team Logo Renderer ---
+    // --- 1. 8-Bit Pixel Art MLB Team Logo & Mascot Renderer ---
     class PixelTeamLogoRenderer {
       static TEAM_DATA = {
         'ATL': { bg: '#13274f', fg: '#ba0c2f', accent: '#eaaa00', text: 'ATL', type: 'tomahawk' },
-        'LAD': { bg: '#005a9c', fg: '#ffffff', accent: '#ef3e42', text: 'LA', type: 'script' },
+        'LAD': { bg: '#005a9c', fg: '#ffffff', accent: '#ef3e42', text: 'LA', type: 'la' },
         'NYY': { bg: '#0c2340', fg: '#ffffff', accent: '#c4ced4', text: 'NY', type: 'ny' },
         'BOS': { bg: '#bd3039', fg: '#0c2340', accent: '#ffffff', text: 'B', type: 'socks' },
         'CHC': { bg: '#0e3386', fg: '#cc3433', accent: '#ffffff', text: 'C', type: 'cub' },
@@ -769,15 +770,15 @@
         'PHI': { bg: '#e31837', fg: '#002d62', accent: '#ffffff', text: 'P', type: 'bell' },
         'STL': { bg: '#c41e3a', fg: '#fedb00', accent: '#0c2340', text: 'STL', type: 'bird' },
         'SF':  { bg: '#27251f', fg: '#fd5a1e', accent: '#efd19f', text: 'SF', type: 'sf' },
-        'SD':  { bg: '#2f241d', fg: '#ffc425', accent: '#ffffff', text: 'SD', type: 'sd' },
+        'SD':  { bg: '#2f241d', fg: '#ffc425', accent: '#ffffff', text: 'SD', type: 'friar' },
         'NYM': { bg: '#002d62', fg: '#ff5910', accent: '#ffffff', text: 'NY', type: 'mets' },
         'TEX': { bg: '#003278', fg: '#c0111f', accent: '#ffffff', text: 'T', type: 'star' },
         'BAL': { bg: '#df4601', fg: '#000000', accent: '#ffffff', text: 'B', type: 'bird' },
         'TOR': { bg: '#134a8e', fg: '#e8291c', accent: '#ffffff', text: 'TOR', type: 'jay' },
         'SEA': { bg: '#0c2340', fg: '#005c5c', accent: '#c4ced4', text: 'SEA', type: 'compass' },
-        'MIN': { bg: '#002b5c', fg: '#d31145', accent: '#ffffff', text: 'TC', type: 'tc' },
+        'MIN': { bg: '#002b5c', fg: '#d31145', accent: '#ffffff', text: 'TC', type: 'skyline' },
         'CLE': { bg: '#0c2340', fg: '#e31937', accent: '#ffffff', text: 'C', type: 'winged' },
-        'DET': { bg: '#0c2340', fg: '#fa4616', accent: '#ffffff', text: 'D', type: 'd' },
+        'DET': { bg: '#0c2340', fg: '#fa4616', accent: '#ffffff', text: 'D', type: 'tiger' },
         'KC':  { bg: '#004687', fg: '#bd9b60', accent: '#ffffff', text: 'KC', type: 'crown' },
         'TB':  { bg: '#092c5c', fg: '#f5d130', accent: '#8fbce6', text: 'TB', type: 'ray' },
         'MIA': { bg: '#00a3e0', fg: '#ef3340', accent: '#000000', text: 'M', type: 'marlin' },
@@ -808,7 +809,7 @@
           bg: '#1f2937', fg: '#f1e05a', accent: '#58a6ff', text: abbr.slice(0, 3) || 'MLB', type: 'default'
         };
 
-        // Retro Drop Shadow
+        // Drop Shadow
         ctx.fillStyle = 'rgba(0,0,0,0.6)';
         ctx.beginPath();
         ctx.arc(w / 2 + 2, h / 2 + 2, 20, 0, Math.PI * 2);
@@ -825,57 +826,233 @@
         ctx.strokeStyle = data.fg;
         ctx.stroke();
 
-        // Inner Ring
+        // Inner Accent Ring
         ctx.lineWidth = 1;
         ctx.strokeStyle = data.accent;
         ctx.beginPath();
         ctx.arc(w / 2, h / 2, 16, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Custom Retro Pixel Icons
+        // Dedicated 8-Bit Pixel Mascot Graphics
         switch (data.type) {
-          case 'star':
-            ctx.fillStyle = data.fg;
-            this.drawPixelStar(ctx, w / 2, h / 2 - 2, 9);
-            ctx.fillStyle = data.accent;
-            ctx.font = '11px "Press Start 2P", monospace';
-            ctx.textAlign = 'center';
-            ctx.fillText(data.text, w / 2, h / 2 + 6);
+          case 'tomahawk': // ATL
+            // Wood Handle
+            ctx.fillStyle = '#8b5a2b';
+            ctx.fillRect(w / 2 - 12, h / 2 + 4, 24, 3);
+            // Red Blade
+            ctx.fillStyle = '#ba0c2f';
+            ctx.fillRect(w / 2 + 4, h / 2 - 4, 6, 12);
+            ctx.fillRect(w / 2 + 10, h / 2 - 2, 3, 8);
+            // Gold Cord
+            ctx.fillStyle = '#eaaa00';
+            ctx.fillRect(w / 2 + 2, h / 2 + 3, 3, 5);
             break;
 
-          case 'crown':
-            ctx.fillStyle = data.fg;
-            ctx.fillRect(w / 2 - 10, h / 2 - 8, 20, 6);
-            ctx.fillRect(w / 2 - 12, h / 2 - 12, 4, 6);
-            ctx.fillRect(w / 2 - 2, h / 2 - 14, 4, 8);
-            ctx.fillRect(w / 2 + 8, h / 2 - 12, 4, 6);
+          case 'la': // LAD
+            // Dodger Blue Ball & Red Motion Streak
+            ctx.fillStyle = '#ef3e42';
+            ctx.fillRect(w / 2 - 12, h / 2 - 2, 16, 4);
             ctx.fillStyle = '#ffffff';
-            ctx.font = '10px "Press Start 2P", monospace';
-            ctx.textAlign = 'center';
-            ctx.fillText(data.text, w / 2, h / 2 + 8);
+            ctx.beginPath();
+            ctx.arc(w / 2 + 4, h / 2, 8, 0, Math.PI * 2);
+            ctx.fill();
+            // Stitches
+            ctx.fillStyle = '#ef3e42';
+            ctx.fillRect(w / 2 + 2, h / 2 - 4, 2, 8);
             break;
 
-          case 'halo':
-            ctx.strokeStyle = data.fg;
-            ctx.lineWidth = 3;
+          case 'socks': // BOS
+            // Pair of 8-Bit Red Socks
+            ctx.fillStyle = '#bd3039';
+            ctx.fillRect(w / 2 - 8, h / 2 - 8, 6, 12);
+            ctx.fillRect(w / 2 - 8, h / 2 + 2, 10, 5);
+            ctx.fillRect(w / 2 + 2, h / 2 - 6, 6, 12);
+            ctx.fillRect(w / 2 + 2, h / 2 + 4, 10, 5);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(w / 2 - 8, h / 2 - 8, 6, 3);
+            ctx.fillRect(w / 2 + 2, h / 2 - 6, 6, 3);
+            break;
+
+          case 'sox': // CWS
+            // Single 8-Bit White Sock
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(w / 2 - 4, h / 2 - 10, 8, 14);
+            ctx.fillRect(w / 2 - 4, h / 2 + 2, 12, 6);
+            ctx.fillStyle = '#c4ced4';
+            ctx.fillRect(w / 2 - 4, h / 2 - 10, 8, 3);
+            break;
+
+          case 'star': // HOU, TEX
+            ctx.fillStyle = data.fg;
+            this.drawPixelStar(ctx, w / 2, h / 2, 12);
+            ctx.fillStyle = data.accent;
+            this.drawPixelStar(ctx, w / 2, h / 2, 6);
+            break;
+
+          case 'bell': // PHI
+            // Liberty Bell
+            ctx.fillStyle = '#8b5a2b';
+            ctx.fillRect(w / 2 - 10, h / 2 - 10, 20, 4); // Beam
+            ctx.fillStyle = '#ffffff';
             ctx.beginPath();
-            ctx.ellipse(w / 2, h / 2 - 8, 10, 4, 0, 0, Math.PI * 2);
+            ctx.arc(w / 2, h / 2 - 2, 8, Math.PI, 0);
+            ctx.lineTo(w / 2 + 10, h / 2 + 8);
+            ctx.lineTo(w / 2 - 10, h / 2 + 8);
+            ctx.closePath();
+            ctx.fill();
+            // Crack
+            ctx.fillStyle = '#002d62';
+            ctx.fillRect(w / 2 - 1, h / 2 - 2, 2, 6);
+            break;
+
+          case 'bird': // STL, BAL
+            // Cardinal / Oriole bird head
+            ctx.fillStyle = data.fg;
+            ctx.beginPath();
+            ctx.arc(w / 2 - 2, h / 2, 10, 0, Math.PI * 2);
+            ctx.fill();
+            // Beak
+            ctx.fillStyle = data.accent;
+            ctx.beginPath();
+            ctx.moveTo(w / 2 + 6, h / 2 - 3);
+            ctx.lineTo(w / 2 + 14, h / 2);
+            ctx.lineTo(w / 2 + 6, h / 2 + 3);
+            ctx.closePath();
+            ctx.fill();
+            // Eye
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(w / 2 + 1, h / 2 - 4, 3, 3);
+            break;
+
+          case 'crown': // KC
+            ctx.fillStyle = '#bd9b60';
+            ctx.fillRect(w / 2 - 12, h / 2 - 4, 24, 10);
+            ctx.fillRect(w / 2 - 12, h / 2 - 10, 5, 8);
+            ctx.fillRect(w / 2 - 2, h / 2 - 12, 5, 10);
+            ctx.fillRect(w / 2 + 7, h / 2 - 10, 5, 8);
+            // Jewels
+            ctx.fillStyle = '#da3633';
+            ctx.fillRect(w / 2 - 10, h / 2 - 10, 2, 2);
+            ctx.fillRect(w / 2, h / 2 - 12, 2, 2);
+            ctx.fillRect(w / 2 + 9, h / 2 - 10, 2, 2);
+            break;
+
+          case 'marlin': // MIA
+            // Swordfish / Marlin
+            ctx.fillStyle = '#00a3e0';
+            ctx.beginPath();
+            ctx.ellipse(w / 2 - 2, h / 2 + 2, 12, 6, -Math.PI / 6, 0, Math.PI * 2);
+            ctx.fill();
+            // Sword bill
+            ctx.fillStyle = '#ef3340';
+            ctx.fillRect(w / 2 + 6, h / 2 - 8, 8, 2);
+            // Tail
+            ctx.fillStyle = '#00a3e0';
+            ctx.fillRect(w / 2 - 14, h / 2 + 4, 4, 8);
+            break;
+
+          case 'mountain': // COL
+            // Purple mountain peak + snow cap
+            ctx.fillStyle = '#333366';
+            ctx.beginPath();
+            ctx.moveTo(w / 2 - 14, h / 2 + 10);
+            ctx.lineTo(w / 2, h / 2 - 12);
+            ctx.lineTo(w / 2 + 14, h / 2 + 10);
+            ctx.closePath();
+            ctx.fill();
+            // Snow Cap
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.moveTo(w / 2 - 5, h / 2 - 4);
+            ctx.lineTo(w / 2, h / 2 - 12);
+            ctx.lineTo(w / 2 + 5, h / 2 - 4);
+            ctx.closePath();
+            ctx.fill();
+            break;
+
+          case 'snake': // ARI
+            // Rattlesnake head shape
+            ctx.fillStyle = '#30ced8';
+            ctx.fillRect(w / 2 - 10, h / 2 - 8, 20, 14);
+            ctx.fillStyle = '#a71930';
+            ctx.fillRect(w / 2 - 6, h / 2 - 4, 4, 4);
+            ctx.fillRect(w / 2 + 2, h / 2 - 4, 4, 4);
+            // Tongue
+            ctx.fillStyle = '#a71930';
+            ctx.fillRect(w / 2 - 1, h / 2 + 6, 2, 6);
+            ctx.fillRect(w / 2 - 3, h / 2 + 10, 2, 2);
+            ctx.fillRect(w / 2 + 1, h / 2 + 10, 2, 2);
+            break;
+
+          case 'halo': // LAA
+            ctx.strokeStyle = '#866d4b';
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            ctx.ellipse(w / 2, h / 2 - 6, 12, 5, 0, 0, Math.PI * 2);
             ctx.stroke();
             ctx.fillStyle = '#ffffff';
-            ctx.font = '13px "Press Start 2P", monospace';
+            ctx.font = '14px "Press Start 2P", monospace';
             ctx.textAlign = 'center';
-            ctx.fillText('A', w / 2, h / 2 + 7);
+            ctx.fillText('A', w / 2, h / 2 + 8);
             break;
 
-          case 'tomahawk':
-            ctx.fillStyle = data.fg;
-            ctx.font = '10px "Press Start 2P", monospace';
+          case 'pirate': // PIT
+            // Pirate Skull / Eyepatch
+            ctx.fillStyle = '#fdb827';
+            ctx.beginPath();
+            ctx.arc(w / 2, h / 2 - 2, 10, 0, Math.PI * 2);
+            ctx.fill();
+            // Eyepatch
+            ctx.fillStyle = '#000000';
+            ctx.fillRect(w / 2 - 6, h / 2 - 5, 6, 6);
+            ctx.fillRect(w / 2 - 10, h / 2 - 7, 18, 2);
+            break;
+
+          case 'glove': // MIL
+            // Ball & Glove
+            ctx.fillStyle = '#b59a57';
+            ctx.fillRect(w / 2 - 10, h / 2 - 8, 18, 16);
+            ctx.fillStyle = '#ffffff';
+            ctx.beginPath();
+            ctx.arc(w / 2 + 2, h / 2, 6, 0, Math.PI * 2);
+            ctx.fill();
+            break;
+
+          case 'compass': // SEA
+            // 8-point compass star
+            ctx.fillStyle = '#005c5c';
+            this.drawPixelStar(ctx, w / 2, h / 2, 12);
+            ctx.fillStyle = '#c4ced4';
+            ctx.fillRect(w / 2 - 2, h / 2 - 12, 4, 24);
+            ctx.fillRect(w / 2 - 12, h / 2 - 2, 24, 4);
+            break;
+
+          case 'tiger': // DET
+            ctx.fillStyle = '#fa4616';
+            ctx.fillRect(w / 2 - 10, h / 2 - 8, 20, 16);
+            ctx.fillStyle = '#0c2340';
+            ctx.fillRect(w / 2 - 8, h / 2 - 6, 3, 8);
+            ctx.fillRect(w / 2 + 5, h / 2 - 6, 3, 8);
+            ctx.fillRect(w / 2 - 2, h / 2 - 2, 4, 4);
+            break;
+
+          case 'ray': // TB
+            ctx.fillStyle = '#f5d130';
+            this.drawPixelStar(ctx, w / 2, h / 2, 12);
+            ctx.fillStyle = '#8fbce6';
+            ctx.font = '10px "Press Start 2P"';
             ctx.textAlign = 'center';
-            ctx.fillText('ATL', w / 2, h / 2 - 2);
-            ctx.fillStyle = data.accent;
-            ctx.fillRect(w / 2 - 12, h / 2 + 4, 24, 3);
-            ctx.fillStyle = data.fg;
-            ctx.fillRect(w / 2 + 8, h / 2 + 1, 4, 9);
+            ctx.fillText('TB', w / 2, h / 2 + 3);
+            break;
+
+          case 'cub': // CHC
+            ctx.fillStyle = '#cc3433';
+            ctx.font = '16px "Press Start 2P"';
+            ctx.textAlign = 'center';
+            ctx.fillText('C', w / 2, h / 2 + 4);
+            ctx.fillStyle = '#0e3386';
+            ctx.fillRect(w / 2 - 10, h / 2 - 12, 4, 4);
+            ctx.fillRect(w / 2 + 6, h / 2 - 12, 4, 4);
             break;
 
           default:
@@ -1573,7 +1750,7 @@
           document.getElementById('awayTeamName').textContent = awayAbbr.toUpperCase();
           document.getElementById('homeTeamName').textContent = homeAbbr.toUpperCase();
 
-          // Render 8-Bit Pixel Logos on outside canvases
+          // Render 8-Bit Pixel Mascot Logos
           PixelTeamLogoRenderer.drawLogo('awayTeamLogo', awayAbbr, awayTeam.name);
           PixelTeamLogoRenderer.drawLogo('homeTeamLogo', homeAbbr, homeTeam.name);
         }
