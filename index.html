@@ -1698,17 +1698,29 @@
           TeamLogoRenderer.updateLogo('homeTeamLogo', homeTeam, homeAbbr, homeTeam.name);
         }
 
+        const statusObj = gameData.status || {};
+        const abstractState = (statusObj.abstractGameState || '').toLowerCase();
+        const detailedState = (statusObj.detailedState || '').toLowerCase();
+        const isFinal = abstractState === 'final' || detailedState.includes('final') || detailedState.includes('completed') || detailedState.includes('game over');
+
         const linescore = liveData.linescore;
         if (linescore && linescore.teams) {
           document.getElementById('awayTeamScore').textContent = linescore.teams.away.runs ?? 0;
           document.getElementById('homeTeamScore').textContent = linescore.teams.home.runs ?? 0;
 
-          const state = linescore.inningState || (linescore.isTopInning ? 'TOP' : 'BOT');
-          const inning = linescore.currentInningOrdinal || (linescore.currentInning ? linescore.currentInning + 'TH' : '');
-          document.getElementById('gameInningText').textContent = `${state} ${inning}`;
+          if (isFinal) {
+            const extraInnings = (linescore.currentInning && linescore.currentInning > 9) ? `/${linescore.currentInning}` : '';
+            document.getElementById('gameInningText').textContent = `FINAL${extraInnings}`;
+          } else {
+            const state = linescore.inningState || (linescore.isTopInning ? 'TOP' : 'BOT');
+            const inning = linescore.currentInningOrdinal || (linescore.currentInning ? linescore.currentInning + 'TH' : '');
+            document.getElementById('gameInningText').textContent = `${state} ${inning}`;
+          }
 
           // Live inning transition check (in case no plays are logged yet in a new half-inning)
-          if (linescore.currentInning) {
+          if (linescore.currentInning && !isFinal) {
+            const state = linescore.inningState || (linescore.isTopInning ? 'TOP' : 'BOT');
+            const inning = linescore.currentInningOrdinal || (linescore.currentInning ? linescore.currentInning + 'TH' : '');
             const liveInningId = `inning_${linescore.isTopInning ? 'top' : 'bot'}_${linescore.currentInning}`;
             if (!gameManager.seenPlayIds.has(liveInningId) && !gameManager.isInitialLoad) {
               gameManager.seenPlayIds.add(liveInningId);
@@ -1755,23 +1767,34 @@
         }
 
         if (linescore && linescore.offense) {
-          document.getElementById('base1').classList.toggle('occupied', !!linescore.offense.first);
-          document.getElementById('base2').classList.toggle('occupied', !!linescore.offense.second);
-          document.getElementById('base3').classList.toggle('occupied', !!linescore.offense.third);
+          if (isFinal) {
+            ['base1', 'base2', 'base3'].forEach((id) => {
+              const el = document.getElementById(id);
+              if (el) el.classList.remove('occupied');
+            });
+            ['ball1', 'ball2', 'ball3', 'strike1', 'strike2', 'out1', 'out2'].forEach((id) => {
+              const el = document.getElementById(id);
+              if (el) el.classList.remove('active');
+            });
+          } else {
+            document.getElementById('base1').classList.toggle('occupied', !!linescore.offense.first);
+            document.getElementById('base2').classList.toggle('occupied', !!linescore.offense.second);
+            document.getElementById('base3').classList.toggle('occupied', !!linescore.offense.third);
 
-          const balls = linescore.balls || 0;
-          const strikes = linescore.strikes || 0;
-          const outs = linescore.outs || 0;
+            const balls = linescore.balls || 0;
+            const strikes = linescore.strikes || 0;
+            const outs = linescore.outs || 0;
 
-          document.getElementById('ball1').classList.toggle('active', balls >= 1);
-          document.getElementById('ball2').classList.toggle('active', balls >= 2);
-          document.getElementById('ball3').classList.toggle('active', balls >= 3);
+            document.getElementById('ball1').classList.toggle('active', balls >= 1);
+            document.getElementById('ball2').classList.toggle('active', balls >= 2);
+            document.getElementById('ball3').classList.toggle('active', balls >= 3);
 
-          document.getElementById('strike1').classList.toggle('active', strikes >= 1);
-          document.getElementById('strike2').classList.toggle('active', strikes >= 2);
+            document.getElementById('strike1').classList.toggle('active', strikes >= 1);
+            document.getElementById('strike2').classList.toggle('active', strikes >= 2);
 
-          document.getElementById('out1').classList.toggle('active', outs >= 1);
-          document.getElementById('out2').classList.toggle('active', outs >= 2);
+            document.getElementById('out1').classList.toggle('active', outs >= 1);
+            document.getElementById('out2').classList.toggle('active', outs >= 2);
+          }
         }
 
         const allPlays = (liveData.plays && liveData.plays.allPlays) ? liveData.plays.allPlays : [];
