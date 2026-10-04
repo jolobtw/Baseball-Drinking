@@ -1040,6 +1040,7 @@
         this.ctx.imageSmoothingEnabled = false;
         this.animId = null;
         this.frame = 0;
+        this.lastTime = 0;
       }
 
       stop() {
@@ -1052,34 +1053,83 @@
       start(playType) {
         this.stop();
         this.frame = 0;
-        const render = () => {
-          this.frame++;
+        this.lastTime = performance.now();
+        const render = (now) => {
+          if (now - this.lastTime > 32) { // Smooth ~30 FPS retro arcade timing
+            this.frame++;
+            this.lastTime = now;
+          }
           this.draw(playType);
           this.animId = requestAnimationFrame(render);
         };
-        render();
+        this.animId = requestAnimationFrame(render);
+      }
+
+      drawBackground(ctx, w, h) {
+        // Deep stadium night sky
+        ctx.fillStyle = '#0b1326';
+        ctx.fillRect(0, 0, w, h);
+
+        // Twinkling stars in sky
+        ctx.fillStyle = '#ffffff';
+        const starPositions = [[40, 15], [120, 25], [200, 10], [320, 30], [400, 18], [450, 35]];
+        starPositions.forEach(([sx, sy], idx) => {
+          const alpha = (Math.sin(this.frame * 0.05 + idx) + 1) * 0.4 + 0.2;
+          ctx.globalAlpha = alpha;
+          ctx.fillRect(sx, sy, 2, 2);
+        });
+        ctx.globalAlpha = 1.0;
+
+        // Stadium floodlights on top corners
+        ctx.fillStyle = '#fffae6';
+        ctx.fillRect(15, 8, 16, 6);
+        ctx.fillRect(w - 31, 8, 16, 6);
+
+        // Light beams
+        ctx.fillStyle = 'rgba(255, 250, 230, 0.04)';
+        ctx.beginPath();
+        ctx.moveTo(23, 14);
+        ctx.lineTo(0, h);
+        ctx.lineTo(160, h);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(w - 23, 14);
+        ctx.lineTo(w, h);
+        ctx.lineTo(w - 160, h);
+        ctx.closePath();
+        ctx.fill();
+
+        // Outfield wall
+        ctx.fillStyle = '#163820';
+        ctx.fillRect(0, 95, w, 25);
+        ctx.fillStyle = '#f1e05a'; // Yellow top wall line
+        ctx.fillRect(0, 95, w, 3);
+
+        // Outfield Grass
+        ctx.fillStyle = '#1e532b';
+        ctx.fillRect(0, 120, w, h - 120);
+
+        // Grass lawn stripes
+        ctx.fillStyle = '#235f32';
+        for (let x = 0; x < w; x += 40) {
+          ctx.fillRect(x, 120, 20, h - 120);
+        }
+
+        // Infield dirt area
+        ctx.fillStyle = '#8b5a2b';
+        ctx.beginPath();
+        ctx.ellipse(w / 2, h - 20, 140, 45, 0, 0, Math.PI * 2);
+        ctx.fill();
       }
 
       draw(playType) {
-        const w = this.canvas.width;
-        const h = this.canvas.height;
+        const w = this.canvas.width || 480;
+        const h = this.canvas.height || 220;
         const ctx = this.ctx;
 
-        ctx.fillStyle = '#0a2312';
-        ctx.fillRect(0, 0, w, h);
-
-        ctx.fillStyle = '#0e311a';
-        for (let y = 100; y < h; y += 8) {
-          ctx.fillRect(0, y, w, 4);
-        }
-
-        ctx.fillStyle = '#06131e';
-        ctx.fillRect(0, 0, w, 90);
-        ctx.fillStyle = '#f1e05a';
-        ctx.fillRect(30, 20, 12, 6);
-        ctx.fillRect(70, 15, 12, 6);
-        ctx.fillRect(230, 15, 12, 6);
-        ctx.fillRect(270, 20, 12, 6);
+        this.drawBackground(ctx, w, h);
 
         switch (playType) {
           case 'strikeout':
@@ -1095,8 +1145,10 @@
             this.drawStolenBase(ctx, w, h);
             break;
           case 'walk':
-          case 'hit_by_pitch':
             this.drawWalk(ctx, w, h);
+            break;
+          case 'hit_by_pitch':
+            this.drawHitByPitch(ctx, w, h);
             break;
           case 'rain_out':
             this.drawRainOut(ctx, w, h);
@@ -1105,178 +1157,299 @@
             this.drawGenericDrink(ctx, w, h);
             break;
         }
-
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
-        for (let y = 0; y < h; y += 4) {
-          ctx.fillRect(0, y, w, 2);
-        }
       }
 
       drawStrikeout(ctx, w, h) {
-        const batterX = 140;
-        const batterY = 90;
-        const swingAngle = Math.sin(this.frame * 0.2) * 0.5;
+        const t = this.frame * 0.08;
+        const swingProgress = Math.min(1, (t % 2));
+        const swingAngle = Math.sin(swingProgress * Math.PI) * 1.2;
 
+        const batterX = w / 2 - 30;
+        const batterY = h - 75;
+
+        // Batter body
         ctx.fillStyle = '#58a6ff';
-        ctx.fillRect(batterX, batterY, 16, 24);
+        ctx.fillRect(batterX, batterY, 18, 28);
         ctx.fillStyle = '#ffcca6';
-        ctx.fillRect(batterX + 2, batterY - 12, 12, 12);
+        ctx.fillRect(batterX + 3, batterY - 14, 12, 12);
         ctx.fillStyle = '#1f6feb';
-        ctx.fillRect(batterX, batterY - 14, 16, 6);
+        ctx.fillRect(batterX + 1, batterY - 16, 16, 5);
+
+        // Bat swing
         ctx.fillStyle = '#d4a373';
         ctx.save();
-        ctx.translate(batterX + 16, batterY + 8);
-        ctx.rotate(swingAngle);
-        ctx.fillRect(0, -2, 24, 4);
+        ctx.translate(batterX + 14, batterY + 8);
+        ctx.rotate(-0.3 + swingAngle);
+        ctx.fillRect(0, -3, 30, 5);
         ctx.restore();
 
-        ctx.font = '48px "Press Start 2P", monospace';
-        ctx.fillStyle = '#da3633';
+        // Big retro flashing "K"
+        const kScale = 1 + Math.sin(t * 2) * 0.08;
+        ctx.save();
+        ctx.translate(w / 2, 55);
+        ctx.scale(kScale, kScale);
+        ctx.font = '54px "Press Start 2P", monospace';
+        ctx.fillStyle = '#000000';
         ctx.textAlign = 'center';
-        ctx.shadowColor = '#000';
-        ctx.shadowBlur = 4;
-        ctx.fillText('K', w / 2, 60 + Math.sin(this.frame * 0.1) * 5);
-        ctx.shadowBlur = 0;
-
-        ctx.font = '16px "VT323", monospace';
-        ctx.fillStyle = '#fff';
-        ctx.fillText('STRIKEOUT! TAKE A DRINK!', w / 2, 80);
-      }
-
-      drawError(ctx, w, h) {
-        const offset = Math.sin(this.frame * 0.3) * 6;
-        const x = 120 + offset;
-        const y = 95;
-
-        ctx.fillStyle = '#f0883e';
-        ctx.fillRect(x, y, 16, 24);
-        ctx.fillStyle = '#ffcca6';
-        ctx.fillRect(x + 2, y - 12, 12, 12);
-
-        const ballY = 110 - Math.abs(Math.sin(this.frame * 0.2)) * 30;
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(x + 40, ballY, 8, 8);
-
-        ctx.font = '24px "Press Start 2P", monospace';
+        ctx.fillText('K', 3, 3);
         ctx.fillStyle = '#da3633';
-        ctx.textAlign = 'center';
-        ctx.fillText('3RROR! OOPS!', w / 2, 50);
+        ctx.fillText('K', 0, 0);
+        ctx.restore();
 
         ctx.font = '16px "Press Start 2P", monospace';
-        ctx.fillStyle = '#f1e05a';
-        ctx.fillText('FIELDING FUMBLE', w / 2, 75);
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.fillText('STRIKEOUT! TAKE 1 DRINK', w / 2, 95);
       }
 
       drawHomeRun(ctx, w, h) {
-        const t = (this.frame * 4) % (w + 40);
-        const ballX = t - 20;
-        const ballY = 120 - Math.sin((t / w) * Math.PI) * 90;
+        const cycle = 120;
+        const progress = (this.frame % cycle) / cycle;
 
-        for (let i = 0; i < 6; i++) {
-          ctx.fillStyle = i % 2 === 0 ? '#f1e05a' : '#f0883e';
-          ctx.fillRect(ballX - i * 6, ballY + i * 2, 6, 6);
+        // Ball Arc trajectory
+        const ballX = progress * (w + 40) - 20;
+        const ballY = (h - 50) - Math.sin(progress * Math.PI) * 110;
+
+        // Rainbow particle trail
+        for (let i = 1; i <= 8; i++) {
+          const trailX = ballX - i * 7;
+          const trailY = ballY + Math.sin((progress - i * 0.02) * Math.PI) * 4 + i * 1.5;
+          const trailColors = ['#f1e05a', '#f0883e', '#e63946', '#58a6ff'];
+          ctx.fillStyle = trailColors[i % trailColors.length];
+          ctx.fillRect(trailX, trailY, 6 - i * 0.5, 6 - i * 0.5);
         }
+
+        // Baseball
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(ballX, ballY, 10, 10);
+        ctx.fillStyle = '#da3633';
+        ctx.fillRect(ballX + 2, ballY + 4, 6, 2);
+
+        // Fireworks burst in sky
+        if (progress > 0.4) {
+          const fx = w / 2 + Math.sin(this.frame * 0.1) * 80;
+          const fy = 45 + Math.cos(this.frame * 0.1) * 15;
+          ctx.fillStyle = (this.frame % 4 === 0) ? '#f1e05a' : '#58a6ff';
+          ctx.fillRect(fx - 12, fy, 4, 4);
+          ctx.fillRect(fx + 12, fy, 4, 4);
+          ctx.fillRect(fx, fy - 12, 4, 4);
+          ctx.fillRect(fx, fy + 12, 4, 4);
+        }
 
         const colors = ['#f1e05a', '#58a6ff', '#2ea043', '#da3633'];
-        const currentColor = colors[Math.floor(this.frame / 6) % colors.length];
+        const bannerColor = colors[Math.floor(this.frame / 8) % colors.length];
 
         ctx.font = '22px "Press Start 2P"';
-        ctx.fillStyle = currentColor;
+        ctx.fillStyle = '#000000';
         ctx.textAlign = 'center';
-        ctx.fillText('🚀 HOMERUN! 🚀', w / 2, 55);
+        ctx.fillText('🚀 HOME RUN! 🚀', w / 2 + 2, 47);
+        ctx.fillStyle = bannerColor;
+        ctx.fillText('🚀 HOME RUN! 🚀', w / 2, 45);
 
-        ctx.font = '18px "Press Start 2P"';
+        ctx.font = '16px "Press Start 2P"';
         ctx.fillStyle = '#da3633';
-        ctx.fillText('FINISH YOUR DRINK!', w / 2, 85);
+        ctx.fillText('FINISH YOUR DRINK!', w / 2, 80);
       }
 
       drawStolenBase(ctx, w, h) {
-        const slideX = 80 + (this.frame * 3) % 120;
-        const slideY = 105;
+        const cycle = 100;
+        const progress = (this.frame % cycle) / cycle;
+        const slideX = 60 + progress * (w - 140);
+        const slideY = h - 60;
 
-        ctx.fillStyle = '#d4a373';
-        ctx.fillRect(slideX - 20, slideY + 4, 18, 12);
-        ctx.fillRect(slideX - 35, slideY + 8, 12, 8);
+        // Base bag at end
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(w - 80, slideY, 18, 18);
+        ctx.fillStyle = '#30363d';
+        ctx.fillRect(w - 80, slideY + 18, 18, 3);
 
+        // Dust cloud behind slider
+        if (progress > 0.3) {
+          ctx.fillStyle = 'rgba(212, 163, 115, 0.7)';
+          const dustSize = Math.sin(this.frame * 0.2) * 6 + 14;
+          ctx.fillRect(slideX - 25, slideY + 4, dustSize, dustSize - 4);
+          ctx.fillRect(slideX - 40, slideY + 8, dustSize * 0.8, dustSize * 0.6);
+        }
+
+        // Sliding Runner
         ctx.fillStyle = '#2ea043';
-        ctx.fillRect(slideX, slideY, 24, 12);
+        ctx.fillRect(slideX, slideY + 4, 28, 14);
         ctx.fillStyle = '#ffcca6';
-        ctx.fillRect(slideX + 22, slideY - 2, 8, 8);
+        ctx.fillRect(slideX + 24, slideY + 2, 10, 10);
+        ctx.fillStyle = '#1f6feb';
+        ctx.fillRect(slideX + 22, slideY, 12, 5);
 
-        ctx.font = '24px "Press Start 2P", monospace';
-        ctx.fillStyle = '#2ea043';
+        ctx.font = '22px "Press Start 2P", monospace';
+        ctx.fillStyle = '#000';
         ctx.textAlign = 'center';
-        ctx.fillText('STOLEN BASE!', w / 2, 50);
+        ctx.fillText('⚡ STOLEN BASE! ⚡', w / 2 + 2, 47);
+        ctx.fillStyle = '#2ea043';
+        ctx.fillText('⚡ STOLEN BASE! ⚡', w / 2, 45);
 
         ctx.font = '18px "VT323", monospace';
         ctx.fillStyle = '#f1e05a';
         ctx.fillText('1 DRINK PER BASE!', w / 2, 75);
       }
 
-      drawWalk(ctx, w, h) {
-        const walkX = 60 + (this.frame * 1.5) % 140;
+      drawError(ctx, w, h) {
+        const wobble = Math.sin(this.frame * 0.15) * 8;
+        const x = w / 2 - 10 + wobble;
+        const y = h - 70;
 
-        ctx.fillStyle = '#58a6ff';
-        ctx.fillRect(walkX, 90, 16, 24);
+        // Fielder
+        ctx.fillStyle = '#f0883e';
+        ctx.fillRect(x, y, 18, 28);
         ctx.fillStyle = '#ffcca6';
-        ctx.fillRect(walkX + 2, 78, 12, 12);
+        ctx.fillRect(x + 3, y - 14, 12, 12);
+        ctx.fillStyle = '#1f6feb';
+        ctx.fillRect(x + 1, y - 16, 16, 5);
 
-        ctx.font = '24px "Press Start 2P", monospace';
-        ctx.fillStyle = '#58a6ff';
+        // Bouncing Ball off glove
+        const ballY = y - 20 - Math.abs(Math.sin(this.frame * 0.12)) * 35;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(x + 28, ballY, 10, 10);
+
+        // Exclamation Mark above head
+        ctx.font = '24px "Press Start 2P"';
+        ctx.fillStyle = '#da3633';
         ctx.textAlign = 'center';
-        ctx.fillText('BASE ON BALLS', w / 2, 50);
+        ctx.fillText('❗', x + 9, y - 24);
+
+        ctx.font = '22px "Press Start 2P", monospace';
+        ctx.fillStyle = '#000';
+        ctx.fillText('3RROR! OOPS!', w / 2 + 2, 47);
+        ctx.fillStyle = '#da3633';
+        ctx.fillText('3RROR! OOPS!', w / 2, 45);
+
+        ctx.font = '18px "VT323", monospace';
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillText('FIELDING FUMBLE - TAKE A DRINK!', w / 2, 75);
+      }
+
+      drawWalk(ctx, w, h) {
+        const progress = ((this.frame * 0.6) % 100) / 100;
+        const walkX = 40 + progress * (w - 120);
+        const walkY = h - 75;
+
+        // Walking Batter
+        ctx.fillStyle = '#58a6ff';
+        ctx.fillRect(walkX, walkY, 18, 28);
+        ctx.fillStyle = '#ffcca6';
+        ctx.fillRect(walkX + 3, walkY - 14, 12, 12);
+        ctx.fillStyle = '#1f6feb';
+        ctx.fillRect(walkX + 1, walkY - 16, 16, 5);
+
+        ctx.font = '22px "Press Start 2P", monospace';
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.fillText('BASE ON BALLS', w / 2 + 2, 47);
+        ctx.fillStyle = '#58a6ff';
+        ctx.fillText('BASE ON BALLS', w / 2, 45);
 
         ctx.font = '18px "VT323", monospace';
         ctx.fillStyle = '#ffffff';
-        ctx.fillText('TAKE YOUR BASE!', w / 2, 75);
+        ctx.fillText('TAKE YOUR BASE - TAKE 1 DRINK!', w / 2, 75);
       }
 
-      drawRainOut(ctx, w, h) {
-        ctx.fillStyle = '#58a6ff';
-        for (let i = 0; i < 20; i++) {
-          const rx = (i * 23 + this.frame * 4) % w;
-          const ry = (i * 17 + this.frame * 8) % h;
-          ctx.fillRect(rx, ry, 2, 8);
+      drawHitByPitch(ctx, w, h) {
+        const batterX = w / 2 - 20;
+        const batterY = h - 75;
+
+        // Batter
+        ctx.fillStyle = '#e63946';
+        ctx.fillRect(batterX, batterY, 18, 28);
+        ctx.fillStyle = '#ffcca6';
+        ctx.fillRect(batterX + 3, batterY - 14, 12, 12);
+
+        // Ouch / Impact flash
+        if (this.frame % 10 < 5) {
+          ctx.fillStyle = '#f1e05a';
+          ctx.fillRect(batterX + 16, batterY + 4, 12, 12);
         }
 
         ctx.font = '22px "Press Start 2P", monospace';
-        ctx.fillStyle = '#58a6ff';
+        ctx.fillStyle = '#000';
         ctx.textAlign = 'center';
-        ctx.fillText('🌧️ RAIN OUT! 🌧️', w / 2, 50);
+        ctx.fillText('HIT BY PITCH!', w / 2 + 2, 47);
+        ctx.fillStyle = '#e63946';
+        ctx.fillText('HIT BY PITCH!', w / 2, 45);
+
+        ctx.font = '18px "VT323", monospace';
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillText('TAKE 5 DRINKS!', w / 2, 75);
+      }
+
+      drawRainOut(ctx, w, h) {
+        // Stormy clouds
+        ctx.fillStyle = '#21262d';
+        ctx.fillRect(0, 0, w, 40);
+
+        // Falling rain drops
+        ctx.fillStyle = '#58a6ff';
+        for (let i = 0; i < 25; i++) {
+          const rx = (i * 21 + this.frame * 2) % w;
+          const ry = (i * 13 + this.frame * 5) % (h - 40) + 30;
+          ctx.fillRect(rx, ry, 2, 9);
+        }
+
+        // Lightning flash every 4 seconds
+        if (this.frame % 120 > 115) {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+          ctx.fillRect(0, 0, w, h);
+        }
 
         ctx.font = '20px "Press Start 2P", monospace';
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.fillText('🌧️ RAIN OUT! 🌧️', w / 2 + 2, 47);
+        ctx.fillStyle = '#58a6ff';
+        ctx.fillText('🌧️ RAIN OUT! 🌧️', w / 2, 45);
+
+        ctx.font = '18px "Press Start 2P", monospace';
         ctx.fillStyle = '#f1e05a';
-        ctx.fillText('TAKE A SHOT! 🥃', w / 2, 85);
+        ctx.fillText('TAKE A SHOT! 🥃', w / 2, 80);
       }
 
       drawGenericDrink(ctx, w, h) {
-        const mugX = w / 2 - 16;
-        const mugY = 70;
+        const mugX = w / 2 - 18;
+        const mugY = 65;
 
-        ctx.fillStyle = '#f1e05a';
-        ctx.fillRect(mugX - 8, mugY + 8, 8, 20);
-        ctx.fillRect(mugX - 12, mugY + 12, 4, 12);
-
-        ctx.fillStyle = '#f1e05a';
-        ctx.fillRect(mugX, mugY, 32, 36);
-
-        const fillHeight = 24 + Math.sin(this.frame * 0.1) * 4;
-        ctx.fillStyle = '#f0883e';
-        ctx.fillRect(mugX + 4, mugY + 32 - fillHeight, 24, fillHeight);
-
+        // Mug Handle
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(mugX - 2, mugY - 4, 36, 10);
+        ctx.fillRect(mugX - 10, mugY + 8, 10, 24);
+        ctx.fillStyle = '#0b1326';
+        ctx.fillRect(mugX - 6, mugY + 12, 6, 16);
 
-        const bubbleY = mugY - 10 - (this.frame * 2) % 30;
-        ctx.fillRect(mugX + 10, bubbleY, 4, 4);
-        ctx.fillRect(mugX + 20, bubbleY + 8, 4, 4);
+        // Glass Body
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(mugX, mugY, 36, 44);
+
+        // Liquid fill animation
+        const fillHeight = 10 + Math.min(28, (this.frame * 0.4) % 32);
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillRect(mugX + 4, mugY + 40 - fillHeight, 28, fillHeight);
+
+        // Light Highlight
+        ctx.fillStyle = '#fff59d';
+        ctx.fillRect(mugX + 6, mugY + 40 - fillHeight, 4, fillHeight);
+
+        // Foam Head
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(mugX - 2, mugY - 6, 40, 10);
+
+        // Rising Bubbles
+        const bubbleY1 = mugY - 8 - (this.frame * 0.8) % 30;
+        const bubbleY2 = mugY - 4 - (this.frame * 0.6) % 35;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(mugX + 8, bubbleY1, 4, 4);
+        ctx.fillRect(mugX + 22, bubbleY2, 4, 4);
 
         ctx.font = '22px "Press Start 2P", monospace';
-        ctx.fillStyle = '#f1e05a';
+        ctx.fillStyle = '#000';
         ctx.textAlign = 'center';
-        ctx.fillText('DRINK UP!', w / 2, 40);
+        ctx.fillText('🍺 DRINK UP! 🍺', w / 2 + 2, 42);
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillText('🍺 DRINK UP! 🍺', w / 2, 40);
       }
     }
 
