@@ -1701,18 +1701,19 @@
 
       applyDrinkResult(result) {
         if (!result.isDrink) return;
-        this.totals.totalDrinks += result.numDrinks;
+        const drinks = result.numDrinks || 0;
+        this.totals.totalDrinks += drinks;
         const key = result.ruleKey;
-        if (key === 'strikeout') this.totals.k++;
-        if (key === 'walk') this.totals.bb++;
-        if (key === 'single' || key === 'double' || key === 'triple') this.totals.hits++;
-        if (key === 'home_run') this.totals.hr++;
-        if (key === 'hit_by_pitch') this.totals.hbp++;
-        if (key === 'error') this.totals.err++;
-        if (key === 'double_play' || key === 'triple_play') this.totals.dp++;
-        if (key === 'stolen_base') this.totals.sb++;
-        if (key === 'balk' || key === 'rain_out') this.totals.balk++;
-        if (key === 'new_inning') this.totals.new_inning++;
+        if (key === 'strikeout') this.totals.k += drinks;
+        if (key === 'walk') this.totals.bb += drinks;
+        if (key === 'single' || key === 'double' || key === 'triple') this.totals.hits += drinks;
+        if (key === 'home_run') this.totals.hr += drinks;
+        if (key === 'hit_by_pitch') this.totals.hbp += drinks;
+        if (key === 'error') this.totals.err += drinks;
+        if (key === 'double_play' || key === 'triple_play') this.totals.dp += drinks;
+        if (key === 'stolen_base') this.totals.sb += drinks;
+        if (key === 'balk' || key === 'rain_out') this.totals.balk += drinks;
+        if (key === 'new_inning') this.totals.new_inning += drinks;
       }
 
       resetCounter() {

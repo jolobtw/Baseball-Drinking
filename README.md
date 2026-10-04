@@ -18,6 +18,7 @@ A standalone Progressive Web App (PWA) that connects directly to the official **
   - Displays `[IN PROGRESS]` for live games and `[COMPLETED]` for finished games in dropdown.
   - Shows `FINAL` (or `FINAL/10` for extra innings) on the scoreboard status bar for completed games, automatically clearing base runners and count dots.
   - Clears default inning text when no game is selected.
+- **📊 Game Drink Summary**: Accumulates total assigned drinks per event category (e.g. total drinks assigned from Strikeouts, Hits, Home Runs, Errors, etc.).
 - **📱 PWA & Standalone Support**: Installable on iPhone, Android, or Desktop. Works offline and from a single file/URL!
 - **🎮 Demo Play Mode**: Preview all pixel art animations, sound effects, and drink triggers anytime without needing a live game.
 
