@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mlb-drinks-v28';
+const CACHE_NAME = 'mlb-drinks-v29';
 const ASSETS = [
   './',
   './index.html',

@@ -849,16 +849,9 @@
       </div>
 
       <div class="panel">
-        <div class="panel-title">💡 DEFAULT RULESET</div>
-        <ul style="font-size: 17px; padding-left: 18px; line-height: 1.35; color: #8b949e;">
-          <li><b>Strikeout / Walk</b>: 1 Drink</li>
-          <li><b>Single / Double / Triple</b>: 2 / 3 / 4 Drinks</li>
-          <li><b>Homerun</b>: FINISH YOUR DRINK! 🍺</li>
-          <li><b>HBP / Balk / Triple Play</b>: 5 Drinks</li>
-          <li><b>Error</b>: 3 Drinks</li>
-          <li><b>Stolen Base</b>: 1 Drink per base</li>
-          <li><b>New Inning</b>: 1 Drink</li>
-          <li><b>Rain Out</b>: TAKE A SHOT! 🥃</li>
+        <div class="panel-title">💡 CURRENT RULESET</div>
+        <ul id="currentRulesList" style="font-size: 17px; padding-left: 18px; line-height: 1.4; color: #8b949e; list-style-type: square;">
+          <!-- Dynamically rendered via JavaScript -->
         </ul>
       </div>
     </section>
@@ -1740,6 +1733,7 @@
         this.resetToNoGameSelected();
         this.bindEvents();
         this.renderRulesModal();
+        this.renderCurrentRulesPanel();
         this.fetchSchedule(localToday);
       },
 
@@ -1779,6 +1773,7 @@
           gameManager.rules = JSON.parse(JSON.stringify(DEFAULT_RULES));
           gameManager.saveRules();
           this.renderRulesModal();
+          this.renderCurrentRulesPanel();
           alert('Drinking rules restored to default!');
         });
 
@@ -2249,6 +2244,30 @@
           }
         });
         gameManager.saveRules();
+        this.renderCurrentRulesPanel();
+      },
+
+      renderCurrentRulesPanel() {
+        const list = document.getElementById('currentRulesList');
+        if (!list) return;
+        list.innerHTML = '';
+
+        Object.keys(gameManager.rules).forEach((key) => {
+          const r = gameManager.rules[key];
+          const li = document.createElement('li');
+          li.style.marginBottom = '4px';
+
+          const val = (r.drinks || '1').trim();
+          let displayVal = val;
+          const parsed = parseInt(val, 10);
+
+          if (!isNaN(parsed) && !val.toLowerCase().includes('drink') && !val.toLowerCase().includes('shot')) {
+            displayVal = `${parsed} Drink${parsed > 1 ? 's' : ''}`;
+          }
+
+          li.innerHTML = `<b style="color: var(--text-bright);">${r.name}</b>: <span style="color: var(--accent-gold);">${displayVal}</span>`;
+          list.appendChild(li);
+        });
       },
 
       triggerDemoPlay() {

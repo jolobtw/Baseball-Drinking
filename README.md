@@ -24,7 +24,9 @@ A standalone Progressive Web App (PWA) that connects directly to the official **
 
 ---
 
-## 🍻 Default Drinking Ruleset
+## 💡 Current Ruleset
+
+*The app features a dynamic **Current Ruleset** panel on the main page that automatically displays all active rules and updates live whenever customized via the **⚙️ RULES** editor:*
 
 | Play Event | Drink Assignment |
 | :--- | :--- |
