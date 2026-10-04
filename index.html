@@ -236,15 +236,13 @@
       justify-content: center;
     }
 
-    .team-logo-img {
+    .team-logo-canvas {
       width: 48px;
       height: 48px;
-      max-width: 48px;
-      max-height: 48px;
-      object-fit: contain;
       flex-shrink: 0;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.7));
-      transition: transform 0.2s ease;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.7));
     }
 
     .team-name {
@@ -274,11 +272,9 @@
       .teams-container {
         gap: 8px;
       }
-      .team-logo-img {
+      .team-logo-canvas {
         width: 38px;
         height: 38px;
-        max-width: 38px;
-        max-height: 38px;
       }
       .team-name {
         font-size: 11px;
@@ -590,7 +586,7 @@
         <div class="teams-container">
           <!-- Away Team: Logo next to team name/score -->
           <div class="team-box away-box">
-            <img id="awayTeamLogo" class="team-logo-img" alt="Away Team Logo" src="https://www.mlbstatic.com/team-logos/147.svg" />
+            <canvas id="awayTeamLogo" class="team-logo-canvas" width="48" height="48"></canvas>
             <div class="team-info">
               <div class="team-name" id="awayTeamName">NYY</div>
               <div class="team-score" id="awayTeamScore">0</div>
@@ -605,7 +601,7 @@
               <div class="team-name" id="homeTeamName">LAD</div>
               <div class="team-score" id="homeTeamScore">0</div>
             </div>
-            <img id="homeTeamLogo" class="team-logo-img" alt="Home Team Logo" src="https://www.mlbstatic.com/team-logos/119.svg" />
+            <canvas id="homeTeamLogo" class="team-logo-canvas" width="48" height="48"></canvas>
           </div>
         </div>
 
@@ -814,12 +810,55 @@
         return 'https://www.mlbstatic.com/team-logos/league-on-dark/1.svg';
       }
 
-      static updateLogo(imgId, teamObj = {}, teamAbbr = '', teamFullName = '') {
-        const img = document.getElementById(imgId);
-        if (!img) return;
+      static updateLogo(canvasId, teamObj = {}, teamAbbr = '', teamFullName = '') {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const w = canvas.width;
+        const h = canvas.height;
+
+        ctx.imageSmoothingEnabled = false;
+        ctx.msImageSmoothingEnabled = false;
+        ctx.webkitImageSmoothingEnabled = false;
+
         const logoUrl = this.getLogoUrl(teamObj, teamAbbr, teamFullName);
+        const img = new Image();
+        img.crossOrigin = 'Anonymous';
         img.src = logoUrl;
-        img.alt = teamFullName || teamAbbr || 'MLB Team Logo';
+
+        img.onload = () => {
+          // Offscreen downsampling to 24x24 for authentic 8-bit retro arcade pixelation
+          const pixelGrid = 24;
+          const offCanvas = document.createElement('canvas');
+          offCanvas.width = pixelGrid;
+          offCanvas.height = pixelGrid;
+          const offCtx = offCanvas.getContext('2d');
+          offCtx.imageSmoothingEnabled = false;
+          offCtx.msImageSmoothingEnabled = false;
+          offCtx.webkitImageSmoothingEnabled = false;
+
+          offCtx.clearRect(0, 0, pixelGrid, pixelGrid);
+          // Scale slightly inside offscreen grid so retro edges are preserved nicely
+          offCtx.drawImage(img, 1, 1, pixelGrid - 2, pixelGrid - 2);
+
+          // Clear target canvas & draw retro pixelated sprite scaled up to 48x48
+          ctx.clearRect(0, 0, w, h);
+          ctx.imageSmoothingEnabled = false;
+          ctx.msImageSmoothingEnabled = false;
+          ctx.webkitImageSmoothingEnabled = false;
+          ctx.drawImage(offCanvas, 0, 0, pixelGrid, pixelGrid, 0, 0, w, h);
+        };
+
+        img.onerror = () => {
+          ctx.clearRect(0, 0, w, h);
+          ctx.fillStyle = '#161b22';
+          ctx.fillRect(0, 0, w, h);
+          ctx.fillStyle = '#f1e05a';
+          ctx.font = '10px "Press Start 2P", monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText((teamAbbr || 'MLB').slice(0, 3), w / 2, h / 2);
+        };
       }
     }
 
@@ -1361,6 +1400,9 @@
         const localToday = `${year}-${month}-${day}`;
 
         document.getElementById('datePicker').value = localToday;
+
+        TeamLogoRenderer.updateLogo('awayTeamLogo', {}, 'NYY', 'New York Yankees');
+        TeamLogoRenderer.updateLogo('homeTeamLogo', {}, 'LAD', 'Los Angeles Dodgers');
 
         this.bindEvents();
         this.renderRulesModal();
