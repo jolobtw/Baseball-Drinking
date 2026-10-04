@@ -835,34 +835,28 @@
 
         // Dedicated 8-Bit Pixel Mascot Graphics
         switch (data.type) {
-          case 'tomahawk': // ATL
-            // Wood Handle
+          case 'tomahawk':
             ctx.fillStyle = '#8b5a2b';
             ctx.fillRect(w / 2 - 12, h / 2 + 4, 24, 3);
-            // Red Blade
             ctx.fillStyle = '#ba0c2f';
             ctx.fillRect(w / 2 + 4, h / 2 - 4, 6, 12);
             ctx.fillRect(w / 2 + 10, h / 2 - 2, 3, 8);
-            // Gold Cord
             ctx.fillStyle = '#eaaa00';
             ctx.fillRect(w / 2 + 2, h / 2 + 3, 3, 5);
             break;
 
-          case 'la': // LAD
-            // Dodger Blue Ball & Red Motion Streak
+          case 'la':
             ctx.fillStyle = '#ef3e42';
             ctx.fillRect(w / 2 - 12, h / 2 - 2, 16, 4);
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
             ctx.arc(w / 2 + 4, h / 2, 8, 0, Math.PI * 2);
             ctx.fill();
-            // Stitches
             ctx.fillStyle = '#ef3e42';
             ctx.fillRect(w / 2 + 2, h / 2 - 4, 2, 8);
             break;
 
-          case 'socks': // BOS
-            // Pair of 8-Bit Red Socks
+          case 'socks':
             ctx.fillStyle = '#bd3039';
             ctx.fillRect(w / 2 - 8, h / 2 - 8, 6, 12);
             ctx.fillRect(w / 2 - 8, h / 2 + 2, 10, 5);
@@ -873,8 +867,7 @@
             ctx.fillRect(w / 2 + 2, h / 2 - 6, 6, 3);
             break;
 
-          case 'sox': // CWS
-            // Single 8-Bit White Sock
+          case 'sox':
             ctx.fillStyle = '#ffffff';
             ctx.fillRect(w / 2 - 4, h / 2 - 10, 8, 14);
             ctx.fillRect(w / 2 - 4, h / 2 + 2, 12, 6);
@@ -882,17 +875,16 @@
             ctx.fillRect(w / 2 - 4, h / 2 - 10, 8, 3);
             break;
 
-          case 'star': // HOU, TEX
+          case 'star':
             ctx.fillStyle = data.fg;
             this.drawPixelStar(ctx, w / 2, h / 2, 12);
             ctx.fillStyle = data.accent;
             this.drawPixelStar(ctx, w / 2, h / 2, 6);
             break;
 
-          case 'bell': // PHI
-            // Liberty Bell
+          case 'bell':
             ctx.fillStyle = '#8b5a2b';
-            ctx.fillRect(w / 2 - 10, h / 2 - 10, 20, 4); // Beam
+            ctx.fillRect(w / 2 - 10, h / 2 - 10, 20, 4);
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
             ctx.arc(w / 2, h / 2 - 2, 8, Math.PI, 0);
@@ -900,18 +892,15 @@
             ctx.lineTo(w / 2 - 10, h / 2 + 8);
             ctx.closePath();
             ctx.fill();
-            // Crack
             ctx.fillStyle = '#002d62';
             ctx.fillRect(w / 2 - 1, h / 2 - 2, 2, 6);
             break;
 
-          case 'bird': // STL, BAL
-            // Cardinal / Oriole bird head
+          case 'bird':
             ctx.fillStyle = data.fg;
             ctx.beginPath();
             ctx.arc(w / 2 - 2, h / 2, 10, 0, Math.PI * 2);
             ctx.fill();
-            // Beak
             ctx.fillStyle = data.accent;
             ctx.beginPath();
             ctx.moveTo(w / 2 + 6, h / 2 - 3);
@@ -919,40 +908,34 @@
             ctx.lineTo(w / 2 + 6, h / 2 + 3);
             ctx.closePath();
             ctx.fill();
-            // Eye
             ctx.fillStyle = '#000000';
             ctx.fillRect(w / 2 + 1, h / 2 - 4, 3, 3);
             break;
 
-          case 'crown': // KC
+          case 'crown':
             ctx.fillStyle = '#bd9b60';
             ctx.fillRect(w / 2 - 12, h / 2 - 4, 24, 10);
             ctx.fillRect(w / 2 - 12, h / 2 - 10, 5, 8);
             ctx.fillRect(w / 2 - 2, h / 2 - 12, 5, 10);
             ctx.fillRect(w / 2 + 7, h / 2 - 10, 5, 8);
-            // Jewels
             ctx.fillStyle = '#da3633';
             ctx.fillRect(w / 2 - 10, h / 2 - 10, 2, 2);
             ctx.fillRect(w / 2, h / 2 - 12, 2, 2);
             ctx.fillRect(w / 2 + 9, h / 2 - 10, 2, 2);
             break;
 
-          case 'marlin': // MIA
-            // Swordfish / Marlin
+          case 'marlin':
             ctx.fillStyle = '#00a3e0';
             ctx.beginPath();
             ctx.ellipse(w / 2 - 2, h / 2 + 2, 12, 6, -Math.PI / 6, 0, Math.PI * 2);
             ctx.fill();
-            // Sword bill
             ctx.fillStyle = '#ef3340';
             ctx.fillRect(w / 2 + 6, h / 2 - 8, 8, 2);
-            // Tail
             ctx.fillStyle = '#00a3e0';
             ctx.fillRect(w / 2 - 14, h / 2 + 4, 4, 8);
             break;
 
-          case 'mountain': // COL
-            // Purple mountain peak + snow cap
+          case 'mountain':
             ctx.fillStyle = '#333366';
             ctx.beginPath();
             ctx.moveTo(w / 2 - 14, h / 2 + 10);
@@ -960,7 +943,6 @@
             ctx.lineTo(w / 2 + 14, h / 2 + 10);
             ctx.closePath();
             ctx.fill();
-            // Snow Cap
             ctx.fillStyle = '#ffffff';
             ctx.beginPath();
             ctx.moveTo(w / 2 - 5, h / 2 - 4);
@@ -970,21 +952,19 @@
             ctx.fill();
             break;
 
-          case 'snake': // ARI
-            // Rattlesnake head shape
+          case 'snake':
             ctx.fillStyle = '#30ced8';
             ctx.fillRect(w / 2 - 10, h / 2 - 8, 20, 14);
             ctx.fillStyle = '#a71930';
             ctx.fillRect(w / 2 - 6, h / 2 - 4, 4, 4);
             ctx.fillRect(w / 2 + 2, h / 2 - 4, 4, 4);
-            // Tongue
             ctx.fillStyle = '#a71930';
             ctx.fillRect(w / 2 - 1, h / 2 + 6, 2, 6);
             ctx.fillRect(w / 2 - 3, h / 2 + 10, 2, 2);
             ctx.fillRect(w / 2 + 1, h / 2 + 10, 2, 2);
             break;
 
-          case 'halo': // LAA
+          case 'halo':
             ctx.strokeStyle = '#866d4b';
             ctx.lineWidth = 4;
             ctx.beginPath();
@@ -996,20 +976,17 @@
             ctx.fillText('A', w / 2, h / 2 + 8);
             break;
 
-          case 'pirate': // PIT
-            // Pirate Skull / Eyepatch
+          case 'pirate':
             ctx.fillStyle = '#fdb827';
             ctx.beginPath();
             ctx.arc(w / 2, h / 2 - 2, 10, 0, Math.PI * 2);
             ctx.fill();
-            // Eyepatch
             ctx.fillStyle = '#000000';
             ctx.fillRect(w / 2 - 6, h / 2 - 5, 6, 6);
             ctx.fillRect(w / 2 - 10, h / 2 - 7, 18, 2);
             break;
 
-          case 'glove': // MIL
-            // Ball & Glove
+          case 'glove':
             ctx.fillStyle = '#b59a57';
             ctx.fillRect(w / 2 - 10, h / 2 - 8, 18, 16);
             ctx.fillStyle = '#ffffff';
@@ -1018,8 +995,7 @@
             ctx.fill();
             break;
 
-          case 'compass': // SEA
-            // 8-point compass star
+          case 'compass':
             ctx.fillStyle = '#005c5c';
             this.drawPixelStar(ctx, w / 2, h / 2, 12);
             ctx.fillStyle = '#c4ced4';
@@ -1027,7 +1003,7 @@
             ctx.fillRect(w / 2 - 12, h / 2 - 2, 24, 4);
             break;
 
-          case 'tiger': // DET
+          case 'tiger':
             ctx.fillStyle = '#fa4616';
             ctx.fillRect(w / 2 - 10, h / 2 - 8, 20, 16);
             ctx.fillStyle = '#0c2340';
@@ -1036,7 +1012,7 @@
             ctx.fillRect(w / 2 - 2, h / 2 - 2, 4, 4);
             break;
 
-          case 'ray': // TB
+          case 'ray':
             ctx.fillStyle = '#f5d130';
             this.drawPixelStar(ctx, w / 2, h / 2, 12);
             ctx.fillStyle = '#8fbce6';
@@ -1045,7 +1021,7 @@
             ctx.fillText('TB', w / 2, h / 2 + 3);
             break;
 
-          case 'cub': // CHC
+          case 'cub':
             ctx.fillStyle = '#cc3433';
             ctx.font = '16px "Press Start 2P"';
             ctx.textAlign = 'center';
@@ -1501,6 +1477,54 @@
         localStorage.setItem('mlb_drink_rules_v2', JSON.stringify(this.rules));
       }
 
+      // Evaluates sub-events inside playEvents (Stolen Bases, Balks, Pitching Changes, Wild Pitches)
+      evaluateSubEvent(pe, play) {
+        const details = pe.details || {};
+        const eventType = (details.eventType || '').toLowerCase();
+        const eventText = (details.event || '').toLowerCase();
+        const desc = details.description || details.event || 'Action occurred';
+
+        let ruleKey = null;
+
+        if (eventType.includes('stolen_base') || eventText.includes('stolen base')) {
+          ruleKey = 'stolen_base';
+        } else if (eventType.includes('balk') || eventText.includes('balk')) {
+          ruleKey = 'balk';
+        } else if (eventType.includes('error') || eventText.includes('error')) {
+          ruleKey = 'error';
+        } else if (eventType.includes('wild_pitch') || eventText.includes('wild pitch')) {
+          ruleKey = 'balk'; // categorize with balk/special
+        } else if (eventType.includes('pitching_substitution') || eventText.includes('pitching substitution')) {
+          ruleKey = 'balk';
+        }
+
+        if (!ruleKey || !this.rules[ruleKey]) return null;
+
+        const rule = this.rules[ruleKey];
+        let drinksText = rule ? rule.drinks : '0';
+        let numDrinks = 0;
+
+        if (ruleKey === 'stolen_base') {
+          if (eventType.includes('home') || desc.toLowerCase().includes('home')) numDrinks = 3;
+          else if (eventType.includes('3b') || desc.toLowerCase().includes('third')) numDrinks = 2;
+          else numDrinks = 1;
+          drinksText = `${numDrinks} Drink${numDrinks > 1 ? 's' : ''} (1/base)`;
+        } else {
+          numDrinks = parseInt(rule ? rule.drinks : 0, 10) || 0;
+        }
+
+        return {
+          isDrink: true,
+          ruleKey,
+          ruleName: rule ? rule.name : (details.event || 'Action Event'),
+          drinksText,
+          numDrinks,
+          desc,
+          play
+        };
+      }
+
+      // Evaluates main atBat result (Strikeout, Single, Double, Triple, Homerun, Walk, HBP, Error, DP)
       evaluatePlay(play) {
         const resultObj = play.result || {};
         const eventType = (resultObj.eventType || '').toLowerCase();
@@ -1750,7 +1774,6 @@
           document.getElementById('awayTeamName').textContent = awayAbbr.toUpperCase();
           document.getElementById('homeTeamName').textContent = homeAbbr.toUpperCase();
 
-          // Render 8-Bit Pixel Mascot Logos
           PixelTeamLogoRenderer.drawLogo('awayTeamLogo', awayAbbr, awayTeam.name);
           PixelTeamLogoRenderer.drawLogo('homeTeamLogo', homeAbbr, homeTeam.name);
         }
@@ -1838,10 +1861,42 @@
           }
 
           allPlays.forEach((play) => {
-            const playId = play.playId || (play.about ? play.about.atBatIndex + '_' + (play.result ? play.result.eventType : '') : null);
+            const atBatIdx = play.about ? play.about.atBatIndex : 0;
 
-            if (playId && !gameManager.seenPlayIds.has(playId)) {
-              gameManager.seenPlayIds.add(playId);
+            // 1. Process sub-events in playEvents (Stolen Bases, Balks, Pickoffs, Pitching Changes)
+            if (play.playEvents && play.playEvents.length > 0) {
+              play.playEvents.forEach((pe) => {
+                if (pe.details && (pe.details.eventType || pe.details.event || pe.type === 'action')) {
+                  const subEventId = `${atBatIdx}_sub_${pe.index}_${pe.details.eventType || pe.details.event}`;
+
+                  if (!gameManager.seenPlayIds.has(subEventId)) {
+                    gameManager.seenPlayIds.add(subEventId);
+
+                    const subResult = gameManager.evaluateSubEvent(pe, play);
+                    if (subResult) {
+                      this.addPlayToFeed(subResult);
+
+                      if (subResult.isDrink) {
+                        gameManager.applyDrinkResult(subResult);
+                        this.updateStatsUI();
+
+                        if (!isFirstTime) {
+                          this.triggerDrinkAlert(subResult);
+                        } else {
+                          document.getElementById('lastDrinkAlert').textContent = `Last: ${subResult.ruleName} (${subResult.drinksText})`;
+                        }
+                      }
+                    }
+                  }
+                }
+              });
+            }
+
+            // 2. Process main atBat result (Strikeouts, Singles, Doubles, HRs, Walks, Errors, DPs)
+            const mainPlayId = `${atBatIdx}_res_${play.result ? play.result.eventType : ''}`;
+
+            if (!gameManager.seenPlayIds.has(mainPlayId)) {
+              gameManager.seenPlayIds.add(mainPlayId);
               const result = gameManager.evaluatePlay(play);
 
               if (result) {
