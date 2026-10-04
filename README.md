@@ -7,10 +7,16 @@ A standalone Progressive Web App (PWA) that connects directly to the official **
 ## 🌟 Key Features
 
 - **⚡ Real-Time MLB API Polling**: Connects directly to MLB's live game feed (`/api/v1.1/game/{gamePk}/feed/live`) with fast 3-second polling. Responds to plays as soon as official data updates.
-- **🎨 Retro 8-Bit Canvas Pixel Art**: Self-contained, procedural retro canvas graphics for key drink events:
-  - **Strikeouts / Hits / Homerun / Rain Out**: Animated retro scenes & banners.
+- **📜 Complete MLB Play-by-Play Feed**: Displays detailed official MLB play descriptions for all plays (outs, hits, walks, scoring events), cleanly separating non-drink plays from drink-assigning events.
+- **🍺 Standardized Pixel Drink Badges**: Every drink play features a custom retro pixel SVG beer mug badge displaying the exact numeric drink count (e.g. `1`, `2`, `6`).
+- **🎨 30 FPS Retro Canvas Pixel Art**: Self-contained, 30 FPS retro stadium canvas graphics with twinkling night stars, floodlights, and custom event scenes:
+  - **Strikeouts / Homeruns / Stolen Bases / Errors / Walks / Hit By Pitch / Rain Delays**: Animated 8-bit retro arcade scenes & banners.
 - **🔊 Web Audio Chiptune SFX**: 8-bit sound synthesizers (whiff, buzzer, fanfare, drink chime) built directly in JS with no external audio file dependencies.
-- **⚙️ Customizable Ruleset**: Edit drink amounts per play type in real-time via the in-app Rules editor.
+- **⚙️ Redesigned Ruleset Editor**: Edit drink amounts per play type in real-time with responsive row cards and wide input fields that fit custom text (`Finish Drink`, `1 per base`, `Take a shot`).
+- **⚾ Smart Scoreboard & Game Selection**:
+  - Displays `[IN PROGRESS]` for live games (including Manager Challenges, Warmups, and Reviews) and `[COMPLETED]` for finished games.
+  - Shows `FINAL` (or `FINAL/10` for extra innings) on the scoreboard for completed games, automatically clearing base runners and count dots.
+  - Clears default inning text when no game is selected.
 - **📱 PWA & Standalone Support**: Installable on iPhone, Android, or Desktop. Works offline and from a single file/URL!
 - **🎮 Demo Play Mode**: Preview all pixel art animations, sound effects, and drink triggers anytime without needing a live game.
 
@@ -55,6 +61,6 @@ npx http-server -p 8080
 
 ### Option 3: Host Online (Free & Instant)
 Host the workspace folder on **GitHub Pages**, **Vercel**, or **Netlify**:
-1. Upload `index.html`, `manifest.json`, and `sw.js` to a GitHub repo.
+1. Upload `index.html`, `manifest.json`, `sw.js`, and `README.md` to a GitHub repo.
 2. Enable **GitHub Pages** in Repository Settings.
 3. Share the generated link with your friends! Everyone can select the same game and get identical real-time play alerts.
