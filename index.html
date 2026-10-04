@@ -652,7 +652,7 @@
       <div class="scoreboard">
         <div class="game-status-bar">
           <div><span class="live-dot" id="liveDot"></span><span id="gameStatusText">NO GAME SELECTED</span></div>
-          <div id="gameInningText">TOP 1ST</div>
+          <div id="gameInningText"></div>
         </div>
 
         <div class="teams-container">
@@ -1641,7 +1641,7 @@
         document.getElementById('awayTeamScore').textContent = '0';
         document.getElementById('homeTeamScore').textContent = '0';
         document.getElementById('gameStatusText').textContent = 'NO GAME SELECTED';
-        document.getElementById('gameInningText').textContent = 'TOP 1ST';
+        document.getElementById('gameInningText').textContent = '';
         document.getElementById('pollStatus').textContent = 'POLLING: PAUSED';
         document.getElementById('lastDrinkAlert').textContent = 'No drinks assigned yet';
 
