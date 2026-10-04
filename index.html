@@ -703,6 +703,10 @@
             <span>Balks / Special</span>
             <span class="stat-val" id="statBalk">0</span>
           </div>
+          <div class="stat-row">
+            <span>New Innings</span>
+            <span class="stat-val" id="statInning">0</span>
+          </div>
         </div>
 
         <button class="btn-pixel btn-danger" id="resetDrinksBtn" style="width: 100%; margin-top: 14px;">RESET DRINK COUNTER</button>
@@ -1238,7 +1242,8 @@
           err: 0,
           dp: 0,
           sb: 0,
-          balk: 0
+          balk: 0,
+          new_inning: 0
         };
         this.seenPlayIds = new Set();
         this.selectedGamePk = null;
@@ -1376,10 +1381,11 @@
         if (key === 'double_play' || key === 'triple_play') this.totals.dp++;
         if (key === 'stolen_base') this.totals.sb++;
         if (key === 'balk' || key === 'rain_out') this.totals.balk++;
+        if (key === 'new_inning') this.totals.new_inning++;
       }
 
       resetCounter() {
-        this.totals = { totalDrinks: 0, k: 0, bb: 0, hits: 0, hr: 0, hbp: 0, err: 0, dp: 0, sb: 0, balk: 0 };
+        this.totals = { totalDrinks: 0, k: 0, bb: 0, hits: 0, hr: 0, hbp: 0, err: 0, dp: 0, sb: 0, balk: 0, new_inning: 0 };
         this.seenPlayIds.clear();
         this.isInitialLoad = true;
         this.lastInningKey = null;
@@ -1746,6 +1752,7 @@
         document.getElementById('statDP').textContent = gameManager.totals.dp;
         document.getElementById('statSB').textContent = gameManager.totals.sb;
         document.getElementById('statBalk').textContent = gameManager.totals.balk;
+        document.getElementById('statInning').textContent = gameManager.totals.new_inning;
       },
 
       renderRulesModal() {
