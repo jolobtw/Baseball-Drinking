@@ -1344,15 +1344,17 @@
         if (eventName) {
           return eventName;
         }
-        return 'Play completed';
+        return null;
       }
 
       // Evaluates main atBat result (Strikeouts, Singles, Doubles, HRs, Walks, Errors, DPs, Flyouts, Groundouts)
       evaluatePlay(play) {
+        const desc = this.getPlayDescription(play);
+        if (!desc) return null;
+
         const resultObj = play.result || {};
         const eventType = (resultObj.eventType || '').toLowerCase();
         const eventText = (resultObj.event || '').toLowerCase();
-        const desc = this.getPlayDescription(play);
 
         let ruleKey = null;
 
@@ -1781,23 +1783,26 @@
             }
 
             // 2. Process main atBat result (Strikeouts, Singles, Doubles, HRs, Walks, Errors, DPs)
-            const mainPlayId = `${atBatIdx}_res_${play.result ? play.result.eventType : ''}`;
+            const eventType = (play.result && play.result.eventType) ? play.result.eventType : '';
+            if (eventType || (play.about && play.about.isComplete) || (play.result && play.result.description)) {
+              const mainPlayId = `${atBatIdx}_res_${eventType || 'completed'}`;
 
-            if (!gameManager.seenPlayIds.has(mainPlayId)) {
-              gameManager.seenPlayIds.add(mainPlayId);
-              const result = gameManager.evaluatePlay(play);
+              if (!gameManager.seenPlayIds.has(mainPlayId)) {
+                const result = gameManager.evaluatePlay(play);
 
-              if (result) {
-                this.addPlayToFeed(result);
+                if (result && result.desc) {
+                  gameManager.seenPlayIds.add(mainPlayId);
+                  this.addPlayToFeed(result);
 
-                if (result.isDrink) {
-                  gameManager.applyDrinkResult(result);
-                  this.updateStatsUI();
+                  if (result.isDrink) {
+                    gameManager.applyDrinkResult(result);
+                    this.updateStatsUI();
 
-                  if (!isFirstTime) {
-                    this.triggerDrinkAlert(result);
-                  } else {
-                    document.getElementById('lastDrinkAlert').textContent = `Last: ${result.ruleName} (${result.drinksText})`;
+                    if (!isFirstTime) {
+                      this.triggerDrinkAlert(result);
+                    } else {
+                      document.getElementById('lastDrinkAlert').textContent = `Last: ${result.ruleName} (${result.drinksText})`;
+                    }
                   }
                 }
               }
