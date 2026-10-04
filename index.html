@@ -1208,74 +1208,63 @@
 
     const sound = new SoundEngine();
 
-    // --- 3. Retro 8-Bit Canvas Play Pixel Art Animator ---
+    // --- 3. Retro 8-Bit Canvas Play Static Illustration Renderer ---
     class PixelArtAnimator {
       constructor(canvasId) {
         this.canvas = document.getElementById(canvasId);
         this.ctx = this.canvas.getContext('2d');
         this.ctx.imageSmoothingEnabled = false;
-        this.animId = null;
-        this.frame = 0;
-        this.lastTime = 0;
       }
 
       stop() {
-        if (this.animId) {
-          cancelAnimationFrame(this.animId);
-          this.animId = null;
-        }
+        // Static illustration - no active animation loop to cancel
       }
 
       start(playType) {
-        this.stop();
-        this.frame = 0;
-        this.lastTime = performance.now();
-        const render = (now) => {
-          if (now - this.lastTime > 32) {
-            this.frame++;
-            this.lastTime = now;
-          }
-          this.draw(playType);
-          this.animId = requestAnimationFrame(render);
-        };
-        this.animId = requestAnimationFrame(render);
+        this.draw(playType);
       }
 
       drawBackground(ctx, w, h, isGridiron = false) {
+        ctx.globalAlpha = 1.0;
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+
         if (!isGridiron) {
           // Baseball stadium night sky & field
           ctx.fillStyle = '#0b1326';
           ctx.fillRect(0, 0, w, h);
 
+          // Stars
           ctx.fillStyle = '#ffffff';
           const starPositions = [[40, 15], [120, 25], [200, 10], [320, 30], [400, 18], [450, 35]];
-          starPositions.forEach(([sx, sy], idx) => {
-            const alpha = (Math.sin(this.frame * 0.05 + idx) + 1) * 0.4 + 0.2;
-            ctx.globalAlpha = alpha;
+          starPositions.forEach(([sx, sy]) => {
             ctx.fillRect(sx, sy, 2, 2);
           });
-          ctx.globalAlpha = 1.0;
 
+          // Stadium light posts
           ctx.fillStyle = '#fffae6';
           ctx.fillRect(15, 8, 16, 6);
           ctx.fillRect(w - 31, 8, 16, 6);
 
+          // Outfield wall
           ctx.fillStyle = '#163820';
-          ctx.fillRect(0, 95, w, 25);
+          ctx.fillRect(0, 75, w, 25);
           ctx.fillStyle = '#f1e05a';
-          ctx.fillRect(0, 95, w, 3);
+          ctx.fillRect(0, 75, w, 3);
 
+          // Grass outfield
           ctx.fillStyle = '#1e532b';
-          ctx.fillRect(0, 120, w, h - 120);
+          ctx.fillRect(0, 100, w, h - 100);
 
+          // Grass stripes
           ctx.fillStyle = '#235f32';
           for (let x = 0; x < w; x += 40) {
-            ctx.fillRect(x, 120, 20, h - 120);
+            ctx.fillRect(x, 100, 20, h - 100);
           }
 
+          // Dirt mound / infield arc
           ctx.fillStyle = '#8b5a2b';
           ctx.beginPath();
-          ctx.ellipse(w / 2, h - 20, 140, 45, 0, 0, Math.PI * 2);
+          ctx.ellipse(w / 2, h - 15, 130, 40, 0, 0, Math.PI * 2);
           ctx.fill();
         } else {
           // Football Gridiron stadium & turf
@@ -1284,42 +1273,42 @@
 
           // Stadium lights
           ctx.fillStyle = '#fffae6';
-          ctx.fillRect(20, 10, 24, 8);
-          ctx.fillRect(w - 44, 10, 24, 8);
+          ctx.fillRect(20, 8, 24, 8);
+          ctx.fillRect(w - 44, 8, 24, 8);
 
           // Turf Field
           ctx.fillStyle = '#1e532b';
-          ctx.fillRect(0, 80, w, h - 80);
+          ctx.fillRect(0, 60, w, h - 60);
 
           // Gridiron Yard Lines
           ctx.fillStyle = '#2ea043';
           for (let x = 0; x < w; x += 40) {
-            ctx.fillRect(x, 80, 20, h - 80);
+            ctx.fillRect(x, 60, 20, h - 60);
           }
 
           // White Yard Line Stripes
           ctx.fillStyle = '#ffffff';
           for (let x = 20; x < w; x += 40) {
-            ctx.fillRect(x, 80, 3, h - 80);
+            ctx.fillRect(x, 60, 3, h - 60);
           }
 
           // End Zone Goalposts (Yellow)
           ctx.fillStyle = '#f1e05a';
-          ctx.fillRect(25, 45, 6, 45);
-          ctx.fillRect(10, 45, 36, 4);
-          ctx.fillRect(10, 25, 5, 20);
-          ctx.fillRect(41, 25, 5, 20);
+          ctx.fillRect(20, 35, 5, 45);
+          ctx.fillRect(8, 35, 29, 3);
+          ctx.fillRect(8, 20, 4, 15);
+          ctx.fillRect(33, 20, 4, 15);
 
-          ctx.fillRect(w - 31, 45, 6, 45);
-          ctx.fillRect(w - 46, 45, 36, 4);
-          ctx.fillRect(w - 46, 25, 5, 20);
-          ctx.fillRect(w - 15, 25, 5, 20);
+          ctx.fillRect(w - 25, 35, 5, 45);
+          ctx.fillRect(w - 37, 35, 29, 3);
+          ctx.fillRect(w - 37, 20, 4, 15);
+          ctx.fillRect(w - 12, 20, 4, 15);
         }
       }
 
       draw(playType) {
-        const w = this.canvas.width || 480;
-        const h = this.canvas.height || 220;
+        const w = this.canvas.width || 320;
+        const h = this.canvas.height || 180;
         const ctx = this.ctx;
 
         const isNflPlay = ['touchdown', 'interception', 'fumble', 'field_goal', 'big_play', 'first_down', 'timeout', 'quarter_change', 'safety'].includes(playType);
@@ -1334,6 +1323,9 @@
           case 'walk': this.drawWalk(ctx, w, h); break;
           case 'hit_by_pitch': this.drawHitByPitch(ctx, w, h); break;
           case 'rain_out': this.drawRainOut(ctx, w, h); break;
+          case 'single': this.drawSingle(ctx, w, h); break;
+          case 'double': this.drawDouble(ctx, w, h); break;
+          case 'triple': this.drawTriple(ctx, w, h); break;
 
           // NFL Plays
           case 'touchdown': this.drawTouchdown(ctx, w, h); break;
@@ -1350,14 +1342,11 @@
         }
       }
 
-      // MLB Scenes
+      // MLB Static Illustrations
       drawStrikeout(ctx, w, h) {
-        const t = this.frame * 0.08;
-        const swingProgress = Math.min(1, (t % 2));
-        const swingAngle = Math.sin(swingProgress * Math.PI) * 1.2;
-        const batterX = w / 2 - 30;
-        const batterY = h - 75;
-
+        // Batter sprite swinging down low on left
+        const batterX = w / 2 - 80;
+        const batterY = h - 65;
         ctx.fillStyle = '#58a6ff';
         ctx.fillRect(batterX, batterY, 18, 28);
         ctx.fillStyle = '#ffcca6';
@@ -1365,305 +1354,407 @@
         ctx.fillStyle = '#1f6feb';
         ctx.fillRect(batterX + 1, batterY - 16, 16, 5);
 
+        // Bat swung low
         ctx.fillStyle = '#d4a373';
         ctx.save();
         ctx.translate(batterX + 14, batterY + 8);
-        ctx.rotate(-0.3 + swingAngle);
-        ctx.fillRect(0, -3, 30, 5);
+        ctx.rotate(0.8);
+        ctx.fillRect(0, -3, 32, 5);
         ctx.restore();
 
-        const kScale = 1 + Math.sin(t * 2) * 0.08;
-        ctx.save();
-        ctx.translate(w / 2, 55);
-        ctx.scale(kScale, kScale);
-        ctx.font = '54px "Press Start 2P", monospace';
+        // Big Retro Red 8-bit 'K' Block graphic in center right
+        const kX = w / 2 + 20;
+        const kY = 35;
         ctx.fillStyle = '#000000';
-        ctx.textAlign = 'center';
-        ctx.fillText('K', 3, 3);
-        ctx.fillStyle = '#da3633';
-        ctx.fillText('K', 0, 0);
-        ctx.restore();
+        ctx.fillRect(kX - 3, kY - 3, 54, 74);
 
-        ctx.font = '16px "Press Start 2P", monospace';
-        ctx.fillStyle = '#ffffff';
-        ctx.textAlign = 'center';
-        ctx.fillText('STRIKEOUT! TAKE 1 DRINK', w / 2, 95);
+        ctx.fillStyle = '#da3633';
+        ctx.fillRect(kX, kY, 14, 68);
+        ctx.fillRect(kX + 14, kY + 24, 12, 10);
+        ctx.fillRect(kX + 24, kY + 12, 12, 12);
+        ctx.fillRect(kX + 34, kY, 14, 12);
+        ctx.fillRect(kX + 14, kY + 34, 12, 10);
+        ctx.fillRect(kX + 24, kY + 44, 12, 12);
+        ctx.fillRect(kX + 34, kY + 56, 14, 12);
       }
 
       drawHomeRun(ctx, w, h) {
-        const cycle = 120;
-        const progress = (this.frame % cycle) / cycle;
-        const ballX = progress * (w + 40) - 20;
-        const ballY = (h - 50) - Math.sin(progress * Math.PI) * 110;
-
-        for (let i = 1; i <= 8; i++) {
-          const trailX = ballX - i * 7;
-          const trailY = ballY + Math.sin((progress - i * 0.02) * Math.PI) * 4 + i * 1.5;
-          const trailColors = ['#f1e05a', '#f0883e', '#e63946', '#58a6ff'];
-          ctx.fillStyle = trailColors[i % trailColors.length];
-          ctx.fillRect(trailX, trailY, 6 - i * 0.5, 6 - i * 0.5);
+        const points = [
+          [30, h - 45], [70, h - 85], [120, 45], [180, 25], [240, 35]
+        ];
+        for (let i = 0; i < points.length - 1; i++) {
+          const [x1, y1] = points[i];
+          const [x2, y2] = points[i + 1];
+          ctx.strokeStyle = ['#f1e05a', '#f0883e', '#e63946', '#58a6ff'][i % 4];
+          ctx.lineWidth = 6;
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
         }
 
+        const ballX = 240;
+        const ballY = 35;
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(ballX, ballY, 10, 10);
+        ctx.fillRect(ballX - 8, ballY - 8, 16, 16);
         ctx.fillStyle = '#da3633';
-        ctx.fillRect(ballX + 2, ballY + 4, 6, 2);
+        ctx.fillRect(ballX - 4, ballY - 2, 8, 4);
 
-        const bannerColor = ['#f1e05a', '#58a6ff', '#2ea043', '#da3633'][Math.floor(this.frame / 8) % 4];
-        ctx.font = '22px "Press Start 2P"';
-        ctx.fillStyle = '#000000';
-        ctx.textAlign = 'center';
-        ctx.fillText('🚀 HOME RUN! 🚀', w / 2 + 2, 47);
-        ctx.fillStyle = bannerColor;
-        ctx.fillText('🚀 HOME RUN! 🚀', w / 2, 45);
-
-        ctx.font = '16px "Press Start 2P"';
-        ctx.fillStyle = '#da3633';
-        ctx.fillText('FINISH YOUR DRINK!', w / 2, 80);
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillRect(ballX + 15, ballY - 10, 4, 4);
+        ctx.fillRect(ballX + 12, ballY + 10, 4, 4);
+        ctx.fillRect(ballX - 18, ballY - 12, 4, 4);
+        ctx.fillRect(ballX + 2, ballY - 18, 4, 4);
       }
 
       drawStolenBase(ctx, w, h) {
-        const cycle = 100;
-        const progress = (this.frame % cycle) / cycle;
-        const slideX = 60 + progress * (w - 140);
-        const slideY = h - 60;
+        const baseX = w / 2 + 30;
+        const baseY = h - 55;
 
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(w - 80, slideY, 18, 18);
-        ctx.fillStyle = '#2ea043';
-        ctx.fillRect(slideX, slideY + 4, 28, 14);
+        ctx.fillRect(baseX, baseY, 22, 22);
+        ctx.fillStyle = '#d0d7de';
+        ctx.fillRect(baseX + 2, baseY + 18, 18, 4);
 
-        ctx.font = '22px "Press Start 2P", monospace';
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        ctx.fillText('⚡ STOLEN BASE! ⚡', w / 2 + 2, 47);
+        const runnerX = baseX - 55;
+        const runnerY = baseY + 4;
         ctx.fillStyle = '#2ea043';
-        ctx.fillText('⚡ STOLEN BASE! ⚡', w / 2, 45);
+        ctx.fillRect(runnerX, runnerY, 40, 14);
+        ctx.fillStyle = '#ffcca6';
+        ctx.fillRect(runnerX + 34, runnerY - 6, 10, 10);
+
+        ctx.fillStyle = '#8b5a2b';
+        ctx.fillRect(runnerX - 18, runnerY + 4, 14, 8);
+        ctx.fillRect(runnerX - 10, runnerY - 2, 8, 6);
       }
 
       drawError(ctx, w, h) {
-        const wobble = Math.sin(this.frame * 0.15) * 8;
-        const x = w / 2 - 10 + wobble;
-        const y = h - 70;
+        const cx = w / 2;
+        const cy = h / 2 - 10;
 
         ctx.fillStyle = '#f0883e';
-        ctx.fillRect(x, y, 18, 28);
-        ctx.font = '22px "Press Start 2P", monospace';
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        ctx.fillText('3RROR! OOPS!', w / 2 + 2, 47);
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 40);
+        ctx.lineTo(cx + 40, cy);
+        ctx.lineTo(cx, cy + 40);
+        ctx.lineTo(cx - 40, cy);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(cx - 4, cy - 24, 8, 26);
+        ctx.fillRect(cx - 4, cy + 8, 8, 8);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(cx + 48, cy + 10, 14, 14);
         ctx.fillStyle = '#da3633';
-        ctx.fillText('3RROR! OOPS!', w / 2, 45);
+        ctx.fillRect(cx + 52, cy + 14, 6, 2);
       }
 
       drawWalk(ctx, w, h) {
-        ctx.font = '22px "Press Start 2P", monospace';
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        ctx.fillText('BASE ON BALLS', w / 2 + 2, 47);
-        ctx.fillStyle = '#58a6ff';
-        ctx.fillText('BASE ON BALLS', w / 2, 45);
+        const cx = w / 2;
+        const cy = h / 2;
+
+        const dots = [[cx - 60, cy], [cx - 20, cy], [cx + 20, cy], [cx + 60, cy]];
+        dots.forEach(([x, y]) => {
+          ctx.fillStyle = '#ffffff';
+          ctx.beginPath();
+          ctx.arc(x, y, 14, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#58a6ff';
+          ctx.beginPath();
+          ctx.arc(x, y, 10, 0, Math.PI * 2);
+          ctx.fill();
+        });
       }
 
       drawHitByPitch(ctx, w, h) {
-        ctx.font = '22px "Press Start 2P", monospace';
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        ctx.fillText('HIT BY PITCH!', w / 2 + 2, 47);
-        ctx.fillStyle = '#e63946';
-        ctx.fillText('HIT BY PITCH!', w / 2, 45);
+        const cx = w / 2;
+        const cy = h / 2 - 5;
+
+        ctx.strokeStyle = '#da3633';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.arc(cx, cy, 32, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.fillStyle = '#da3633';
+        ctx.fillRect(cx - 45, cy - 2, 90, 4);
+        ctx.fillRect(cx - 2, cy - 45, 4, 90);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 14, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#da3633';
+        ctx.fillRect(cx - 4, cy - 2, 8, 4);
       }
 
       drawRainOut(ctx, w, h) {
-        ctx.font = '20px "Press Start 2P", monospace';
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        ctx.fillText('🌧️ RAIN OUT! 🌧️', w / 2 + 2, 47);
+        const cx = w / 2;
+
+        ctx.fillStyle = '#30363d';
+        ctx.fillRect(cx - 50, 25, 100, 30);
+        ctx.fillRect(cx - 70, 35, 140, 25);
+
         ctx.fillStyle = '#58a6ff';
-        ctx.fillText('🌧️ RAIN OUT! 🌧️', w / 2, 45);
+        const dropCoords = [
+          [cx - 50, 75], [cx - 20, 85], [cx + 10, 70], [cx + 40, 80],
+          [cx - 35, 105], [cx - 5, 115], [cx + 25, 100]
+        ];
+        dropCoords.forEach(([dx, dy]) => {
+          ctx.fillRect(dx, dy, 3, 12);
+        });
+
+        ctx.fillStyle = '#f1e05a';
+        ctx.beginPath();
+        ctx.moveTo(cx, 40);
+        ctx.lineTo(cx - 12, 70);
+        ctx.lineTo(cx - 2, 70);
+        ctx.lineTo(cx - 10, 100);
+        ctx.lineTo(cx + 8, 65);
+        ctx.lineTo(cx - 2, 65);
+        ctx.closePath();
+        ctx.fill();
       }
 
-      // NFL Scenes
-      // NFL Scenes
+      drawSingle(ctx, w, h) { this.drawDiamondBases(ctx, w, h, [true, false, false]); }
+      drawDouble(ctx, w, h) { this.drawDiamondBases(ctx, w, h, [false, true, false]); }
+      drawTriple(ctx, w, h) { this.drawDiamondBases(ctx, w, h, [false, false, true]); }
+
+      drawDiamondBases(ctx, w, h, [b1, b2, b3]) {
+        const cx = w / 2;
+        const cy = h / 2 + 5;
+        const size = 35;
+
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(cx, cy + size);
+        ctx.lineTo(cx + size, cy);
+        ctx.lineTo(cx, cy - size);
+        ctx.lineTo(cx - size, cy);
+        ctx.closePath();
+        ctx.stroke();
+
+        const drawBag = (x, y, active) => {
+          ctx.fillStyle = active ? '#f1e05a' : '#ffffff';
+          ctx.fillRect(x - 8, y - 8, 16, 16);
+          if (active) {
+            ctx.strokeStyle = '#f0883e';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x - 8, y - 8, 16, 16);
+          }
+        };
+
+        drawBag(cx + size, cy, b1);
+        drawBag(cx, cy - size, b2);
+        drawBag(cx - size, cy, b3);
+      }
+
+      // NFL Static Illustrations
       drawTouchdown(ctx, w, h) {
-        const cycle = 90;
-        const progress = (this.frame % cycle) / cycle;
-        const ballX = progress * (w - 110) + 30;
-        const ballY = (h - 60) - Math.sin(progress * Math.PI) * 75;
+        const cx = w / 2;
 
-        // Receiver in End Zone throwing hands up
-        const wrX = w - 75;
-        const wrY = h - 65;
-        ctx.fillStyle = '#f0883e';
-        ctx.fillRect(wrX, wrY, 18, 26);
-        ctx.fillStyle = '#ffcca6';
-        ctx.fillRect(wrX + 3, wrY - 14, 12, 12);
-        ctx.fillStyle = '#f0883e';
-        ctx.fillRect(wrX - 4, wrY - 10, 6, 14);
-        ctx.fillRect(wrX + 16, wrY - 10, 6, 14);
-
-        // Parabolic Flying Football
-        ctx.fillStyle = '#8b4513';
-        ctx.fillRect(ballX, ballY, 14, 10);
+        const refX = cx - 40;
+        const refY = h - 60;
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(ballX + 5, ballY + 2, 4, 6);
+        ctx.fillRect(refX, refY, 18, 26);
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(refX + 4, refY, 4, 26);
+        ctx.fillRect(refX + 12, refY, 4, 26);
+        ctx.fillStyle = '#ffcca6';
+        ctx.fillRect(refX + 3, refY - 12, 12, 12);
 
-        // Endzone Fireworks burst
-        if (progress > 0.5) {
-          const fx = w - 60 + Math.sin(this.frame * 0.15) * 25;
-          const fy = 35 + Math.cos(this.frame * 0.15) * 15;
-          ctx.fillStyle = (this.frame % 4 < 2) ? '#f1e05a' : '#f0883e';
-          ctx.fillRect(fx - 12, fy, 4, 4);
-          ctx.fillRect(fx + 12, fy, 4, 4);
-          ctx.fillRect(fx, fy - 12, 4, 4);
-          ctx.fillRect(fx, fy + 12, 4, 4);
-        }
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(refX - 6, refY - 24, 6, 26);
+        ctx.fillRect(refX + 18, refY - 24, 6, 26);
 
-        const bannerColor = ['#f1e05a', '#f0883e', '#e63946'][Math.floor(this.frame / 8) % 3];
-        ctx.font = '22px "Press Start 2P", monospace';
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        ctx.fillText('🏈 TOUCHDOWN! 🏈', w / 2 + 2, 47);
-        ctx.fillStyle = bannerColor;
-        ctx.fillText('🏈 TOUCHDOWN! 🏈', w / 2, 45);
+        const ballX = cx + 30;
+        const ballY = h - 65;
+        ctx.fillStyle = '#8b4513';
+        ctx.fillRect(ballX, ballY, 26, 16);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(ballX + 10, ballY + 3, 6, 10);
+
+        ctx.fillStyle = '#f0883e';
+        ctx.fillRect(ballX - 12, ballY - 10, 8, 26);
+
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillRect(ballX + 5, ballY - 30, 4, 4);
+        ctx.fillRect(ballX + 25, ballY - 20, 4, 4);
+        ctx.fillRect(ballX - 5, ballY - 25, 4, 4);
       }
 
       drawInterception(ctx, w, h) {
-        const cycle = 80;
-        const progress = (this.frame % cycle) / cycle;
-        const dbX = w / 2 - 40 + progress * 60;
-        const dbY = h - 65 - Math.sin(progress * Math.PI) * 25;
+        const cx = w / 2;
+        const cy = h / 2 - 5;
 
-        // DB Player leaping intercept catch
         ctx.fillStyle = '#da3633';
-        ctx.fillRect(dbX, dbY, 20, 26);
+        ctx.fillRect(cx - 15, cy - 10, 30, 30);
         ctx.fillStyle = '#ffcca6';
-        ctx.fillRect(dbX + 4, dbY - 12, 12, 12);
+        ctx.fillRect(cx - 8, cy - 24, 16, 14);
 
-        // Football grabbed mid-air
         ctx.fillStyle = '#8b4513';
-        ctx.fillRect(dbX + 6, dbY - 18, 12, 8);
+        ctx.fillRect(cx - 12, cy - 35, 24, 14);
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(dbX + 10, dbY - 17, 4, 5);
+        ctx.fillRect(cx - 2, cy - 33, 4, 10);
 
-        ctx.font = '22px "Press Start 2P", monospace';
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        ctx.fillText('⚡ INTERCEPTION! ⚡', w / 2 + 2, 47);
-        ctx.fillStyle = '#da3633';
-        ctx.fillText('⚡ INTERCEPTION! ⚡', w / 2, 45);
+        ctx.fillStyle = '#f1e05a';
+        ctx.beginPath();
+        ctx.moveTo(cx - 45, cy - 20);
+        ctx.lineTo(cx - 30, cy);
+        ctx.lineTo(cx - 38, cy);
+        ctx.lineTo(cx - 25, cy + 25);
+        ctx.lineTo(cx - 35, cy + 5);
+        ctx.lineTo(cx - 28, cy + 5);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(cx + 45, cy - 20);
+        ctx.lineTo(cx + 30, cy);
+        ctx.lineTo(cx + 38, cy);
+        ctx.lineTo(cx + 25, cy + 25);
+        ctx.lineTo(cx + 35, cy + 5);
+        ctx.lineTo(cx + 28, cy + 5);
+        ctx.closePath();
+        ctx.fill();
       }
 
       drawFumble(ctx, w, h) {
-        const cycle = 70;
-        const progress = (this.frame % cycle) / cycle;
-        const bounceY = h - 55 - Math.abs(Math.sin(progress * Math.PI * 3)) * 35;
-        const ballX = 60 + progress * (w - 120);
+        const cx = w / 2;
+        const cy = h / 2 + 5;
 
-        // Bouncing Football
-        ctx.fillStyle = '#8b4513';
-        ctx.fillRect(ballX, bounceY, 14, 10);
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(ballX + 5, bounceY + 2, 4, 6);
-
-        ctx.font = '22px "Press Start 2P", monospace';
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        ctx.fillText('💥 FUMBLE! 💥', w / 2 + 2, 47);
         ctx.fillStyle = '#f0883e';
-        ctx.fillText('💥 FUMBLE! 💥', w / 2, 45);
+        ctx.beginPath();
+        ctx.arc(cx, cy, 32, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#f1e05a';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 22, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#8b4513';
+        ctx.fillRect(cx - 13, cy - 9, 26, 18);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(cx - 3, cy - 6, 6, 12);
       }
 
       drawFieldGoal(ctx, w, h) {
-        const cycle = 90;
-        const progress = (this.frame % cycle) / cycle;
-        const ballX = w / 2;
-        const ballY = (h - 45) - progress * 110;
+        const cx = w / 2;
 
-        // Football sailing high into uprights
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillRect(cx - 3, 50, 6, 90);
+        ctx.fillRect(cx - 45, 50, 90, 6);
+        ctx.fillRect(cx - 45, 10, 6, 40);
+        ctx.fillRect(cx + 39, 10, 6, 40);
+
         ctx.fillStyle = '#8b4513';
-        ctx.fillRect(ballX - 5, ballY, 10, 8);
+        ctx.fillRect(cx - 8, 20, 16, 22);
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(ballX - 1, ballY + 2, 3, 4);
-
-        ctx.font = '22px "Press Start 2P", monospace';
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        ctx.fillText('⚽ FIELD GOAL! ⚽', w / 2 + 2, 47);
-        ctx.fillStyle = '#2ea043';
-        ctx.fillText('⚽ FIELD GOAL! ⚽', w / 2, 45);
+        ctx.fillRect(cx - 2, 23, 4, 16);
       }
 
       drawBigPlay(ctx, w, h) {
-        const slideX = (this.frame * 5) % w;
+        const cx = w / 2 - 30;
+        const cy = h / 2 + 10;
 
-        // Runner sprite sprinting
-        ctx.fillStyle = '#58a6ff';
-        ctx.fillRect(slideX, h - 65, 26, 20);
-        ctx.fillStyle = '#ffcca6';
-        ctx.fillRect(slideX + 20, h - 70, 10, 10);
-
-        // Speed trail particles behind runner
         ctx.fillStyle = '#f1e05a';
-        ctx.fillRect(slideX - 15, h - 60, 10, 4);
-        ctx.fillRect(slideX - 30, h - 56, 12, 3);
+        ctx.fillRect(cx - 60, cy - 20, 45, 4);
+        ctx.fillRect(cx - 75, cy - 5, 55, 5);
+        ctx.fillRect(cx - 50, cy + 10, 40, 4);
 
-        ctx.font = '22px "Press Start 2P", monospace';
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        ctx.fillText('🚀 BIG PLAY! 🚀', w / 2 + 2, 47);
-        ctx.fillStyle = '#f0883e';
-        ctx.fillText('🚀 BIG PLAY! 🚀', w / 2, 45);
+        ctx.fillStyle = '#58a6ff';
+        ctx.fillRect(cx, cy - 15, 30, 22);
+        ctx.fillStyle = '#ffcca6';
+        ctx.fillRect(cx + 22, cy - 24, 12, 12);
+
+        ctx.fillStyle = '#8b4513';
+        ctx.fillRect(cx + 10, cy - 10, 14, 10);
       }
 
       drawFirstDown(ctx, w, h) {
-        const cycle = 100;
-        const progress = (this.frame % cycle) / cycle;
-        const slideX = 30 + progress * (w - 80);
+        const cx = w / 2;
+        const cy = h / 2;
 
-        // First down marker poles
         ctx.fillStyle = '#f1e05a';
-        ctx.fillRect(slideX, h - 65, 5, 35);
-        ctx.fillRect(slideX - 12, h - 65, 28, 5);
+        ctx.fillRect(cx - 45, cy - 30, 6, 60);
+        ctx.fillRect(cx + 39, cy - 30, 6, 60);
+        ctx.fillRect(cx - 45, cy - 30, 90, 4);
 
-        ctx.font = '22px "Press Start 2P", monospace';
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        ctx.fillText('🏃 FIRST DOWN! 🏃', w / 2 + 2, 47);
-        ctx.fillStyle = '#58a6ff';
-        ctx.fillText('🏃 FIRST DOWN! 🏃', w / 2, 45);
+        ctx.fillStyle = '#f0883e';
+        ctx.beginPath();
+        ctx.moveTo(cx - 25, cy + 5);
+        ctx.lineTo(cx + 5, cy + 5);
+        ctx.lineTo(cx + 5, cy - 10);
+        ctx.lineTo(cx + 25, cy + 10);
+        ctx.lineTo(cx + 5, cy + 30);
+        ctx.lineTo(cx + 5, cy + 15);
+        ctx.lineTo(cx - 25, cy + 15);
+        ctx.closePath();
+        ctx.fill();
       }
 
       drawTimeout(ctx, w, h) {
-        ctx.font = '22px "Press Start 2P", monospace';
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        ctx.fillText('⏱️ TIMEOUT ⏱️', w / 2 + 2, 47);
+        const cx = w / 2;
+        const cy = h / 2;
+
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 34, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#0b1326';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 28, 0, Math.PI * 2);
+        ctx.fill();
+
         ctx.fillStyle = '#f1e05a';
-        ctx.fillText('⏱️ TIMEOUT ⏱️', w / 2, 45);
+        ctx.fillRect(cx - 12, cy - 18, 24, 6);
+        ctx.fillRect(cx - 3, cy - 18, 6, 26);
       }
 
       drawQuarterChange(ctx, w, h) {
-        ctx.font = '20px "Press Start 2P", monospace';
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        ctx.fillText('🏈 QUARTER ENDED 🏈', w / 2 + 2, 47);
-        ctx.fillStyle = '#f0883e';
-        ctx.fillText('🏈 QUARTER ENDED 🏈', w / 2, 45);
+        const cx = w / 2;
+        const cy = h / 2;
+
+        ctx.fillStyle = '#040d1a';
+        ctx.fillRect(cx - 70, cy - 35, 140, 70);
+        ctx.strokeStyle = '#f1e05a';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(cx - 70, cy - 35, 140, 70);
+
+        ctx.fillStyle = '#8b4513';
+        ctx.fillRect(cx - 25, cy - 15, 50, 30);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(cx - 4, cy - 10, 8, 20);
       }
 
       drawSafety(ctx, w, h) {
-        ctx.font = '22px "Press Start 2P", monospace';
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        ctx.fillText('⚠️ SAFETY! ⚠️', w / 2 + 2, 47);
+        const cx = w / 2;
+        const cy = h / 2;
+
         ctx.fillStyle = '#da3633';
-        ctx.fillText('⚠️ SAFETY! ⚠️', w / 2, 45);
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 40);
+        ctx.lineTo(cx + 35, cy - 20);
+        ctx.lineTo(cx + 28, cy + 25);
+        ctx.lineTo(cx, cy + 42);
+        ctx.lineTo(cx - 28, cy + 25);
+        ctx.lineTo(cx - 35, cy - 20);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(cx - 4, cy - 25, 8, 35);
+        ctx.fillRect(cx - 15, cy - 10, 30, 8);
       }
 
       drawGenericDrink(ctx, w, h) {
         const mugX = w / 2 - 18;
-        const mugY = 65;
+        const mugY = h / 2 - 25;
 
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(mugX - 10, mugY + 8, 10, 24);
@@ -1673,16 +1764,11 @@
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(mugX, mugY, 36, 44);
 
-        const fillHeight = 10 + Math.min(28, (this.frame * 0.4) % 32);
         ctx.fillStyle = '#f1e05a';
-        ctx.fillRect(mugX + 4, mugY + 40 - fillHeight, 28, fillHeight);
+        ctx.fillRect(mugX + 4, mugY + 12, 28, 28);
 
-        ctx.font = '22px "Press Start 2P", monospace';
-        ctx.fillStyle = '#000';
-        ctx.textAlign = 'center';
-        ctx.fillText('🍺 DRINK UP! 🍺', w / 2 + 2, 42);
-        ctx.fillStyle = '#f1e05a';
-        ctx.fillText('🍺 DRINK UP! 🍺', w / 2, 40);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(mugX - 2, mugY - 4, 40, 14);
       }
     }
 

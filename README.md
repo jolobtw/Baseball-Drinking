@@ -10,9 +10,9 @@ A standalone Progressive Web App (PWA) that connects directly to official live s
 - **Real-Time Stats API Polling**: Connects directly to MLB and NFL live game feeds with fast 3-second polling to update play feeds in real time.
 - **Complete Play-by-Play Feed**: Displays detailed official play descriptions for all plays, cleanly highlighting drink-assigning events with custom retro pixel badges.
 - **Standardized Pixel Drink Badges**: Every drink play features a custom retro pixel SVG beer mug badge displaying the exact numeric drink count (e.g. `1`, `2`, `3`, `6`).
-- **30 FPS Retro Canvas Pixel Art**: Self-contained retro stadium canvas graphics with stadium floodlights and custom 8-bit event animations:
-  - **MLB Events**: Strikeouts, Homeruns, Stolen Bases, Errors, Walks, Hit By Pitch, and Rain Delays.
-  - **NFL Events**: Touchdowns, Interceptions, Fumbles, Field Goals, Big Plays (10+ Yds), First Downs, Timeouts, Quarter Changes, and Safeties.
+- **Static Retro Canvas Pixel Art**: Self-contained 8-bit retro stadium canvas graphics with stadium floodlights and distinct static play illustrations (with zero text repetition across the pop-up modal):
+  - **MLB Events**: Strikeouts (Red pixel 'K'), Homeruns (Rainbow arc in stars), Stolen Bases (Sliding shoe into base bag), Errors (Orange warning triangle & dropped ball), Walks (4-ball count dots), Hit By Pitch (Red target reticle), Rain Delays, and Base Hits.
+  - **NFL Events**: Touchdowns (Yellow goalposts & TD ref signal), Interceptions (Leaping DB catch & lightning bolts), Fumbles (Bouncing football & impact burst), Field Goals (Uprights with centered football), Big Plays (Speed trail runner), First Downs (10-yard chain poles & arrow), Timeouts (Stopwatch clock icon), Quarter Changes (Stadium LED box), and Safeties (Safety shield).
 - **Web Audio Chiptune SFX**: Built-in 8-bit sound synthesizers (whiff, buzzer, fanfare, chime, referee whistle) with zero external audio file dependencies.
 - **Customizable Ruleset Editor**: Edit drink amounts per play type in real time for both MLB and NFL rulesets.
 - **Game Drink Summary**: Tracks and accumulates total assigned drinks per event category.
