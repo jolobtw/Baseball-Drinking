@@ -1566,23 +1566,26 @@
           const inning = linescore.currentInningOrdinal || (linescore.currentInning ? linescore.currentInning + 'TH' : '');
           document.getElementById('gameInningText').textContent = `${state} ${inning}`;
 
-          const currentInningKey = `${linescore.currentInning}_${linescore.isTopInning}`;
-          if (gameManager.lastInningKey && gameManager.lastInningKey !== currentInningKey && !gameManager.isInitialLoad) {
-            const inningResult = {
-              isDrink: true,
-              ruleKey: 'new_inning',
-              ruleName: 'NEW INNING',
-              drinksText: '1 Drink',
-              numDrinks: 1,
-              desc: `New Inning Started: ${state} ${inning}! Take 1 drink.`,
-              play: { about: { halfInning: state, inning: linescore.currentInning } }
-            };
-            gameManager.applyDrinkResult(inningResult);
-            this.addPlayToFeed(inningResult);
-            this.triggerDrinkAlert(inningResult);
-            this.updateStatsUI();
+          // Live inning transition check (in case no plays are logged yet in a new half-inning)
+          if (linescore.currentInning) {
+            const liveInningId = `inning_${linescore.isTopInning ? 'top' : 'bot'}_${linescore.currentInning}`;
+            if (!gameManager.seenPlayIds.has(liveInningId) && !gameManager.isInitialLoad) {
+              gameManager.seenPlayIds.add(liveInningId);
+              const inningResult = {
+                isDrink: true,
+                ruleKey: 'new_inning',
+                ruleName: 'NEW INNING',
+                drinksText: '1 Drink',
+                numDrinks: 1,
+                desc: `New Inning Started: ${state} ${inning}! Take 1 drink.`,
+                play: { about: { halfInning: state, inning: linescore.currentInning } }
+              };
+              gameManager.applyDrinkResult(inningResult);
+              this.addPlayToFeed(inningResult);
+              this.triggerDrinkAlert(inningResult);
+              this.updateStatsUI();
+            }
           }
-          gameManager.lastInningKey = currentInningKey;
         }
 
         if (gameData.status) {
@@ -1640,9 +1643,35 @@
           }
 
           allPlays.forEach((play) => {
-            const atBatIdx = play.about ? play.about.atBatIndex : 0;
+            const about = play.about || {};
+            const atBatIdx = about.atBatIndex ?? 0;
+            const halfInning = (about.halfInning || 'top').toLowerCase();
+            const inningNum = about.inning || 1;
 
-            // 1. Process sub-events in playEvents (Stolen Bases, Balks, Pickoffs, Pitching Changes)
+            // Track New Inning for every half-inning in the game
+            const inningId = `inning_${halfInning}_${inningNum}`;
+            if (!gameManager.seenPlayIds.has(inningId)) {
+              gameManager.seenPlayIds.add(inningId);
+              const stateText = halfInning.toUpperCase();
+              const ordText = about.inningOrdinal || `${inningNum}TH`;
+              const inningResult = {
+                isDrink: true,
+                ruleKey: 'new_inning',
+                ruleName: 'NEW INNING',
+                drinksText: '1 Drink',
+                numDrinks: 1,
+                desc: `New Inning Started: ${stateText} ${ordText}! Take 1 drink.`,
+                play: { about: { halfInning: stateText, inning: inningNum } }
+              };
+              gameManager.applyDrinkResult(inningResult);
+              this.addPlayToFeed(inningResult);
+              if (!isFirstTime) {
+                this.triggerDrinkAlert(inningResult);
+              }
+              this.updateStatsUI();
+            }
+
+            // 1. Process sub-events in playEvents (Stolen Bases, Balks, Errors)
             if (play.playEvents && play.playEvents.length > 0) {
               play.playEvents.forEach((pe) => {
                 if (pe.details && (pe.details.eventType || pe.details.event || pe.type === 'action')) {
