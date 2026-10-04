@@ -1440,7 +1440,7 @@
           if (gamePk) {
             this.startPollingGame(gamePk);
           } else {
-            this.stopPolling();
+            this.resetToNoGameSelected();
           }
         });
 
@@ -1487,6 +1487,7 @@
       },
 
       async fetchSchedule(dateStr) {
+        this.resetToNoGameSelected();
         const select = document.getElementById('gameSelect');
         select.innerHTML = '<option value="">Loading schedule...</option>';
 
@@ -1541,6 +1542,42 @@
           gameManager.pollingInterval = null;
         }
         document.getElementById('pollStatus').textContent = 'POLLING: PAUSED';
+      },
+
+      resetToNoGameSelected() {
+        this.stopPolling();
+        gameManager.selectedGamePk = null;
+        gameManager.resetCounter();
+
+        document.getElementById('awayTeamName').textContent = 'AWAY';
+        document.getElementById('homeTeamName').textContent = 'HOME';
+        document.getElementById('awayTeamScore').textContent = '0';
+        document.getElementById('homeTeamScore').textContent = '0';
+        document.getElementById('gameStatusText').textContent = 'NO GAME SELECTED';
+        document.getElementById('gameInningText').textContent = 'TOP 1ST';
+        document.getElementById('pollStatus').textContent = 'POLLING: PAUSED';
+        document.getElementById('lastDrinkAlert').textContent = 'No drinks assigned yet';
+
+        ['awayTeamLogo', 'homeTeamLogo'].forEach((id) => {
+          const c = document.getElementById(id);
+          if (c) {
+            const ctx = c.getContext('2d');
+            ctx.clearRect(0, 0, c.width, c.height);
+          }
+        });
+
+        ['base1', 'base2', 'base3'].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.classList.remove('occupied');
+        });
+
+        ['ball1', 'ball2', 'ball3', 'strike1', 'strike2', 'out1', 'out2'].forEach((id) => {
+          const el = document.getElementById(id);
+          if (el) el.classList.remove('active');
+        });
+
+        document.getElementById('playFeed').innerHTML = '<div style="text-align: center; color: #8b949e; padding: 20px;">Select a live or archived game above to start tracking plays!</div>';
+        this.updateStatsUI();
       },
 
       async pollGameFeed() {
