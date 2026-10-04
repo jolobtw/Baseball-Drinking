@@ -1536,10 +1536,25 @@
                 d.games.forEach((g) => {
                   const away = g.teams.away.team.name;
                   const home = g.teams.home.team.name;
-                  const status = g.status.detailedState || g.status.abstractGameState;
+                  
+                  const statusObj = g.status || {};
+                  const abstractState = (statusObj.abstractGameState || '').toLowerCase();
+                  const detailedState = (statusObj.detailedState || '').toLowerCase();
+
+                  let statusText = 'IN PROGRESS';
+                  if (detailedState.includes('postponed') || detailedState.includes('cancelled') || detailedState.includes('suspended')) {
+                    statusText = 'POSTPONED';
+                  } else if (abstractState === 'final' || detailedState.includes('final') || detailedState.includes('completed') || detailedState.includes('game over')) {
+                    statusText = 'COMPLETED';
+                  } else if (abstractState === 'preview' || detailedState.includes('scheduled') || detailedState.includes('pre-game')) {
+                    statusText = 'SCHEDULED';
+                  } else {
+                    statusText = 'IN PROGRESS';
+                  }
+
                   const opt = document.createElement('option');
                   opt.value = g.gamePk;
-                  opt.textContent = `[${status.toUpperCase()}] ${away} @ ${home}`;
+                  opt.textContent = `[${statusText}] ${away} @ ${home}`;
                   select.appendChild(opt);
                 });
               }
