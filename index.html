@@ -536,26 +536,65 @@
       color: var(--accent-gold);
     }
 
-    .rules-grid {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
+    .rules-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 60vh;
+      overflow-y: auto;
+      padding-right: 6px;
+      margin: 12px 0 16px 0;
+    }
+
+    .rule-row {
+      display: flex;
+      justify-content: space-between;
       align-items: center;
-      margin-top: 10px;
+      gap: 12px;
+      padding: 10px 14px;
+      background: #21262d;
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      transition: border-color 0.15s ease;
+    }
+
+    .rule-row:hover {
+      border-color: var(--accent-cyan);
+    }
+
+    .rule-label {
+      font-size: 20px;
+      color: var(--text-bright);
+      font-family: var(--font-arcade);
+      flex: 1;
     }
 
     .rule-input {
-      width: 80px;
+      width: 150px;
+      min-width: 130px;
       text-align: center;
-      font-family: var(--font-pixel);
-      font-size: 11px;
+      font-family: var(--font-arcade);
+      font-size: 20px;
+      padding: 6px 10px;
+      background: #0d1117;
+      color: var(--accent-gold);
+      border: 2px solid var(--panel-border);
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    .rule-input:focus {
+      border-color: var(--accent-gold);
+      outline: none;
+      background: #161b22;
     }
 
     /* Modal for Rules */
     #rulesModal {
       position: fixed;
       top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0,0,0,0.8);
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(3px);
       z-index: 999;
       display: none;
       justify-content: center;
@@ -567,12 +606,14 @@
     .modal-content {
       background: var(--panel-bg);
       border: 3px solid var(--accent-cyan);
-      border-radius: 8px;
-      width: 90%;
-      max-width: 520px;
-      padding: 20px;
+      border-radius: 10px;
+      width: 92%;
+      max-width: 580px;
+      padding: 24px;
       max-height: 85vh;
-      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
     }
 
     ::-webkit-scrollbar { width: 6px; }
@@ -1898,9 +1939,13 @@
 
         Object.keys(gameManager.rules).forEach((key) => {
           const r = gameManager.rules[key];
+
+          const row = document.createElement('div');
+          row.className = 'rule-row';
+
           const label = document.createElement('div');
+          label.className = 'rule-label';
           label.textContent = r.name;
-          label.style.fontSize = '18px';
 
           const input = document.createElement('input');
           input.type = 'text';
@@ -1908,8 +1953,9 @@
           input.className = 'rule-input';
           input.dataset.key = key;
 
-          container.appendChild(label);
-          container.appendChild(input);
+          row.appendChild(label);
+          row.appendChild(input);
+          container.appendChild(row);
         });
       },
 
