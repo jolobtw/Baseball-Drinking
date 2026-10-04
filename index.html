@@ -1733,18 +1733,15 @@
                     gameManager.seenPlayIds.add(subEventId);
 
                     const subResult = gameManager.evaluateSubEvent(pe, play);
-                    if (subResult) {
+                    if (subResult && subResult.isDrink) {
                       this.addPlayToFeed(subResult);
+                      gameManager.applyDrinkResult(subResult);
+                      this.updateStatsUI();
 
-                      if (subResult.isDrink) {
-                        gameManager.applyDrinkResult(subResult);
-                        this.updateStatsUI();
-
-                        if (!isFirstTime) {
-                          this.triggerDrinkAlert(subResult);
-                        } else {
-                          document.getElementById('lastDrinkAlert').textContent = `Last: ${subResult.ruleName} (${subResult.drinksText})`;
-                        }
+                      if (!isFirstTime) {
+                        this.triggerDrinkAlert(subResult);
+                      } else {
+                        document.getElementById('lastDrinkAlert').textContent = `Last: ${subResult.ruleName} (${subResult.drinksText})`;
                       }
                     }
                   }
@@ -1759,18 +1756,15 @@
               gameManager.seenPlayIds.add(mainPlayId);
               const result = gameManager.evaluatePlay(play);
 
-              if (result) {
+              if (result && result.isDrink) {
                 this.addPlayToFeed(result);
+                gameManager.applyDrinkResult(result);
+                this.updateStatsUI();
 
-                if (result.isDrink) {
-                  gameManager.applyDrinkResult(result);
-                  this.updateStatsUI();
-
-                  if (!isFirstTime) {
-                    this.triggerDrinkAlert(result);
-                  } else {
-                    document.getElementById('lastDrinkAlert').textContent = `Last: ${result.ruleName} (${result.drinksText})`;
-                  }
+                if (!isFirstTime) {
+                  this.triggerDrinkAlert(result);
+                } else {
+                  document.getElementById('lastDrinkAlert').textContent = `Last: ${result.ruleName} (${result.drinksText})`;
                 }
               }
             }
