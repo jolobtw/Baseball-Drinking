@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>MLB Real-Time Play Drinking Game</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0d1117">
+  <!-- Retro Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-color: #0b0e14;
+      --panel-bg: #161b22;
+      --panel-border: #30363d;
+      --accent-green: #2ea043;
+      --accent-gold: #f1e05a;
+      --accent-red: #da3633;
+      --accent-cyan: #58a6ff;
+      --accent-orange: #f0883e;
+      --text-main: #c9d1d9;
+      --text-bright: #ffffff;
+      --font-pixel: 'Press Start 2P', cursive, monospace;
+      --font-arcade: 'VT323', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: var(--font-arcade);
+      font-size: 20px;
+      line-height: 1.2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Header Navigation */
+    header {
+      background: var(--panel-bg);
+      border-bottom: 3px solid var(--panel-border);
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand h1 {
+      font-family: var(--font-pixel);
+      font-size: 14px;
+      color: var(--accent-gold);
+      text-shadow: 2px 2px #000;
+      letter-spacing: 1px;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    button, select, input[type="date"] {
+      font-family: var(--font-arcade);
+      font-size: 18px;
+      background: #21262d;
+      color: var(--text-bright);
+      border: 2px solid var(--panel-border);
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    button:hover, select:hover, input[type="date"]:hover {
+      border-color: var(--accent-cyan);
+      background: #30363d;
+    }
+
+    button:active {
+      transform: translateY(2px);
+    }
+
+    .btn-pixel {
+      font-family: var(--font-pixel);
+      font-size: 10px;
+      padding: 8px 12px;
+      background: var(--accent-green);
+      color: #fff;
+      border: 2px solid #fff;
+      text-shadow: 1px 1px #000;
+      box-shadow: 0 4px 0 #1b6329;
+    }
+
+    .btn-pixel:active {
+      box-shadow: 0 1px 0 #1b6329;
+      transform: translateY(3px);
+    }
+
+    .btn-danger {
+      background: var(--accent-red);
+      box-shadow: 0 4px 0 #8e1b18;
+    }
+    .btn-danger:active {
+      box-shadow: 0 1px 0 #8e1b18;
+    }
+
+    .btn-warning {
+      background: var(--accent-orange);
+      box-shadow: 0 4px 0 #9f4f14;
+    }
+
+    /* Main Container */
+    main {
+      flex: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      main {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Card Panels */
+    .panel {
+      background: var(--panel-bg);
+      border: 3px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+    }
+
+    .panel-title {
+      font-family: var(--font-pixel);
+      font-size: 12px;
+      color: var(--accent-cyan);
+      border-bottom: 2px dashed var(--panel-border);
+      padding-bottom: 8px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Scoreboard Display */
+    .scoreboard {
+      background: #040d1a;
+      border: 3px solid var(--accent-cyan);
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: inset 0 0 15px rgba(88, 166, 255, 0.2);
+    }
+
+    .game-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--font-pixel);
+      font-size: 10px;
+      color: var(--accent-gold);
+      margin-bottom: 12px;
+    }
+
+    .live-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background: var(--accent-red);
+      border-radius: 50%;
+      margin-right: 6px;
+      animation: blink 1s infinite alternate;
+    }
+
+    @keyframes blink {
+      from { opacity: 0.3; }
+      to { opacity: 1; }
+    }
+
+    .teams-container {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .team-box {
+      text-align: center;
+      flex: 1;
+    }
+
+    .team-name {
+      font-family: var(--font-pixel);
+      font-size: 16px;
+      color: var(--text-bright);
+      margin-bottom: 4px;
+    }
+
+    .team-score {
+      font-family: var(--font-pixel);
+      font-size: 36px;
+      color: var(--accent-gold);
+      text-shadow: 3px 3px 0 #000;
+    }
+
+    .vs-text {
+      font-family: var(--font-pixel);
+      font-size: 12px;
+      color: #8b949e;
+    }
+
+    /* Base Diamond & Count */
+    .field-status {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      background: rgba(255,255,255,0.03);
+      padding: 10px;
+      border-radius: 6px;
+    }
+
+    .diamond-container {
+      position: relative;
+      width: 60px;
+      height: 60px;
+    }
+
+    .base {
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      background: #30363d;
+      border: 2px solid #8b949e;
+      transform: rotate(45deg);
+    }
+
+    .base.occupied {
+      background: var(--accent-gold);
+      border-color: #fff;
+      box-shadow: 0 0 8px var(--accent-gold);
+    }
+
+    .base-1st { top: 20px; right: 4px; }
+    .base-2nd { top: 2px; left: 20px; }
+    .base-3rd { top: 20px; left: 4px; }
+
+    .count-box {
+      font-family: var(--font-pixel);
+      font-size: 11px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .count-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .count-dots {
+      display: flex;
+      gap: 4px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #30363d;
+    }
+    .dot.ball.active { background: var(--accent-green); }
+    .dot.strike.active { background: var(--accent-red); }
+    .dot.out.active { background: var(--accent-gold); }
+
+    /* Pixel Art Alert Overlay Modal */
+    #alertOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(4px);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    #alertOverlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .alert-card {
+      background: var(--panel-bg);
+      border: 4px solid var(--accent-gold);
+      border-radius: 12px;
+      width: 90%;
+      max-width: 550px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 0 30px rgba(241, 224, 90, 0.4);
+      transform: scale(0.8);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    #alertOverlay.active .alert-card {
+      transform: scale(1);
+    }
+
+    .alert-title {
+      font-family: var(--font-pixel);
+      font-size: 18px;
+      color: var(--accent-gold);
+      text-shadow: 2px 2px #000;
+      margin-bottom: 12px;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      margin: 12px 0;
+      background: #000;
+      border: 3px solid var(--panel-border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    canvas#pixelCanvas {
+      width: 100%;
+      height: 220px;
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    .alert-drinks {
+      font-family: var(--font-pixel);
+      font-size: 22px;
+      color: var(--accent-red);
+      text-shadow: 2px 2px #000;
+      margin: 12px 0;
+      animation: pulse 0.8s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.08); }
+    }
+
+    .alert-description {
+      font-size: 22px;
+      color: var(--text-bright);
+      margin-bottom: 16px;
+    }
+
+    /* Play Feed */
+    .play-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .play-item {
+      background: #21262d;
+      border: 2px solid var(--panel-border);
+      border-left: 6px solid var(--accent-cyan);
+      border-radius: 4px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .play-item.has-drinks {
+      border-left-color: var(--accent-red);
+      background: #281619;
+    }
+
+    .play-item-header {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--font-pixel);
+      font-size: 10px;
+      color: var(--accent-gold);
+    }
+
+    .play-item-desc {
+      font-size: 20px;
+      color: var(--text-bright);
+    }
+
+    .drink-badge {
+      display: inline-block;
+      font-family: var(--font-pixel);
+      font-size: 9px;
+      background: var(--accent-red);
+      color: #fff;
+      padding: 3px 6px;
+      border-radius: 3px;
+      margin-top: 4px;
+      align-self: flex-start;
+      box-shadow: 1px 1px 0 #000;
+    }
+
+    /* Stats & Rules Panel */
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 20px;
+    }
+
+    .stat-val {
+      font-family: var(--font-pixel);
+      font-size: 13px;
+      color: var(--accent-gold);
+    }
+
+    .rules-grid {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .rule-input {
+      width: 80px;
+      text-align: center;
+      font-family: var(--font-pixel);
+      font-size: 11px;
+    }
+
+    /* Modal for Rules */
+    #rulesModal {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.8);
+      z-index: 999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+
+    #rulesModal.active { display: flex; }
+
+    .modal-content {
+      background: var(--panel-bg);
+      border: 3px solid var(--accent-cyan);
+      border-radius: 8px;
+      width: 90%;
+      max-width: 520px;
+      padding: 20px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #161b22; }
+    ::-webkit-scrollbar-thumb { background: #30363d; border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-cyan); }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="brand">
+      <span style="font-size: 28px;">⚾🍺</span>
+      <div>
+        <h1>MLB DRINK TRACKER</h1>
+        <div style="font-size: 14px; color: #8b949e;">REAL-TIME PLAY DRINK ASSIGNER</div>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <input type="date" id="datePicker">
+      <select id="gameSelect">
+        <option value="">-- Select Game --</option>
+      </select>
+
+      <button id="soundToggleBtn">🔊 SOUND ON</button>
+      <button class="btn-pixel" id="openRulesBtn">⚙️ RULES</button>
+      <button class="btn-pixel btn-warning" id="demoBtn">🎮 DEMO PLAY</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left Column: Scoreboard & Live Play Feed -->
+    <section>
+      <!-- Scoreboard Card -->
+      <div class="scoreboard">
+        <div class="game-status-bar">
+          <div><span class="live-dot" id="liveDot"></span><span id="gameStatusText">NO GAME SELECTED</span></div>
+          <div id="gameInningText">TOP 1ST</div>
+        </div>
+
+        <div class="teams-container">
+          <div class="team-box">
+            <div class="team-name" id="awayTeamName">AWAY</div>
+            <div class="team-score" id="awayTeamScore">0</div>
+          </div>
+          <div class="vs-text">VS</div>
+          <div class="team-box">
+            <div class="team-name" id="homeTeamName">HOME</div>
+            <div class="team-score" id="homeTeamScore">0</div>
+          </div>
+        </div>
+
+        <div class="field-status">
+          <div class="diamond-container">
+            <div class="base base-1st" id="base1"></div>
+            <div class="base base-2nd" id="base2"></div>
+            <div class="base base-3rd" id="base3"></div>
+          </div>
+
+          <div class="count-box">
+            <div class="count-row">
+              <span style="width: 20px;">B:</span>
+              <div class="count-dots">
+                <div class="dot ball" id="ball1"></div>
+                <div class="dot ball" id="ball2"></div>
+                <div class="dot ball" id="ball3"></div>
+              </div>
+            </div>
+            <div class="count-row">
+              <span style="width: 20px;">S:</span>
+              <div class="count-dots">
+                <div class="dot strike" id="strike1"></div>
+                <div class="dot strike" id="strike2"></div>
+              </div>
+            </div>
+            <div class="count-row">
+              <span style="width: 20px;">O:</span>
+              <div class="count-dots">
+                <div class="dot out" id="out1"></div>
+                <div class="dot out" id="out2"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Plays Panel -->
+      <div class="panel">
+        <div class="panel-title">
+          <span>⚡ LIVE PLAY-BY-PLAY FEED</span>
+          <span id="pollStatus" style="font-size: 10px; color: var(--accent-gold);">POLLING: PAUSED</span>
+        </div>
+        <div class="play-feed" id="playFeed">
+          <div style="text-align: center; color: #8b949e; padding: 20px;">
+            Select a live or archived game above to start tracking plays!
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Column: Drink Stats & Leaderboard -->
+    <section>
+      <div class="panel" style="margin-bottom: 16px;">
+        <div class="panel-title">🍺 GAME DRINK SUMMARY</div>
+        <div style="text-align: center; padding: 12px 0;">
+          <div style="font-size: 16px; color: #8b949e;">TOTAL DRINKS ASSIGNED</div>
+          <div id="totalDrinksCount" style="font-family: var(--font-pixel); font-size: 44px; color: var(--accent-red); margin: 6px 0; text-shadow: 2px 2px 0 #000;">0</div>
+          <div style="font-size: 18px; color: var(--accent-gold);" id="lastDrinkAlert">No drinks assigned yet</div>
+        </div>
+
+        <div style="margin-top: 12px;">
+          <div class="stat-row">
+            <span>Strikeouts (K)</span>
+            <span class="stat-val" id="statK">0</span>
+          </div>
+          <div class="stat-row">
+            <span>Walks (BB)</span>
+            <span class="stat-val" id="statBB">0</span>
+          </div>
+          <div class="stat-row">
+            <span>Hits (1B / 2B / 3B)</span>
+            <span class="stat-val" id="statHits">0</span>
+          </div>
+          <div class="stat-row">
+            <span>Home Runs (HR)</span>
+            <span class="stat-val" id="statHR">0</span>
+          </div>
+          <div class="stat-row">
+            <span>Hit By Pitch (HBP)</span>
+            <span class="stat-val" id="statHBP">0</span>
+          </div>
+          <div class="stat-row">
+            <span>Errors (3rror)</span>
+            <span class="stat-val" id="statERR">0</span>
+          </div>
+          <div class="stat-row">
+            <span>Double/Triple Plays</span>
+            <span class="stat-val" id="statDP">0</span>
+          </div>
+          <div class="stat-row">
+            <span>Stolen Bases</span>
+            <span class="stat-val" id="statSB">0</span>
+          </div>
+          <div class="stat-row">
+            <span>Balks / Special</span>
+            <span class="stat-val" id="statBalk">0</span>
+          </div>
+        </div>
+
+        <button class="btn-pixel btn-danger" id="resetDrinksBtn" style="width: 100%; margin-top: 14px;">RESET DRINK COUNTER</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">💡 DEFAULT RULESET</div>
+        <ul style="font-size: 17px; padding-left: 18px; line-height: 1.35; color: #8b949e;">
+          <li><b>Strikeout / Walk</b>: 1 Drink</li>
+          <li><b>Single / Double / Triple</b>: 2 / 3 / 4 Drinks</li>
+          <li><b>Homerun</b>: FINISH YOUR DRINK! 🍺</li>
+          <li><b>HBP / Balk / Triple Play</b>: 5 Drinks</li>
+          <li><b>Error</b>: 3 Drinks</li>
+          <li><b>Stolen Base</b>: 1 Drink per base</li>
+          <li><b>New Inning</b>: 1 Drink</li>
+          <li><b>Rain Out</b>: TAKE A SHOT! 🥃</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- Animated Pixel Art Overlay Modal -->
+  <div id="alertOverlay">
+    <div class="alert-card">
+      <div class="alert-title" id="overlayTitle">DRINK ALERT!</div>
+
+      <div class="canvas-wrapper">
+        <canvas id="pixelCanvas" width="320" height="180"></canvas>
+      </div>
+
+      <div class="alert-drinks" id="overlayDrinks">🍺 TAKE 3 DRINKS! 🍺</div>
+      <div class="alert-description" id="overlayDesc">Fielding Error by Shortstop</div>
+      <button class="btn-pixel" id="closeOverlayBtn" style="margin-top: 10px;">CHEERS! (CLOSE)</button>
+    </div>
+  </div>
+
+  <!-- Rules Customization Modal -->
+  <div id="rulesModal">
+    <div class="modal-content">
+      <div class="panel-title">
+        <span>⚙️ DRINKING RULESET</span>
+        <button id="closeRulesBtn" style="padding: 2px 6px; font-size: 14px;">✕</button>
+      </div>
+      <p style="font-size: 18px; color: #8b949e; margin-bottom: 12px;">Customize how many drinks each play type is worth:</p>
+
+      <div id="rulesListContainer" class="rules-grid">
+        <!-- Injected via JavaScript -->
+      </div>
+
+      <div style="margin-top: 20px; display: flex; justify-content: space-between; gap: 10px;">
+        <button class="btn-pixel btn-warning" id="restoreDefaultsBtn">RESTORE DEFAULTS</button>
+        <button class="btn-pixel" id="saveRulesBtn">SAVE RULES</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Code -->
+  <script>
+    // --- 1. Audio Synthesizer Engine (Web Audio API) ---
+    class SoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.muted = false;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      toggleMute() {
+        this.muted = !this.muted;
+        return this.muted;
+      }
+
+      playWhiff() {
+        if (this.muted) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(110, this.ctx.currentTime + 0.25);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.25);
+      }
+
+      playBuzzer() {
+        if (this.muted) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+        osc.frequency.setValueAtTime(100, this.ctx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.4);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.4);
+      }
+
+      playFanfare() {
+        if (this.muted) return;
+        this.init();
+        const notes = [261.63, 329.63, 392.00, 523.25];
+        notes.forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, this.ctx.currentTime + idx * 0.12);
+          gain.gain.setValueAtTime(0.3, this.ctx.currentTime + idx * 0.12);
+          gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + idx * 0.12 + 0.25);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(this.ctx.currentTime + idx * 0.12);
+          osc.stop(this.ctx.currentTime + idx * 0.12 + 0.25);
+        });
+      }
+
+      playChime() {
+        if (this.muted) return;
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, this.ctx.currentTime);
+        osc.frequency.setValueAtTime(880.00, this.ctx.currentTime + 0.1);
+        gain.gain.setValueAtTime(0.3, this.ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.35);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.35);
+      }
+    }
+
+    const sound = new SoundEngine();
+
+    // --- 2. Retro 8-Bit Canvas Pixel Art Animator ---
+    class PixelArtAnimator {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.ctx.imageSmoothingEnabled = false;
+        this.animId = null;
+        this.frame = 0;
+      }
+
+      stop() {
+        if (this.animId) {
+          cancelAnimationFrame(this.animId);
+          this.animId = null;
+        }
+      }
+
+      start(playType) {
+        this.stop();
+        this.frame = 0;
+        const render = () => {
+          this.frame++;
+          this.draw(playType);
+          this.animId = requestAnimationFrame(render);
+        };
+        render();
+      }
+
+      draw(playType) {
+        const w = this.canvas.width;
+        const h = this.canvas.height;
+        const ctx = this.ctx;
+
+        ctx.fillStyle = '#0a2312';
+        ctx.fillRect(0, 0, w, h);
+
+        ctx.fillStyle = '#0e311a';
+        for (let y = 100; y < h; y += 8) {
+          ctx.fillRect(0, y, w, 4);
+        }
+
+        ctx.fillStyle = '#06131e';
+        ctx.fillRect(0, 0, w, 90);
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillRect(30, 20, 12, 6);
+        ctx.fillRect(70, 15, 12, 6);
+        ctx.fillRect(230, 15, 12, 6);
+        ctx.fillRect(270, 20, 12, 6);
+
+        switch (playType) {
+          case 'strikeout':
+            this.drawStrikeout(ctx, w, h);
+            break;
+          case 'error':
+            this.drawError(ctx, w, h);
+            break;
+          case 'home_run':
+            this.drawHomeRun(ctx, w, h);
+            break;
+          case 'stolen_base':
+            this.drawStolenBase(ctx, w, h);
+            break;
+          case 'walk':
+          case 'hit_by_pitch':
+            this.drawWalk(ctx, w, h);
+            break;
+          case 'rain_out':
+            this.drawRainOut(ctx, w, h);
+            break;
+          default:
+            this.drawGenericDrink(ctx, w, h);
+            break;
+        }
+
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+        for (let y = 0; y < h; y += 4) {
+          ctx.fillRect(0, y, w, 2);
+        }
+      }
+
+      drawStrikeout(ctx, w, h) {
+        const batterX = 140;
+        const batterY = 90;
+        const swingAngle = Math.sin(this.frame * 0.2) * 0.5;
+
+        ctx.fillStyle = '#58a6ff';
+        ctx.fillRect(batterX, batterY, 16, 24);
+        ctx.fillStyle = '#ffcca6';
+        ctx.fillRect(batterX + 2, batterY - 12, 12, 12);
+        ctx.fillStyle = '#1f6feb';
+        ctx.fillRect(batterX, batterY - 14, 16, 6);
+        ctx.fillStyle = '#d4a373';
+        ctx.save();
+        ctx.translate(batterX + 16, batterY + 8);
+        ctx.rotate(swingAngle);
+        ctx.fillRect(0, -2, 24, 4);
+        ctx.restore();
+
+        ctx.font = '48px "Press Start 2P", monospace';
+        ctx.fillStyle = '#da3633';
+        ctx.textAlign = 'center';
+        ctx.shadowColor = '#000';
+        ctx.shadowBlur = 4;
+        ctx.fillText('K', w / 2, 60 + Math.sin(this.frame * 0.1) * 5);
+        ctx.shadowBlur = 0;
+
+        ctx.font = '16px "VT323", monospace';
+        ctx.fillStyle = '#fff';
+        ctx.fillText('STRIKEOUT! TAKE A DRINK!', w / 2, 80);
+      }
+
+      drawError(ctx, w, h) {
+        const offset = Math.sin(this.frame * 0.3) * 6;
+        const x = 120 + offset;
+        const y = 95;
+
+        ctx.fillStyle = '#f0883e';
+        ctx.fillRect(x, y, 16, 24);
+        ctx.fillStyle = '#ffcca6';
+        ctx.fillRect(x + 2, y - 12, 12, 12);
+
+        const ballY = 110 - Math.abs(Math.sin(this.frame * 0.2)) * 30;
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(x + 40, ballY, 8, 8);
+
+        ctx.font = '24px "Press Start 2P", monospace';
+        ctx.fillStyle = '#da3633';
+        ctx.textAlign = 'center';
+        ctx.fillText('3RROR! OOPS!', w / 2, 50);
+
+        ctx.font = '16px "Press Start 2P", monospace';
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillText('FIELDING FUMBLE', w / 2, 75);
+      }
+
+      drawHomeRun(ctx, w, h) {
+        const t = (this.frame * 4) % (w + 40);
+        const ballX = t - 20;
+        const ballY = 120 - Math.sin((t / w) * Math.PI) * 90;
+
+        for (let i = 0; i < 6; i++) {
+          ctx.fillStyle = i % 2 === 0 ? '#f1e05a' : '#f0883e';
+          ctx.fillRect(ballX - i * 6, ballY + i * 2, 6, 6);
+        }
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(ballX, ballY, 10, 10);
+
+        const colors = ['#f1e05a', '#58a6ff', '#2ea043', '#da3633'];
+        const currentColor = colors[Math.floor(this.frame / 6) % colors.length];
+
+        ctx.font = '22px "Press Start 2P"';
+        ctx.fillStyle = currentColor;
+        ctx.textAlign = 'center';
+        ctx.fillText('🚀 HOMERUN! 🚀', w / 2, 55);
+
+        ctx.font = '18px "Press Start 2P"';
+        ctx.fillStyle = '#da3633';
+        ctx.fillText('FINISH YOUR DRINK!', w / 2, 85);
+      }
+
+      drawStolenBase(ctx, w, h) {
+        const slideX = 80 + (this.frame * 3) % 120;
+        const slideY = 105;
+
+        ctx.fillStyle = '#d4a373';
+        ctx.fillRect(slideX - 20, slideY + 4, 18, 12);
+        ctx.fillRect(slideX - 35, slideY + 8, 12, 8);
+
+        ctx.fillStyle = '#2ea043';
+        ctx.fillRect(slideX, slideY, 24, 12);
+        ctx.fillStyle = '#ffcca6';
+        ctx.fillRect(slideX + 22, slideY - 2, 8, 8);
+
+        ctx.font = '24px "Press Start 2P", monospace';
+        ctx.fillStyle = '#2ea043';
+        ctx.textAlign = 'center';
+        ctx.fillText('STOLEN BASE!', w / 2, 50);
+
+        ctx.font = '18px "VT323", monospace';
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillText('1 DRINK PER BASE!', w / 2, 75);
+      }
+
+      drawWalk(ctx, w, h) {
+        const walkX = 60 + (this.frame * 1.5) % 140;
+
+        ctx.fillStyle = '#58a6ff';
+        ctx.fillRect(walkX, 90, 16, 24);
+        ctx.fillStyle = '#ffcca6';
+        ctx.fillRect(walkX + 2, 78, 12, 12);
+
+        ctx.font = '24px "Press Start 2P", monospace';
+        ctx.fillStyle = '#58a6ff';
+        ctx.textAlign = 'center';
+        ctx.fillText('BASE ON BALLS', w / 2, 50);
+
+        ctx.font = '18px "VT323", monospace';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText('TAKE YOUR BASE!', w / 2, 75);
+      }
+
+      drawRainOut(ctx, w, h) {
+        // Rain drop animation
+        ctx.fillStyle = '#58a6ff';
+        for (let i = 0; i < 20; i++) {
+          const rx = (i * 23 + this.frame * 4) % w;
+          const ry = (i * 17 + this.frame * 8) % h;
+          ctx.fillRect(rx, ry, 2, 8);
+        }
+
+        ctx.font = '22px "Press Start 2P", monospace';
+        ctx.fillStyle = '#58a6ff';
+        ctx.textAlign = 'center';
+        ctx.fillText('🌧️ RAIN OUT! 🌧️', w / 2, 50);
+
+        ctx.font = '20px "Press Start 2P", monospace';
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillText('TAKE A SHOT! 🥃', w / 2, 85);
+      }
+
+      drawGenericDrink(ctx, w, h) {
+        const mugX = w / 2 - 16;
+        const mugY = 70;
+
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillRect(mugX - 8, mugY + 8, 8, 20);
+        ctx.fillRect(mugX - 12, mugY + 12, 4, 12);
+
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillRect(mugX, mugY, 32, 36);
+
+        const fillHeight = 24 + Math.sin(this.frame * 0.1) * 4;
+        ctx.fillStyle = '#f0883e';
+        ctx.fillRect(mugX + 4, mugY + 32 - fillHeight, 24, fillHeight);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(mugX - 2, mugY - 4, 36, 10);
+
+        const bubbleY = mugY - 10 - (this.frame * 2) % 30;
+        ctx.fillRect(mugX + 10, bubbleY, 4, 4);
+        ctx.fillRect(mugX + 20, bubbleY + 8, 4, 4);
+
+        ctx.font = '22px "Press Start 2P", monospace';
+        ctx.fillStyle = '#f1e05a';
+        ctx.textAlign = 'center';
+        ctx.fillText('DRINK UP!', w / 2, 40);
+      }
+    }
+
+    const pixelAnimator = new PixelArtAnimator('pixelCanvas');
+
+    // --- 3. User's Standard Default Ruleset ---
+    const DEFAULT_RULES = {
+      'strikeout': { name: 'Strikeout (K)', drinks: '1' },
+      'walk': { name: 'Walk (BB)', drinks: '1' },
+      'single': { name: 'Single (1B)', drinks: '2' },
+      'double': { name: 'Double (2B)', drinks: '3' },
+      'triple': { name: 'Triple (3B)', drinks: '4' },
+      'home_run': { name: 'Homerun (HR)', drinks: 'Finish Drink' },
+      'hit_by_pitch': { name: 'Hit By Pitch (HBP)', drinks: '5' },
+      'double_play': { name: 'Double Play (DP)', drinks: '2' },
+      'triple_play': { name: 'Triple Play (TP)', drinks: '5' },
+      'balk': { name: 'Balk', drinks: '5' },
+      'error': { name: '3rror (Error)', drinks: '3' },
+      'stolen_base': { name: 'Stolen Base', drinks: '1 per base' },
+      'new_inning': { name: 'New Inning', drinks: '1' },
+      'rain_out': { name: 'Rain Out', drinks: 'Take a shot' }
+    };
+
+    class DrinkingGameManager {
+      constructor() {
+        this.rules = DEFAULT_RULES;
+        // Always enforce updated ruleset in localStorage
+        localStorage.setItem('mlb_drink_rules_v2', JSON.stringify(this.rules));
+
+        this.totals = {
+          totalDrinks: 0,
+          k: 0,
+          bb: 0,
+          hits: 0,
+          hr: 0,
+          hbp: 0,
+          err: 0,
+          dp: 0,
+          sb: 0,
+          balk: 0
+        };
+        this.seenPlayIds = new Set();
+        this.selectedGamePk = null;
+        this.pollingInterval = null;
+        this.isInitialLoad = true;
+        this.lastInningKey = null;
+      }
+
+      saveRules() {
+        localStorage.setItem('mlb_drink_rules_v2', JSON.stringify(this.rules));
+      }
+
+      evaluatePlay(play) {
+        const resultObj = play.result || {};
+        const eventType = (resultObj.eventType || '').toLowerCase();
+        const eventText = (resultObj.event || '').toLowerCase();
+        const desc = resultObj.description || 'Play completed';
+
+        let ruleKey = null;
+
+        if (eventType.includes('strikeout') || eventText.includes('strikeout')) {
+          ruleKey = 'strikeout';
+        } else if (eventType.includes('error') || eventText.includes('error')) {
+          ruleKey = 'error';
+        } else if (eventType === 'home_run' || eventText.includes('home run')) {
+          ruleKey = 'home_run';
+        } else if (eventType === 'triple' || eventText.includes('triple')) {
+          ruleKey = 'triple';
+        } else if (eventType === 'double' || eventText.includes('double')) {
+          ruleKey = 'double';
+        } else if (eventType === 'single' || eventText.includes('single')) {
+          ruleKey = 'single';
+        } else if (eventType === 'walk' || eventType === 'intent_walk' || eventText.includes('walk')) {
+          ruleKey = 'walk';
+        } else if (eventType === 'hit_by_pitch' || eventText.includes('hit by pitch')) {
+          ruleKey = 'hit_by_pitch';
+        } else if (eventType.includes('balk') || eventText.includes('balk')) {
+          ruleKey = 'balk';
+        } else if (eventType.includes('stolen_base') || eventText.includes('stolen base')) {
+          ruleKey = 'stolen_base';
+        } else if (eventType.includes('double_play') || eventText.includes('double play') || eventText.includes('grounded into dp')) {
+          ruleKey = 'double_play';
+        } else if (eventType.includes('triple_play') || eventText.includes('triple play')) {
+          ruleKey = 'triple_play';
+        }
+
+        const isDrink = !!(ruleKey && this.rules[ruleKey]);
+        const rule = isDrink ? this.rules[ruleKey] : null;
+
+        let drinksText = isDrink ? rule.drinks : '0';
+        let numDrinks = 0;
+
+        if (ruleKey === 'stolen_base') {
+          // Dynamic calculation: 1 drink per base
+          if (eventType.includes('home') || desc.toLowerCase().includes('home')) numDrinks = 3;
+          else if (eventType.includes('3b') || desc.toLowerCase().includes('third')) numDrinks = 2;
+          else numDrinks = 1;
+          drinksText = `${numDrinks} Drink${numDrinks > 1 ? 's' : ''} (1/base)`;
+        } else if (ruleKey === 'home_run') {
+          numDrinks = 6; // Count as 6 for tally
+          drinksText = 'FINISH YOUR DRINK!';
+        } else if (ruleKey === 'rain_out') {
+          numDrinks = 1;
+          drinksText = 'TAKE A SHOT! 🥃';
+        } else {
+          numDrinks = parseInt(rule ? rule.drinks : 0, 10) || 0;
+        }
+
+        const ruleName = isDrink ? rule.name : (resultObj.event || 'Play');
+
+        return {
+          isDrink,
+          ruleKey: ruleKey || 'play',
+          ruleName,
+          drinksText,
+          numDrinks,
+          desc,
+          play
+        };
+      }
+
+      applyDrinkResult(result) {
+        if (!result.isDrink) return;
+        this.totals.totalDrinks += result.numDrinks;
+        const key = result.ruleKey;
+        if (key === 'strikeout') this.totals.k++;
+        if (key === 'walk') this.totals.bb++;
+        if (key === 'single' || key === 'double' || key === 'triple') this.totals.hits++;
+        if (key === 'home_run') this.totals.hr++;
+        if (key === 'hit_by_pitch') this.totals.hbp++;
+        if (key === 'error') this.totals.err++;
+        if (key === 'double_play' || key === 'triple_play') this.totals.dp++;
+        if (key === 'stolen_base') this.totals.sb++;
+        if (key === 'balk' || key === 'rain_out') this.totals.balk++;
+      }
+
+      resetCounter() {
+        this.totals = { totalDrinks: 0, k: 0, bb: 0, hits: 0, hr: 0, hbp: 0, err: 0, dp: 0, sb: 0, balk: 0 };
+        this.seenPlayIds.clear();
+        this.isInitialLoad = true;
+        this.lastInningKey = null;
+      }
+    }
+
+    const gameManager = new DrinkingGameManager();
+
+    // --- 4. UI Controller & MLB API Integration ---
+    const UI = {
+      init() {
+        const d = new Date();
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        const localToday = `${year}-${month}-${day}`;
+
+        document.getElementById('datePicker').value = localToday;
+
+        this.bindEvents();
+        this.renderRulesModal();
+        this.fetchSchedule(localToday);
+      },
+
+      bindEvents() {
+        document.getElementById('datePicker').addEventListener('change', (e) => {
+          this.fetchSchedule(e.target.value);
+        });
+
+        document.getElementById('gameSelect').addEventListener('change', (e) => {
+          const gamePk = e.target.value;
+          if (gamePk) {
+            this.startPollingGame(gamePk);
+          } else {
+            this.stopPolling();
+          }
+        });
+
+        document.getElementById('soundToggleBtn').addEventListener('click', () => {
+          const isMuted = sound.toggleMute();
+          document.getElementById('soundToggleBtn').textContent = isMuted ? '🔇 SOUND OFF' : '🔊 SOUND ON';
+        });
+
+        document.getElementById('openRulesBtn').addEventListener('click', () => {
+          document.getElementById('rulesModal').classList.add('active');
+        });
+
+        document.getElementById('closeRulesBtn').addEventListener('click', () => {
+          document.getElementById('rulesModal').classList.remove('active');
+        });
+
+        document.getElementById('saveRulesBtn').addEventListener('click', () => {
+          this.saveRulesFromModal();
+          document.getElementById('rulesModal').classList.remove('active');
+        });
+
+        document.getElementById('restoreDefaultsBtn').addEventListener('click', () => {
+          gameManager.rules = JSON.parse(JSON.stringify(DEFAULT_RULES));
+          gameManager.saveRules();
+          this.renderRulesModal();
+          alert('Drinking rules restored to default!');
+        });
+
+        document.getElementById('resetDrinksBtn').addEventListener('click', () => {
+          if (confirm('Reset total drink counter for this session?')) {
+            gameManager.resetCounter();
+            this.updateStatsUI();
+            document.getElementById('playFeed').innerHTML = '<div style="text-align: center; color: #8b949e; padding: 20px;">Feed reset. Waiting for next play...</div>';
+          }
+        });
+
+        document.getElementById('demoBtn').addEventListener('click', () => {
+          this.triggerDemoPlay();
+        });
+
+        document.getElementById('closeOverlayBtn').addEventListener('click', () => {
+          this.closeOverlay();
+        });
+      },
+
+      async fetchSchedule(dateStr) {
+        const select = document.getElementById('gameSelect');
+        select.innerHTML = '<option value="">Loading schedule...</option>';
+
+        try {
+          const res = await fetch(`https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=${dateStr}`);
+          const data = await res.json();
+
+          select.innerHTML = '<option value="">-- Select Game --</option>';
+
+          let foundGames = false;
+          if (data.dates && data.dates.length > 0) {
+            data.dates.forEach((d) => {
+              if (d.games && d.games.length > 0) {
+                foundGames = true;
+                d.games.forEach((g) => {
+                  const away = g.teams.away.team.name;
+                  const home = g.teams.home.team.name;
+                  const status = g.status.detailedState || g.status.abstractGameState;
+                  const opt = document.createElement('option');
+                  opt.value = g.gamePk;
+                  opt.textContent = `[${status.toUpperCase()}] ${away} @ ${home}`;
+                  select.appendChild(opt);
+                });
+              }
+            });
+          }
+
+          if (!foundGames) {
+            select.innerHTML = `<option value="">No games found for ${dateStr}. Change date above!</option>`;
+          }
+        } catch (err) {
+          console.error('Failed to fetch MLB schedule:', err);
+          select.innerHTML = '<option value="">Error loading schedule</option>';
+        }
+      },
+
+      startPollingGame(gamePk) {
+        this.stopPolling();
+        gameManager.resetCounter();
+        gameManager.selectedGamePk = gamePk;
+
+        document.getElementById('pollStatus').textContent = 'POLLING: ACTIVE (3s)';
+        document.getElementById('playFeed').innerHTML = '<div style="text-align: center; color: #8b949e; padding: 20px;">Loading play-by-play feed...</div>';
+
+        this.pollGameFeed();
+        gameManager.pollingInterval = setInterval(() => this.pollGameFeed(), 3000);
+      },
+
+      stopPolling() {
+        if (gameManager.pollingInterval) {
+          clearInterval(gameManager.pollingInterval);
+          gameManager.pollingInterval = null;
+        }
+        document.getElementById('pollStatus').textContent = 'POLLING: PAUSED';
+      },
+
+      async pollGameFeed() {
+        if (!gameManager.selectedGamePk) return;
+
+        try {
+          const res = await fetch(`https://statsapi.mlb.com/api/v1.1/game/${gameManager.selectedGamePk}/feed/live`);
+          if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+          const data = await res.json();
+          this.updateGameDashboard(data);
+        } catch (err) {
+          console.error('Error polling game feed:', err);
+          document.getElementById('pollStatus').textContent = 'POLLING: RETRYING...';
+        }
+      },
+
+      updateGameDashboard(data) {
+        const gameData = data.gameData || {};
+        const liveData = data.liveData || {};
+
+        if (gameData.teams) {
+          const awayName = gameData.teams.away ? (gameData.teams.away.abbreviation || gameData.teams.away.name) : 'AWAY';
+          const homeName = gameData.teams.home ? (gameData.teams.home.abbreviation || gameData.teams.home.name) : 'HOME';
+          document.getElementById('awayTeamName').textContent = awayName;
+          document.getElementById('homeTeamName').textContent = homeName;
+        }
+
+        const linescore = liveData.linescore;
+        if (linescore && linescore.teams) {
+          document.getElementById('awayTeamScore').textContent = linescore.teams.away.runs ?? 0;
+          document.getElementById('homeTeamScore').textContent = linescore.teams.home.runs ?? 0;
+
+          const state = linescore.inningState || (linescore.isTopInning ? 'TOP' : 'BOT');
+          const inning = linescore.currentInningOrdinal || (linescore.currentInning ? linescore.currentInning + 'TH' : '');
+          document.getElementById('gameInningText').textContent = `${state} ${inning}`;
+
+          // Check for New Inning event
+          const currentInningKey = `${linescore.currentInning}_${linescore.isTopInning}`;
+          if (gameManager.lastInningKey && gameManager.lastInningKey !== currentInningKey && !gameManager.isInitialLoad) {
+            const inningResult = {
+              isDrink: true,
+              ruleKey: 'new_inning',
+              ruleName: 'NEW INNING',
+              drinksText: '1 Drink',
+              numDrinks: 1,
+              desc: `New Inning Started: ${state} ${inning}! Take 1 drink.`,
+              play: { about: { halfInning: state, inning: linescore.currentInning } }
+            };
+            gameManager.applyDrinkResult(inningResult);
+            this.addPlayToFeed(inningResult);
+            this.triggerDrinkAlert(inningResult);
+            this.updateStatsUI();
+          }
+          gameManager.lastInningKey = currentInningKey;
+        }
+
+        if (gameData.status) {
+          const statusText = gameData.status.detailedState || gameData.status.abstractGameState || 'LIVE';
+          document.getElementById('gameStatusText').textContent = statusText.toUpperCase();
+
+          // Check Rain Out / Postponed
+          if (statusText.toLowerCase().includes('rain') || statusText.toLowerCase().includes('postponed') || statusText.toLowerCase().includes('suspended')) {
+            const rainId = 'rain_' + gameManager.selectedGamePk;
+            if (!gameManager.seenPlayIds.has(rainId) && !gameManager.isInitialLoad) {
+              gameManager.seenPlayIds.add(rainId);
+              const rainResult = {
+                isDrink: true,
+                ruleKey: 'rain_out',
+                ruleName: 'RAIN OUT / DELAY',
+                drinksText: 'TAKE A SHOT! 🥃',
+                numDrinks: 1,
+                desc: `Game Status: ${statusText}! TAKE A SHOT!`,
+                play: { about: { halfInning: 'LIVE', inning: '' } }
+              };
+              gameManager.applyDrinkResult(rainResult);
+              this.addPlayToFeed(rainResult);
+              this.triggerDrinkAlert(rainResult);
+              this.updateStatsUI();
+            }
+          }
+        }
+
+        if (linescore && linescore.offense) {
+          document.getElementById('base1').classList.toggle('occupied', !!linescore.offense.first);
+          document.getElementById('base2').classList.toggle('occupied', !!linescore.offense.second);
+          document.getElementById('base3').classList.toggle('occupied', !!linescore.offense.third);
+
+          const balls = linescore.balls || 0;
+          const strikes = linescore.strikes || 0;
+          const outs = linescore.outs || 0;
+
+          document.getElementById('ball1').classList.toggle('active', balls >= 1);
+          document.getElementById('ball2').classList.toggle('active', balls >= 2);
+          document.getElementById('ball3').classList.toggle('active', balls >= 3);
+
+          document.getElementById('strike1').classList.toggle('active', strikes >= 1);
+          document.getElementById('strike2').classList.toggle('active', strikes >= 2);
+
+          document.getElementById('out1').classList.toggle('active', outs >= 1);
+          document.getElementById('out2').classList.toggle('active', outs >= 2);
+        }
+
+        // Process Plays Feed
+        const allPlays = (liveData.plays && liveData.plays.allPlays) ? liveData.plays.allPlays : [];
+        const isFirstTime = gameManager.isInitialLoad;
+
+        if (allPlays.length > 0) {
+          const feed = document.getElementById('playFeed');
+          if (isFirstTime) {
+            feed.innerHTML = '';
+          }
+
+          allPlays.forEach((play) => {
+            const playId = play.playId || (play.about ? play.about.atBatIndex + '_' + (play.result ? play.result.eventType : '') : null);
+
+            if (playId && !gameManager.seenPlayIds.has(playId)) {
+              gameManager.seenPlayIds.add(playId);
+              const result = gameManager.evaluatePlay(play);
+
+              if (result) {
+                this.addPlayToFeed(result);
+
+                if (result.isDrink) {
+                  gameManager.applyDrinkResult(result);
+                  this.updateStatsUI();
+
+                  if (!isFirstTime) {
+                    this.triggerDrinkAlert(result);
+                  } else {
+                    document.getElementById('lastDrinkAlert').textContent = `Last: ${result.ruleName} (${result.drinksText})`;
+                  }
+                }
+              }
+            }
+          });
+
+          gameManager.isInitialLoad = false;
+        } else {
+          document.getElementById('playFeed').innerHTML = '<div style="text-align: center; color: #8b949e; padding: 20px;">Game selected! Waiting for first play...</div>';
+        }
+      },
+
+      addPlayToFeed(result) {
+        const feed = document.getElementById('playFeed');
+        const item = document.createElement('div');
+        item.className = 'play-item' + (result.isDrink ? ' has-drinks' : '');
+
+        const inningInfo = result.play.about ? `[${(result.play.about.halfInning || '').toUpperCase()} ${result.play.about.inning || ''}]` : '[LIVE]';
+
+        item.innerHTML = `
+          <div class="play-item-header">
+            <span>${inningInfo} ${result.ruleName.toUpperCase()}</span>
+            <span>${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+          </div>
+          <div class="play-item-desc">${result.desc}</div>
+          ${result.isDrink ? `<div class="drink-badge">🍺 ${result.drinksText.toUpperCase()}</div>` : ''}
+        `;
+
+        feed.insertBefore(item, feed.firstChild);
+      },
+
+      triggerDrinkAlert(result) {
+        document.getElementById('overlayTitle').textContent = `🍺 ${result.ruleName.toUpperCase()}!`;
+        document.getElementById('overlayDrinks').textContent = `🍺 ${result.drinksText.toUpperCase()}! 🍺`;
+        document.getElementById('overlayDesc').textContent = result.desc;
+
+        document.getElementById('lastDrinkAlert').textContent = `Last: ${result.ruleName} (${result.drinksText})`;
+
+        if (result.ruleKey === 'strikeout') sound.playWhiff();
+        else if (result.ruleKey === 'error') sound.playBuzzer();
+        else if (result.ruleKey === 'home_run') sound.playFanfare();
+        else sound.playChime();
+
+        pixelAnimator.start(result.ruleKey);
+        document.getElementById('alertOverlay').classList.add('active');
+      },
+
+      closeOverlay() {
+        document.getElementById('alertOverlay').classList.remove('active');
+        pixelAnimator.stop();
+      },
+
+      updateStatsUI() {
+        document.getElementById('totalDrinksCount').textContent = gameManager.totals.totalDrinks;
+        document.getElementById('statK').textContent = gameManager.totals.k;
+        document.getElementById('statBB').textContent = gameManager.totals.bb;
+        document.getElementById('statHits').textContent = gameManager.totals.hits;
+        document.getElementById('statHR').textContent = gameManager.totals.hr;
+        document.getElementById('statHBP').textContent = gameManager.totals.hbp;
+        document.getElementById('statERR').textContent = gameManager.totals.err;
+        document.getElementById('statDP').textContent = gameManager.totals.dp;
+        document.getElementById('statSB').textContent = gameManager.totals.sb;
+        document.getElementById('statBalk').textContent = gameManager.totals.balk;
+      },
+
+      renderRulesModal() {
+        const container = document.getElementById('rulesListContainer');
+        container.innerHTML = '';
+
+        Object.keys(gameManager.rules).forEach((key) => {
+          const r = gameManager.rules[key];
+          const label = document.createElement('div');
+          label.textContent = r.name;
+          label.style.fontSize = '18px';
+
+          const input = document.createElement('input');
+          input.type = 'text';
+          input.value = r.drinks;
+          input.className = 'rule-input';
+          input.dataset.key = key;
+
+          container.appendChild(label);
+          container.appendChild(input);
+        });
+      },
+
+      saveRulesFromModal() {
+        const inputs = document.querySelectorAll('.rule-input');
+        inputs.forEach((inp) => {
+          const key = inp.dataset.key;
+          const val = inp.value.trim();
+          if (gameManager.rules[key]) {
+            gameManager.rules[key].drinks = val || '1';
+          }
+        });
+        gameManager.saveRules();
+      },
+
+      triggerDemoPlay() {
+        const demoPlays = [
+          { key: 'strikeout', desc: 'Batter strikes out swinging on a 98mph fastball!' },
+          { key: 'single', desc: 'Base hit single to center field!' },
+          { key: 'double', desc: 'Line drive into the gap for a Double!' },
+          { key: 'triple', desc: 'Deep fly ball off the wall... Triple!' },
+          { key: 'home_run', desc: 'DEEP FLY BALL TO LEFT FIELD... THAT BALL IS OUTTA HERE! HOMERUN!' },
+          { key: 'hit_by_pitch', desc: 'Batter hit by pitch! Take 5 drinks!' },
+          { key: 'balk', desc: 'Pitcher balks! Runners advance.' },
+          { key: 'error', desc: '3rror by shortstop on ground ball!' },
+          { key: 'stolen_base', desc: 'Runner slides into second base... SAFE! Stolen base!' },
+          { key: 'rain_out', desc: 'Rain Out / Game Delay! TAKE A SHOT!' }
+        ];
+
+        const pick = demoPlays[Math.floor(Math.random() * demoPlays.length)];
+        const rule = gameManager.rules[pick.key];
+        let drinksText = rule ? rule.drinks : '1 Drink';
+        let numDrinks = 1;
+
+        if (pick.key === 'home_run') { drinksText = 'FINISH YOUR DRINK!'; numDrinks = 6; }
+        else if (pick.key === 'stolen_base') { drinksText = '1 Drink (1/base)'; numDrinks = 1; }
+        else if (pick.key === 'rain_out') { drinksText = 'TAKE A SHOT! 🥃'; numDrinks = 1; }
+        else { numDrinks = parseInt(rule ? rule.drinks : '1', 10) || 1; }
+
+        const demoResult = {
+          isDrink: true,
+          ruleKey: pick.key,
+          ruleName: rule ? rule.name : 'Demo Play',
+          drinksText,
+          numDrinks,
+          desc: pick.desc,
+          play: { about: { halfInning: 'top', inning: 7 } }
+        };
+
+        gameManager.applyDrinkResult(demoResult);
+        this.addPlayToFeed(demoResult);
+        this.triggerDrinkAlert(demoResult);
+        this.updateStatsUI();
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', () => UI.init());
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Registration failed:', err));
+    }
+  </script>
+</body>
+</html>
