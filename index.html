@@ -493,16 +493,31 @@
     }
 
     .drink-badge {
-      display: inline-block;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       font-family: var(--font-pixel);
-      font-size: 9px;
+      font-size: 10px;
+      line-height: 1;
       background: var(--accent-red);
-      color: #fff;
-      padding: 3px 6px;
-      border-radius: 3px;
-      margin-top: 4px;
+      color: #ffffff;
+      padding: 5px 8px;
+      border-radius: 4px;
+      margin-top: 6px;
       align-self: flex-start;
-      box-shadow: 1px 1px 0 #000;
+      box-shadow: 0 2px 0 #8e1b18, 1px 1px 0 #000;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      text-shadow: 1px 1px 0 #000;
+      letter-spacing: 0.5px;
+    }
+
+    .drink-badge .badge-icon {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+      display: block;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
     }
 
     /* Stats & Rules Panel */
@@ -1802,13 +1817,16 @@
 
         const inningInfo = result.play.about ? `[${(result.play.about.halfInning || '').toUpperCase()} ${result.play.about.inning || ''}]` : '[LIVE]';
 
+        const beerSvgIcon = `<svg class="badge-icon" viewBox="0 0 16 16" width="14" height="14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M 3 2 H 11 V 5 H 3 Z" fill="#FFFFFF"/><path d="M 3 5 H 10 V 14 H 3 Z" fill="#F1E05A"/><path d="M 4 6 H 6 V 13 H 4 Z" fill="#FFF59D"/><path d="M 10 6 H 13 V 7 H 14 V 11 H 13 V 12 H 10 V 11 H 12 V 7 H 10 Z" fill="#FFFFFF"/><path d="M 2 2 H 3 V 14 H 10 V 15 H 2 Z" fill="#000000" opacity="0.3"/></svg>`;
+        const cleanText = result.drinksText.replace(/[\u{1F300}-\u{1F9FF}]/gu, '').trim().toUpperCase();
+
         item.innerHTML = `
           <div class="play-item-header">
             <span>${inningInfo} ${result.ruleName.toUpperCase()}</span>
             <span>${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
           </div>
           <div class="play-item-desc">${result.desc}</div>
-          ${result.isDrink ? `<div class="drink-badge">🍺 ${result.drinksText.toUpperCase()}</div>` : ''}
+          ${result.isDrink ? `<div class="drink-badge">${beerSvgIcon}<span>${cleanText}</span></div>` : ''}
         `;
 
         feed.insertBefore(item, feed.firstChild);
