@@ -3,3 +3,8 @@ Thumbs.db
 node_modules/
 .vscode/
 .idea/
+
+# Gemini / Antigravity development files
+.gemini/
+.gemini*
+GEMINI.md
