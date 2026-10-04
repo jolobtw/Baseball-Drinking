@@ -46,25 +46,3 @@ A standalone Progressive Web App (PWA) that connects directly to the official **
 | **Rain Out / Delay** | 🥃 **TAKE A SHOT!** |
 
 *All rules can be customized live using the **⚙️ RULES** button in the app header!*
-
----
-
-## 🚀 How to Run & Share with Friends
-
-### Option 1: Direct File Sharing (Zero Server Required)
-Simply send the `index.html` file to your friends! They can open `index.html` directly in Chrome, Safari, Edge, or Firefox on mobile or desktop.
-
-### Option 2: Local Web Server (For PWA Installation)
-To test PWA installation or run locally:
-```bash
-# Using Node.js (http-server)
-npx http-server -p 8080
-
-# Then open http://localhost:8080 in your browser!
-```
-
-### Option 3: Host Online (Free & Instant)
-Host the workspace folder on **GitHub Pages**, **Vercel**, or **Netlify**:
-1. Upload `index.html`, `manifest.json`, `sw.js`, and `README.md` to a GitHub repo.
-2. Enable **GitHub Pages** in Repository Settings.
-3. Share the generated link with your friends! Everyone can select the same game and get identical real-time play alerts.
