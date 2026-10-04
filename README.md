@@ -13,13 +13,7 @@ A standalone Progressive Web App (PWA) that connects directly to the official **
   - **Strikeouts / Homeruns / Stolen Bases / Errors / Walks / Hit By Pitch / Rain Delays**: Animated 8-bit retro arcade scenes & banners.
 - **🔊 Web Audio Chiptune SFX**: 8-bit sound synthesizers (whiff, buzzer, fanfare, drink chime) built directly in JS with no external audio file dependencies.
 - **⚙️ Customizable Ruleset Editor**: Edit drink amounts per play type in real time with responsive row cards and input fields supporting custom text (`Finish Drink`, `1 per base`, `Take a shot`).
-- **⚾ Smart Scoreboard & Dynamic Status Icons**:
-  - **Dynamic Status Icons**: Live pulsing green radar dot for in-progress games, rotating gold clock for scheduled games, solid red dot for finished games, and amber flash for postponed games.
-  - Displays `[IN PROGRESS]` for live games and `[COMPLETED]` for finished games in dropdown.
-  - Shows `FINAL` (or `FINAL/10` for extra innings) on the scoreboard status bar for completed games, automatically clearing base runners and count dots.
-  - Clears default inning text when no game is selected.
 - **📊 Game Drink Summary**: Accumulates total assigned drinks per event category (e.g. total drinks assigned from Strikeouts, Hits, Home Runs, Errors, etc.).
-- **📱 PWA & Standalone Support**: Installable on iPhone, Android, or Desktop. Works offline and from a single file/URL!
 - **🎮 Demo Play Mode**: Preview all pixel art animations, sound effects, and drink triggers anytime without needing a live game.
 
 ---
