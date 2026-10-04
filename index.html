@@ -203,47 +203,86 @@
       to { opacity: 1; }
     }
 
+    /* Teams & Outside Logos Banner Layout */
     .teams-container {
       display: flex;
-      justify-content: space-around;
+      justify-content: space-between;
       align-items: center;
       margin-bottom: 16px;
+      gap: 10px;
     }
 
     .team-box {
-      text-align: center;
       flex: 1;
       display: flex;
-      flex-direction: column;
       align-items: center;
+      gap: 10px;
+    }
+
+    .team-box.away-box {
+      justify-content: flex-start;
+      text-align: left;
+    }
+
+    .team-box.home-box {
+      justify-content: flex-end;
+      text-align: right;
+    }
+
+    .team-info {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .team-logo-canvas {
-      width: 54px;
-      height: 54px;
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
       image-rendering: pixelated;
-      margin-bottom: 6px;
       filter: drop-shadow(0 3px 6px rgba(0,0,0,0.6));
     }
 
     .team-name {
       font-family: var(--font-pixel);
-      font-size: 15px;
+      font-size: 14px;
       color: var(--text-bright);
-      margin-bottom: 4px;
+      margin-bottom: 2px;
+      white-space: nowrap;
     }
 
     .team-score {
       font-family: var(--font-pixel);
-      font-size: 36px;
+      font-size: 32px;
       color: var(--accent-gold);
-      text-shadow: 3px 3px 0 #000;
+      text-shadow: 2px 2px 0 #000;
     }
 
     .vs-text {
       font-family: var(--font-pixel);
-      font-size: 12px;
+      font-size: 11px;
       color: #8b949e;
+      flex-shrink: 0;
+      padding: 0 4px;
+    }
+
+    @media (max-width: 500px) {
+      .team-logo-canvas {
+        width: 36px;
+        height: 36px;
+      }
+      .team-name {
+        font-size: 11px;
+      }
+      .team-score {
+        font-size: 24px;
+      }
+      .vs-text {
+        font-size: 9px;
+      }
+      .team-box {
+        gap: 6px;
+      }
     }
 
     /* Base Diamond & Count */
@@ -543,16 +582,24 @@
         </div>
 
         <div class="teams-container">
-          <div class="team-box">
+          <!-- Away Team: Logo on far left -->
+          <div class="team-box away-box">
             <canvas id="awayTeamLogo" class="team-logo-canvas" width="48" height="48"></canvas>
-            <div class="team-name" id="awayTeamName">AWAY</div>
-            <div class="team-score" id="awayTeamScore">0</div>
+            <div class="team-info">
+              <div class="team-name" id="awayTeamName">AWAY</div>
+              <div class="team-score" id="awayTeamScore">0</div>
+            </div>
           </div>
+
           <div class="vs-text">VS</div>
-          <div class="team-box">
+
+          <!-- Home Team: Logo on far right -->
+          <div class="team-box home-box">
+            <div class="team-info">
+              <div class="team-name" id="homeTeamName">HOME</div>
+              <div class="team-score" id="homeTeamScore">0</div>
+            </div>
             <canvas id="homeTeamLogo" class="team-logo-canvas" width="48" height="48"></canvas>
-            <div class="team-name" id="homeTeamName">HOME</div>
-            <div class="team-score" id="homeTeamScore">0</div>
           </div>
         </div>
 
@@ -1526,7 +1573,7 @@
           document.getElementById('awayTeamName').textContent = awayAbbr.toUpperCase();
           document.getElementById('homeTeamName').textContent = homeAbbr.toUpperCase();
 
-          // Render 8-Bit Pixel Logos
+          // Render 8-Bit Pixel Logos on outside canvases
           PixelTeamLogoRenderer.drawLogo('awayTeamLogo', awayAbbr, awayTeam.name);
           PixelTeamLogoRenderer.drawLogo('homeTeamLogo', homeAbbr, homeTeam.name);
         }
