@@ -200,19 +200,86 @@
       margin-bottom: 12px;
     }
 
-    .live-dot {
-      display: inline-block;
+    /* Game Status Icon */
+    .status-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 8px;
+      vertical-align: middle;
+    }
+
+    /* Live / In Progress: Pulsing Green Dot with Glow */
+    .status-icon.in-progress {
+      width: 10px;
+      height: 10px;
+      background: #3fb950;
+      border-radius: 50%;
+      box-shadow: 0 0 0 0 rgba(63, 185, 80, 0.7);
+      animation: livePulse 1.5s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+
+    @keyframes livePulse {
+      to {
+        box-shadow: 0 0 0 10px rgba(63, 185, 80, 0);
+      }
+    }
+
+    /* Scheduled: Animated Gold Clock Icon */
+    .status-icon.scheduled {
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--accent-gold);
+      border-radius: 50%;
+      position: relative;
+    }
+    .status-icon.scheduled::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 3px;
+      width: 2px;
+      height: 4px;
+      background: var(--accent-gold);
+      transform-origin: bottom center;
+      animation: clockHand 4s linear infinite;
+    }
+
+    @keyframes clockHand {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    /* Final: Solid Red Dot */
+    .status-icon.final {
       width: 10px;
       height: 10px;
       background: var(--accent-red);
       border-radius: 50%;
-      margin-right: 6px;
-      animation: blink 1s infinite alternate;
+      box-shadow: 0 0 4px var(--accent-red);
     }
 
-    @keyframes blink {
-      from { opacity: 0.3; }
-      to { opacity: 1; }
+    /* Postponed: Warning Orange Amber Flash */
+    .status-icon.postponed {
+      width: 10px;
+      height: 10px;
+      background: var(--accent-orange);
+      border-radius: 2px;
+      animation: warningBlink 0.8s infinite alternate;
+    }
+
+    @keyframes warningBlink {
+      from { opacity: 0.3; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1.1); }
+    }
+
+    /* None Selected: Dim Grey */
+    .status-icon.none {
+      width: 8px;
+      height: 8px;
+      background: #484f58;
+      border-radius: 50%;
+      opacity: 0.5;
     }
 
     /* Centered Scoreboard Banner Layout */
@@ -651,7 +718,7 @@
       <!-- Scoreboard Card -->
       <div class="scoreboard">
         <div class="game-status-bar">
-          <div><span class="live-dot" id="liveDot"></span><span id="gameStatusText">NO GAME SELECTED</span></div>
+          <div><span class="status-icon none" id="liveDot"></span><span id="gameStatusText">NO GAME SELECTED</span></div>
           <div id="gameInningText"></div>
         </div>
 
@@ -1815,6 +1882,8 @@
         document.getElementById('homeTeamScore').textContent = '0';
         document.getElementById('gameStatusText').textContent = 'NO GAME SELECTED';
         document.getElementById('gameInningText').textContent = '';
+        const liveDot = document.getElementById('liveDot');
+        if (liveDot) liveDot.className = 'status-icon none';
         document.getElementById('pollStatus').textContent = 'POLLING: PAUSED';
         document.getElementById('lastDrinkAlert').textContent = 'No drinks assigned yet';
 
@@ -1914,12 +1983,22 @@
         }
 
         if (gameData.status) {
+          const statusText = gameData.status.detailedState || gameData.status.abstractGameState || 'LIVE';
+          const liveDot = document.getElementById('liveDot');
+
           if (isFinal) {
             const extraInnings = (linescore && linescore.currentInning && linescore.currentInning > 9) ? `/${linescore.currentInning}` : '';
             document.getElementById('gameStatusText').textContent = `FINAL${extraInnings}`;
-          } else {
-            const statusText = gameData.status.detailedState || gameData.status.abstractGameState || 'LIVE';
+            if (liveDot) liveDot.className = 'status-icon final';
+          } else if (statusText.toLowerCase().includes('rain') || statusText.toLowerCase().includes('postponed') || statusText.toLowerCase().includes('suspended')) {
             document.getElementById('gameStatusText').textContent = statusText.toUpperCase();
+            if (liveDot) liveDot.className = 'status-icon postponed';
+          } else if (statusText.toLowerCase().includes('scheduled') || statusText.toLowerCase().includes('pre-game') || statusText.toLowerCase().includes('preview')) {
+            document.getElementById('gameStatusText').textContent = statusText.toUpperCase();
+            if (liveDot) liveDot.className = 'status-icon scheduled';
+          } else {
+            document.getElementById('gameStatusText').textContent = statusText.toUpperCase();
+            if (liveDot) liveDot.className = 'status-icon in-progress';
           }
 
           if (statusText.toLowerCase().includes('rain') || statusText.toLowerCase().includes('postponed') || statusText.toLowerCase().includes('suspended')) {
