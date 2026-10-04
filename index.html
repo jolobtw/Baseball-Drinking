@@ -1066,19 +1066,21 @@
         img.onload = () => {
           if (canvas.dataset.currentTeamUrl !== logoUrl) return;
 
-          // Offscreen 36x36 pixel grid canvas for sharp 8-bit retro arcade pixelation
-          const pixelGrid = 36;
+          // Refined pixel grid for crisp 16-bit retro arcade resolution (48x48 for NFL, 36x36 for MLB)
+          const pixelGrid = sport === 'nfl' ? 48 : 36;
           const offCanvas = document.createElement('canvas');
           offCanvas.width = pixelGrid;
           offCanvas.height = pixelGrid;
           const offCtx = offCanvas.getContext('2d');
-          offCtx.imageSmoothingEnabled = false;
-          offCtx.msImageSmoothingEnabled = false;
-          offCtx.webkitImageSmoothingEnabled = false;
+
+          // High quality smooth downsampling into sprite grid to preserve fine logo lines & emblems
+          offCtx.imageSmoothingEnabled = true;
+          offCtx.imageSmoothingQuality = 'high';
 
           offCtx.clearRect(0, 0, pixelGrid, pixelGrid);
           offCtx.drawImage(img, 0, 0, pixelGrid, pixelGrid);
 
+          // Crisp nearest-neighbor upscale to display canvas for authentic retro pixel aesthetic
           ctx.clearRect(0, 0, w, h);
           ctx.imageSmoothingEnabled = false;
           ctx.msImageSmoothingEnabled = false;
