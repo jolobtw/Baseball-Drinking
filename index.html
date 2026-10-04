@@ -916,6 +916,7 @@
           <div class="stat-row"><span>Interceptions (INT)</span><span class="stat-val" id="statINT">0</span></div>
           <div class="stat-row"><span>Fumbles</span><span class="stat-val" id="statFumble">0</span></div>
           <div class="stat-row"><span>Field Goals (FG)</span><span class="stat-val" id="statFG">0</span></div>
+          <div class="stat-row"><span>Big Plays (10+ Yds)</span><span class="stat-val" id="statBigPlay">0</span></div>
           <div class="stat-row"><span>First Downs</span><span class="stat-val" id="statFirstDown">0</span></div>
           <div class="stat-row"><span>Timeouts</span><span class="stat-val" id="statTimeout">0</span></div>
           <div class="stat-row"><span>Quarter Changes</span><span class="stat-val" id="statQuarter">0</span></div>
@@ -1314,7 +1315,7 @@
         const h = this.canvas.height || 220;
         const ctx = this.ctx;
 
-        const isNflPlay = ['touchdown', 'interception', 'fumble', 'field_goal', 'first_down', 'timeout', 'quarter_change', 'safety'].includes(playType);
+        const isNflPlay = ['touchdown', 'interception', 'fumble', 'field_goal', 'big_play', 'first_down', 'timeout', 'quarter_change', 'safety'].includes(playType);
         this.drawBackground(ctx, w, h, isNflPlay);
 
         switch (playType) {
@@ -1332,6 +1333,7 @@
           case 'interception': this.drawInterception(ctx, w, h); break;
           case 'fumble': this.drawFumble(ctx, w, h); break;
           case 'field_goal': this.drawFieldGoal(ctx, w, h); break;
+          case 'big_play': this.drawBigPlay(ctx, w, h); break;
           case 'first_down': this.drawFirstDown(ctx, w, h); break;
           case 'timeout': this.drawTimeout(ctx, w, h); break;
           case 'quarter_change': this.drawQuarterChange(ctx, w, h); break;
@@ -1576,6 +1578,26 @@
         ctx.fillText('IT IS GOOD! TAKE 2 DRINKS!', w / 2, 75);
       }
 
+      drawBigPlay(ctx, w, h) {
+        const slideX = (this.frame * 6) % w;
+
+        ctx.fillStyle = '#f0883e';
+        ctx.fillRect(slideX, h - 55, 24, 12);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(slideX + 8, h - 53, 8, 8);
+
+        ctx.font = '22px "Press Start 2P", monospace';
+        ctx.fillStyle = '#000';
+        ctx.textAlign = 'center';
+        ctx.fillText('🚀 BIG PLAY! 🚀', w / 2 + 2, 47);
+        ctx.fillStyle = '#f0883e';
+        ctx.fillText('🚀 BIG PLAY! 🚀', w / 2, 45);
+
+        ctx.font = '18px "VT323", monospace';
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillText('1 DRINK PER 10 YARDS GAINED!', w / 2, 75);
+      }
+
       drawFirstDown(ctx, w, h) {
         const slideX = (this.frame * 4) % w;
 
@@ -1684,6 +1706,7 @@
       'interception': { name: 'Interception (INT)', drinks: '3' },
       'fumble': { name: 'Fumble Turnover', drinks: '2' },
       'field_goal': { name: 'Field Goal (FG)', drinks: '2' },
+      'big_play': { name: 'Big Play (10+ Yds)', drinks: '1 / 10 yds' },
       'first_down': { name: 'First Down', drinks: '1' },
       'timeout': { name: 'Timeout', drinks: '1' },
       'quarter_change': { name: 'Quarter Change', drinks: '1' },
@@ -1698,7 +1721,7 @@
         this.nflRules = JSON.parse(localStorage.getItem('nfl_drink_rules_v1')) || JSON.parse(JSON.stringify(DEFAULT_NFL_RULES));
 
         this.mlbTotals = { totalDrinks: 0, k: 0, bb: 0, hits: 0, hr: 0, hbp: 0, err: 0, dp: 0, sb: 0, balk: 0, new_inning: 0 };
-        this.nflTotals = { totalDrinks: 0, td: 0, int: 0, fumble: 0, fg: 0, firstDown: 0, timeout: 0, quarterChange: 0, safety: 0 };
+        this.nflTotals = { totalDrinks: 0, td: 0, int: 0, fumble: 0, fg: 0, bigPlay: 0, firstDown: 0, timeout: 0, quarterChange: 0, safety: 0 };
 
         this.seenPlayIds = new Set();
         this.selectedGamePk = null;
@@ -1812,7 +1835,18 @@
         const isSameTeamPossession = !!(startTeamId && endTeamId && startTeamId === endTeamId);
         const isPossessionChangePlay = play.isTurnover || typeText.includes('Punt') || typeText.includes('Kickoff') || typeText.includes('Interception') || typeText.includes('Fumble Recovery (Opponent)');
 
+        let yardsGained = 0;
+        if (isSameTeamPossession && !isPossessionChangePlay && !isScoring) {
+          const match = text.match(/for\s+(\d+)\s+yard/i) || text.match(/for\s+(\d+)\s+Yds/i);
+          if (match) {
+            yardsGained = parseInt(match[1], 10);
+          } else if (typeof play.statYardage === 'number' && play.statYardage > 0) {
+            yardsGained = play.statYardage;
+          }
+        }
+
         let ruleKey = null;
+        let bigPlayBaseTen = Math.floor(yardsGained / 10);
 
         if (isScoring && (scoringType === 'touchdown' || typeText.toLowerCase().includes('touchdown') || text.toUpperCase().includes('TOUCHDOWN'))) {
           ruleKey = 'touchdown';
@@ -1828,6 +1862,8 @@
           ruleKey = 'timeout';
         } else if (typeText === 'End Period' || typeText === 'End of Half' || typeText === 'End of Quarter' || typeText === 'End of Regulation' || typeText === 'End of Game') {
           ruleKey = 'quarter_change';
+        } else if (bigPlayBaseTen >= 1 && this.rules['big_play']) {
+          ruleKey = 'big_play';
         } else if (!isScoring && isSameTeamPossession && !isPossessionChangePlay) {
           const endDownDist = (play.end && play.end.shortDownDistanceText) ? play.end.shortDownDistanceText : '';
           const earnedFirstDown = endDownDist.startsWith('1st') || text.includes('1st Down') || (play.start && play.start.down && play.start.down <= 3 && play.statYardage >= play.start.distance);
@@ -1848,6 +1884,11 @@
         } else if (ruleKey === 'safety') {
           numDrinks = 1;
           drinksText = 'TAKE A SHOT! 🥃';
+        } else if (ruleKey === 'big_play') {
+          const multiplier = parseInt(rule ? rule.drinks : 1, 10) || 1;
+          numDrinks = bigPlayBaseTen * multiplier;
+          const roundedYards = bigPlayBaseTen * 10;
+          drinksText = `${numDrinks} Drink${numDrinks > 1 ? 's' : ''} (${roundedYards}+ yds)`;
         } else {
           numDrinks = parseInt(rule ? rule.drinks : 0, 10) || 0;
         }
@@ -1879,6 +1920,7 @@
           if (key === 'interception') this.nflTotals.int += drinks;
           if (key === 'fumble') this.nflTotals.fumble += drinks;
           if (key === 'field_goal') this.nflTotals.fg += drinks;
+          if (key === 'big_play') this.nflTotals.bigPlay += drinks;
           if (key === 'first_down') this.nflTotals.firstDown += drinks;
           if (key === 'timeout') this.nflTotals.timeout += drinks;
           if (key === 'quarter_change') this.nflTotals.quarterChange += drinks;
@@ -1888,7 +1930,7 @@
 
       resetCounter() {
         this.mlbTotals = { totalDrinks: 0, k: 0, bb: 0, hits: 0, hr: 0, hbp: 0, err: 0, dp: 0, sb: 0, balk: 0, new_inning: 0 };
-        this.nflTotals = { totalDrinks: 0, td: 0, int: 0, fumble: 0, fg: 0, firstDown: 0, timeout: 0, quarterChange: 0, safety: 0 };
+        this.nflTotals = { totalDrinks: 0, td: 0, int: 0, fumble: 0, fg: 0, bigPlay: 0, firstDown: 0, timeout: 0, quarterChange: 0, safety: 0 };
         this.seenPlayIds.clear();
         this.isInitialLoad = true;
         this.lastNFLQuarter = null;
@@ -2422,6 +2464,7 @@
           document.getElementById('statINT').textContent = gameManager.nflTotals.int;
           document.getElementById('statFumble').textContent = gameManager.nflTotals.fumble;
           document.getElementById('statFG').textContent = gameManager.nflTotals.fg;
+          document.getElementById('statBigPlay').textContent = gameManager.nflTotals.bigPlay;
           document.getElementById('statFirstDown').textContent = gameManager.nflTotals.firstDown;
           document.getElementById('statTimeout').textContent = gameManager.nflTotals.timeout;
           document.getElementById('statQuarter').textContent = gameManager.nflTotals.quarterChange;
@@ -2509,7 +2552,8 @@
             { key: 'interception', desc: 'INTERCEPTED AT THE 20 YARD LINE!' },
             { key: 'fumble', desc: 'FUMBLE ON THE PLAY! RECOVERED BY DEFENSE!' },
             { key: 'field_goal', desc: '52-YARD FIELD GOAL IS GOOD!' },
-            { key: 'first_down', desc: 'RUSH FOR 12 YARDS AND A FIRST DOWN!' },
+            { key: 'big_play', desc: '45-YARD DEEP PASS COMPLETED DOWN THE SIDELINE!' },
+            { key: 'first_down', desc: 'RUSH FOR 6 YARDS AND A FIRST DOWN!' },
             { key: 'timeout', desc: 'TIMEOUT CALLED BY OFFENSE.' },
             { key: 'quarter_change', desc: 'END OF THE 1ST QUARTER.' },
             { key: 'safety', desc: 'SACKED IN THE END ZONE... SAFETY!' }

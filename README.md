@@ -12,7 +12,7 @@ A standalone Progressive Web App (PWA) that connects directly to official live s
 - **Standardized Pixel Drink Badges**: Every drink play features a custom retro pixel SVG beer mug badge displaying the exact numeric drink count (e.g. `1`, `2`, `3`, `6`).
 - **30 FPS Retro Canvas Pixel Art**: Self-contained retro stadium canvas graphics with stadium floodlights and custom 8-bit event animations:
   - **MLB Events**: Strikeouts, Homeruns, Stolen Bases, Errors, Walks, Hit By Pitch, and Rain Delays.
-  - **NFL Events**: Touchdowns, Interceptions, Fumbles, Field Goals, First Downs, Timeouts, Quarter Changes, and Safeties.
+  - **NFL Events**: Touchdowns, Interceptions, Fumbles, Field Goals, Big Plays (10+ Yds), First Downs, Timeouts, Quarter Changes, and Safeties.
 - **Web Audio Chiptune SFX**: Built-in 8-bit sound synthesizers (whiff, buzzer, fanfare, chime, referee whistle) with zero external audio file dependencies.
 - **Customizable Ruleset Editor**: Edit drink amounts per play type in real time for both MLB and NFL rulesets.
 - **Game Drink Summary**: Tracks and accumulates total assigned drinks per event category.
@@ -53,6 +53,7 @@ The tables below outline the **default drinking rulesets** for MLB and NFL games
 | Interception (INT) | 3 Drinks |
 | Fumble Turnover | 2 Drinks |
 | Field Goal (FG) | 2 Drinks |
+| Big Play (10+ Yds) | 1 Drink per 10 yards gained |
 | First Down | 1 Drink |
 | Timeout | 1 Drink |
 | Quarter Change | 1 Drink |
