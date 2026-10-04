@@ -1266,10 +1266,6 @@
           ruleKey = 'balk';
         } else if (eventType.includes('error') || eventText.includes('error')) {
           ruleKey = 'error';
-        } else if (eventType.includes('wild_pitch') || eventText.includes('wild pitch')) {
-          ruleKey = 'balk'; // categorize with balk/special
-        } else if (eventType.includes('pitching_substitution') || eventText.includes('pitching substitution')) {
-          ruleKey = 'balk';
         }
 
         if (!ruleKey || !this.rules[ruleKey]) return null;
