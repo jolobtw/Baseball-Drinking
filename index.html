@@ -457,21 +457,12 @@
 
     /* Play Feed */
     .play-feed {
-      flex: 1;
-      height: 0;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      min-height: 250px;
+      max-height: 520px;
       overflow-y: auto;
       padding-right: 4px;
-    }
-
-    @media (max-width: 900px) {
-      .play-feed {
-        height: auto;
-        max-height: 420px;
-      }
     }
 
     .play-item {
@@ -848,16 +839,20 @@
         const w = canvas.width;
         const h = canvas.height;
 
+        const logoUrl = this.getLogoUrl(teamObj, teamAbbr, teamFullName);
+        canvas.dataset.currentTeamUrl = logoUrl;
+
         ctx.imageSmoothingEnabled = false;
         ctx.msImageSmoothingEnabled = false;
         ctx.webkitImageSmoothingEnabled = false;
 
-        const logoUrl = this.getLogoUrl(teamObj, teamAbbr, teamFullName);
         const img = new Image();
         img.crossOrigin = 'Anonymous';
         img.src = logoUrl;
 
         img.onload = () => {
+          if (canvas.dataset.currentTeamUrl !== logoUrl) return;
+
           // Offscreen 36x36 grid for crisp, sharp retro arcade pixelation
           const pixelGrid = 36;
           const offCanvas = document.createElement('canvas');
@@ -1429,9 +1424,7 @@
 
         document.getElementById('datePicker').value = localToday;
 
-        TeamLogoRenderer.updateLogo('awayTeamLogo', {}, 'NYY', 'New York Yankees');
-        TeamLogoRenderer.updateLogo('homeTeamLogo', {}, 'LAD', 'Los Angeles Dodgers');
-
+        this.resetToNoGameSelected();
         this.bindEvents();
         this.renderRulesModal();
         this.fetchSchedule(localToday);
