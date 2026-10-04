@@ -236,12 +236,15 @@
       justify-content: center;
     }
 
-    .team-logo-canvas {
-      width: 44px;
-      height: 44px;
+    .team-logo-img {
+      width: 48px;
+      height: 48px;
+      max-width: 48px;
+      max-height: 48px;
+      object-fit: contain;
       flex-shrink: 0;
-      image-rendering: pixelated;
-      filter: drop-shadow(0 3px 5px rgba(0,0,0,0.6));
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.7));
+      transition: transform 0.2s ease;
     }
 
     .team-name {
@@ -271,9 +274,11 @@
       .teams-container {
         gap: 8px;
       }
-      .team-logo-canvas {
-        width: 36px;
-        height: 36px;
+      .team-logo-img {
+        width: 38px;
+        height: 38px;
+        max-width: 38px;
+        max-height: 38px;
       }
       .team-name {
         font-size: 11px;
@@ -585,9 +590,9 @@
         <div class="teams-container">
           <!-- Away Team: Logo next to team name/score -->
           <div class="team-box away-box">
-            <canvas id="awayTeamLogo" class="team-logo-canvas" width="48" height="48"></canvas>
+            <img id="awayTeamLogo" class="team-logo-img" alt="Away Team Logo" src="https://www.mlbstatic.com/team-logos/147.svg" />
             <div class="team-info">
-              <div class="team-name" id="awayTeamName">AWAY</div>
+              <div class="team-name" id="awayTeamName">NYY</div>
               <div class="team-score" id="awayTeamScore">0</div>
             </div>
           </div>
@@ -597,10 +602,10 @@
           <!-- Home Team: Logo next to team name/score -->
           <div class="team-box home-box">
             <div class="team-info">
-              <div class="team-name" id="homeTeamName">HOME</div>
+              <div class="team-name" id="homeTeamName">LAD</div>
               <div class="team-score" id="homeTeamScore">0</div>
             </div>
-            <canvas id="homeTeamLogo" class="team-logo-canvas" width="48" height="48"></canvas>
+            <img id="homeTeamLogo" class="team-logo-img" alt="Home Team Logo" src="https://www.mlbstatic.com/team-logos/119.svg" />
           </div>
         </div>
 
@@ -757,336 +762,64 @@
 
   <!-- JavaScript Code -->
   <script>
-    // --- 1. 8-Bit Pixel Art MLB Team Logo & Mascot Renderer ---
-    class PixelTeamLogoRenderer {
-      static TEAM_DATA = {
-        'ATL': { bg: '#13274f', fg: '#ba0c2f', accent: '#eaaa00', text: 'ATL', type: 'tomahawk' },
-        'LAD': { bg: '#005a9c', fg: '#ffffff', accent: '#ef3e42', text: 'LA', type: 'la' },
-        'NYY': { bg: '#0c2340', fg: '#ffffff', accent: '#c4ced4', text: 'NY', type: 'ny' },
-        'BOS': { bg: '#bd3039', fg: '#0c2340', accent: '#ffffff', text: 'B', type: 'socks' },
-        'CHC': { bg: '#0e3386', fg: '#cc3433', accent: '#ffffff', text: 'C', type: 'cub' },
-        'CWS': { bg: '#27251f', fg: '#c4ced4', accent: '#ffffff', text: 'SOX', type: 'sox' },
-        'HOU': { bg: '#002d62', fg: '#eb6e1f', accent: '#fdb927', text: 'H', type: 'star' },
-        'PHI': { bg: '#e31837', fg: '#002d62', accent: '#ffffff', text: 'P', type: 'bell' },
-        'STL': { bg: '#c41e3a', fg: '#fedb00', accent: '#0c2340', text: 'STL', type: 'bird' },
-        'SF':  { bg: '#27251f', fg: '#fd5a1e', accent: '#efd19f', text: 'SF', type: 'sf' },
-        'SD':  { bg: '#2f241d', fg: '#ffc425', accent: '#ffffff', text: 'SD', type: 'friar' },
-        'NYM': { bg: '#002d62', fg: '#ff5910', accent: '#ffffff', text: 'NY', type: 'mets' },
-        'TEX': { bg: '#003278', fg: '#c0111f', accent: '#ffffff', text: 'T', type: 'star' },
-        'BAL': { bg: '#df4601', fg: '#000000', accent: '#ffffff', text: 'B', type: 'bird' },
-        'TOR': { bg: '#134a8e', fg: '#e8291c', accent: '#ffffff', text: 'TOR', type: 'jay' },
-        'SEA': { bg: '#0c2340', fg: '#005c5c', accent: '#c4ced4', text: 'SEA', type: 'compass' },
-        'MIN': { bg: '#002b5c', fg: '#d31145', accent: '#ffffff', text: 'TC', type: 'skyline' },
-        'CLE': { bg: '#0c2340', fg: '#e31937', accent: '#ffffff', text: 'C', type: 'winged' },
-        'DET': { bg: '#0c2340', fg: '#fa4616', accent: '#ffffff', text: 'D', type: 'tiger' },
-        'KC':  { bg: '#004687', fg: '#bd9b60', accent: '#ffffff', text: 'KC', type: 'crown' },
-        'TB':  { bg: '#092c5c', fg: '#f5d130', accent: '#8fbce6', text: 'TB', type: 'ray' },
-        'MIA': { bg: '#00a3e0', fg: '#ef3340', accent: '#000000', text: 'M', type: 'marlin' },
-        'WSH': { bg: '#ab0003', fg: '#14225a', accent: '#ffffff', text: 'W', type: 'w' },
-        'CIN': { bg: '#c6011f', fg: '#ffffff', accent: '#000000', text: 'C', type: 'wishbone' },
-        'MIL': { bg: '#122a47', fg: '#b59a57', accent: '#ffffff', text: 'MB', type: 'glove' },
-        'PIT': { bg: '#000000', fg: '#fdb827', accent: '#ffffff', text: 'P', type: 'pirate' },
-        'COL': { bg: '#333366', fg: '#c4ced4', accent: '#000000', text: 'CR', type: 'mountain' },
-        'ARI': { bg: '#a71930', fg: '#30ced8', accent: '#000000', text: 'A', type: 'snake' },
-        'AZ':  { bg: '#a71930', fg: '#30ced8', accent: '#000000', text: 'A', type: 'snake' },
-        'OAK': { bg: '#003831', fg: '#efb21e', accent: '#ffffff', text: 'A\'s', type: 'oak' },
-        'LAA': { bg: '#ba0c2f', fg: '#866d4b', accent: '#002244', text: 'A', type: 'halo' }
+    // --- 1. Official MLB Vector Team Logo Renderer ---
+    class TeamLogoRenderer {
+      static TEAM_IDS = {
+        'LAA': 108, 'ANGELS': 108,
+        'ARI': 109, 'AZ': 109, 'DIAMONDBACKS': 109, 'D-BACKS': 109,
+        'BAL': 110, 'ORIOLES': 110,
+        'BOS': 111, 'RED SOX': 111,
+        'CHC': 112, 'CUBS': 112,
+        'CIN': 113, 'REDS': 113,
+        'CLE': 114, 'GUARDIANS': 114,
+        'COL': 115, 'ROCKIES': 115,
+        'DET': 116, 'TIGERS': 116,
+        'HOU': 117, 'ASTROS': 117,
+        'KC':  118, 'ROYALS': 118,
+        'LAD': 119, 'DODGERS': 119,
+        'WSH': 120, 'WAS': 120, 'NATIONALS': 120,
+        'NYM': 121, 'METS': 121,
+        'OAK': 133, 'ATH': 133, 'ATHLETICS': 133, "A'S": 133,
+        'PIT': 134, 'PIRATES': 134,
+        'SD':  135, 'PADRES': 135,
+        'SEA': 136, 'MARINERS': 136,
+        'SF':  137, 'GIANTS': 137,
+        'STL': 138, 'CARDINALS': 138,
+        'TB':  139, 'RAYS': 139,
+        'TEX': 140, 'RANGERS': 140,
+        'TOR': 141, 'BLUE JAYS': 141,
+        'MIN': 142, 'TWINS': 142,
+        'PHI': 143, 'PHILLIES': 143,
+        'ATL': 144, 'BRAVES': 144,
+        'CWS': 145, 'CHW': 145, 'WHITE SOX': 145,
+        'MIA': 146, 'MARLINS': 146,
+        'NYY': 147, 'YANKEES': 147,
+        'MIL': 158, 'BREWERS': 158
       };
 
-      static drawLogo(canvasId, teamAbbr, teamFullName = '') {
-        const canvas = document.getElementById(canvasId);
-        if (!canvas) return;
-        const ctx = canvas.getContext('2d');
-        ctx.imageSmoothingEnabled = false;
-
-        const w = canvas.width;
-        const h = canvas.height;
-
-        ctx.clearRect(0, 0, w, h);
-
+      static getLogoUrl(teamObj = {}, teamAbbr = '', teamFullName = '') {
+        if (teamObj && teamObj.id) {
+          return `https://www.mlbstatic.com/team-logos/${teamObj.id}.svg`;
+        }
         const abbr = (teamAbbr || '').toUpperCase().trim();
-        const data = this.TEAM_DATA[abbr] || this.findMatchByName(teamFullName) || {
-          bg: '#1f2937', fg: '#f1e05a', accent: '#58a6ff', text: abbr.slice(0, 3) || 'MLB', type: 'default'
-        };
-
-        // Drop Shadow
-        ctx.fillStyle = 'rgba(0,0,0,0.6)';
-        ctx.beginPath();
-        ctx.arc(w / 2 + 2, h / 2 + 2, 20, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Main Circular Shield Badge
-        ctx.fillStyle = data.bg;
-        ctx.beginPath();
-        ctx.arc(w / 2, h / 2, 20, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Outer Pixel Ring
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = data.fg;
-        ctx.stroke();
-
-        // Inner Accent Ring
-        ctx.lineWidth = 1;
-        ctx.strokeStyle = data.accent;
-        ctx.beginPath();
-        ctx.arc(w / 2, h / 2, 16, 0, Math.PI * 2);
-        ctx.stroke();
-
-        // Dedicated 8-Bit Pixel Mascot Graphics
-        switch (data.type) {
-          case 'tomahawk':
-            ctx.fillStyle = '#8b5a2b';
-            ctx.fillRect(w / 2 - 12, h / 2 + 4, 24, 3);
-            ctx.fillStyle = '#ba0c2f';
-            ctx.fillRect(w / 2 + 4, h / 2 - 4, 6, 12);
-            ctx.fillRect(w / 2 + 10, h / 2 - 2, 3, 8);
-            ctx.fillStyle = '#eaaa00';
-            ctx.fillRect(w / 2 + 2, h / 2 + 3, 3, 5);
-            break;
-
-          case 'la':
-            ctx.fillStyle = '#ef3e42';
-            ctx.fillRect(w / 2 - 12, h / 2 - 2, 16, 4);
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            ctx.arc(w / 2 + 4, h / 2, 8, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#ef3e42';
-            ctx.fillRect(w / 2 + 2, h / 2 - 4, 2, 8);
-            break;
-
-          case 'socks':
-            ctx.fillStyle = '#bd3039';
-            ctx.fillRect(w / 2 - 8, h / 2 - 8, 6, 12);
-            ctx.fillRect(w / 2 - 8, h / 2 + 2, 10, 5);
-            ctx.fillRect(w / 2 + 2, h / 2 - 6, 6, 12);
-            ctx.fillRect(w / 2 + 2, h / 2 + 4, 10, 5);
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(w / 2 - 8, h / 2 - 8, 6, 3);
-            ctx.fillRect(w / 2 + 2, h / 2 - 6, 6, 3);
-            break;
-
-          case 'sox':
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(w / 2 - 4, h / 2 - 10, 8, 14);
-            ctx.fillRect(w / 2 - 4, h / 2 + 2, 12, 6);
-            ctx.fillStyle = '#c4ced4';
-            ctx.fillRect(w / 2 - 4, h / 2 - 10, 8, 3);
-            break;
-
-          case 'star':
-            ctx.fillStyle = data.fg;
-            this.drawPixelStar(ctx, w / 2, h / 2, 12);
-            ctx.fillStyle = data.accent;
-            this.drawPixelStar(ctx, w / 2, h / 2, 6);
-            break;
-
-          case 'bell':
-            ctx.fillStyle = '#8b5a2b';
-            ctx.fillRect(w / 2 - 10, h / 2 - 10, 20, 4);
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            ctx.arc(w / 2, h / 2 - 2, 8, Math.PI, 0);
-            ctx.lineTo(w / 2 + 10, h / 2 + 8);
-            ctx.lineTo(w / 2 - 10, h / 2 + 8);
-            ctx.closePath();
-            ctx.fill();
-            ctx.fillStyle = '#002d62';
-            ctx.fillRect(w / 2 - 1, h / 2 - 2, 2, 6);
-            break;
-
-          case 'bird':
-            ctx.fillStyle = data.fg;
-            ctx.beginPath();
-            ctx.arc(w / 2 - 2, h / 2, 10, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = data.accent;
-            ctx.beginPath();
-            ctx.moveTo(w / 2 + 6, h / 2 - 3);
-            ctx.lineTo(w / 2 + 14, h / 2);
-            ctx.lineTo(w / 2 + 6, h / 2 + 3);
-            ctx.closePath();
-            ctx.fill();
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(w / 2 + 1, h / 2 - 4, 3, 3);
-            break;
-
-          case 'crown':
-            ctx.fillStyle = '#bd9b60';
-            ctx.fillRect(w / 2 - 12, h / 2 - 4, 24, 10);
-            ctx.fillRect(w / 2 - 12, h / 2 - 10, 5, 8);
-            ctx.fillRect(w / 2 - 2, h / 2 - 12, 5, 10);
-            ctx.fillRect(w / 2 + 7, h / 2 - 10, 5, 8);
-            ctx.fillStyle = '#da3633';
-            ctx.fillRect(w / 2 - 10, h / 2 - 10, 2, 2);
-            ctx.fillRect(w / 2, h / 2 - 12, 2, 2);
-            ctx.fillRect(w / 2 + 9, h / 2 - 10, 2, 2);
-            break;
-
-          case 'marlin':
-            ctx.fillStyle = '#00a3e0';
-            ctx.beginPath();
-            ctx.ellipse(w / 2 - 2, h / 2 + 2, 12, 6, -Math.PI / 6, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#ef3340';
-            ctx.fillRect(w / 2 + 6, h / 2 - 8, 8, 2);
-            ctx.fillStyle = '#00a3e0';
-            ctx.fillRect(w / 2 - 14, h / 2 + 4, 4, 8);
-            break;
-
-          case 'mountain':
-            ctx.fillStyle = '#333366';
-            ctx.beginPath();
-            ctx.moveTo(w / 2 - 14, h / 2 + 10);
-            ctx.lineTo(w / 2, h / 2 - 12);
-            ctx.lineTo(w / 2 + 14, h / 2 + 10);
-            ctx.closePath();
-            ctx.fill();
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            ctx.moveTo(w / 2 - 5, h / 2 - 4);
-            ctx.lineTo(w / 2, h / 2 - 12);
-            ctx.lineTo(w / 2 + 5, h / 2 - 4);
-            ctx.closePath();
-            ctx.fill();
-            break;
-
-          case 'snake':
-            ctx.fillStyle = '#30ced8';
-            ctx.fillRect(w / 2 - 10, h / 2 - 8, 20, 14);
-            ctx.fillStyle = '#a71930';
-            ctx.fillRect(w / 2 - 6, h / 2 - 4, 4, 4);
-            ctx.fillRect(w / 2 + 2, h / 2 - 4, 4, 4);
-            ctx.fillStyle = '#a71930';
-            ctx.fillRect(w / 2 - 1, h / 2 + 6, 2, 6);
-            ctx.fillRect(w / 2 - 3, h / 2 + 10, 2, 2);
-            ctx.fillRect(w / 2 + 1, h / 2 + 10, 2, 2);
-            break;
-
-          case 'halo':
-            ctx.strokeStyle = '#866d4b';
-            ctx.lineWidth = 4;
-            ctx.beginPath();
-            ctx.ellipse(w / 2, h / 2 - 6, 12, 5, 0, 0, Math.PI * 2);
-            ctx.stroke();
-            ctx.fillStyle = '#ffffff';
-            ctx.font = '14px "Press Start 2P", monospace';
-            ctx.textAlign = 'center';
-            ctx.fillText('A', w / 2, h / 2 + 8);
-            break;
-
-          case 'pirate':
-            ctx.fillStyle = '#fdb827';
-            ctx.beginPath();
-            ctx.arc(w / 2, h / 2 - 2, 10, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.fillStyle = '#000000';
-            ctx.fillRect(w / 2 - 6, h / 2 - 5, 6, 6);
-            ctx.fillRect(w / 2 - 10, h / 2 - 7, 18, 2);
-            break;
-
-          case 'glove':
-            ctx.fillStyle = '#b59a57';
-            ctx.fillRect(w / 2 - 10, h / 2 - 8, 18, 16);
-            ctx.fillStyle = '#ffffff';
-            ctx.beginPath();
-            ctx.arc(w / 2 + 2, h / 2, 6, 0, Math.PI * 2);
-            ctx.fill();
-            break;
-
-          case 'compass':
-            ctx.fillStyle = '#005c5c';
-            this.drawPixelStar(ctx, w / 2, h / 2, 12);
-            ctx.fillStyle = '#c4ced4';
-            ctx.fillRect(w / 2 - 2, h / 2 - 12, 4, 24);
-            ctx.fillRect(w / 2 - 12, h / 2 - 2, 24, 4);
-            break;
-
-          case 'tiger':
-            ctx.fillStyle = '#fa4616';
-            ctx.fillRect(w / 2 - 10, h / 2 - 8, 20, 16);
-            ctx.fillStyle = '#0c2340';
-            ctx.fillRect(w / 2 - 8, h / 2 - 6, 3, 8);
-            ctx.fillRect(w / 2 + 5, h / 2 - 6, 3, 8);
-            ctx.fillRect(w / 2 - 2, h / 2 - 2, 4, 4);
-            break;
-
-          case 'ray':
-            ctx.fillStyle = '#f5d130';
-            this.drawPixelStar(ctx, w / 2, h / 2, 12);
-            ctx.fillStyle = '#8fbce6';
-            ctx.font = '10px "Press Start 2P"';
-            ctx.textAlign = 'center';
-            ctx.fillText('TB', w / 2, h / 2 + 3);
-            break;
-
-          case 'cub':
-            ctx.fillStyle = '#cc3433';
-            ctx.font = '16px "Press Start 2P"';
-            ctx.textAlign = 'center';
-            ctx.fillText('C', w / 2, h / 2 + 4);
-            ctx.fillStyle = '#0e3386';
-            ctx.fillRect(w / 2 - 10, h / 2 - 12, 4, 4);
-            ctx.fillRect(w / 2 + 6, h / 2 - 12, 4, 4);
-            break;
-
-          default:
-            ctx.font = data.text.length > 2 ? '9px "Press Start 2P"' : '12px "Press Start 2P"';
-            ctx.fillStyle = data.fg;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.shadowColor = '#000';
-            ctx.shadowBlur = 2;
-            ctx.fillText(data.text, w / 2, h / 2);
-            ctx.shadowBlur = 0;
-            break;
+        if (this.TEAM_IDS[abbr]) {
+          return `https://www.mlbstatic.com/team-logos/${this.TEAM_IDS[abbr]}.svg`;
         }
+        const name = (teamFullName || '').toUpperCase().trim();
+        for (const [key, id] of Object.entries(this.TEAM_IDS)) {
+          if (name.includes(key)) {
+            return `https://www.mlbstatic.com/team-logos/${id}.svg`;
+          }
+        }
+        return 'https://www.mlbstatic.com/team-logos/league-on-dark/1.svg';
       }
 
-      static findMatchByName(name = '') {
-        const n = name.toLowerCase();
-        if (n.includes('braves')) return this.TEAM_DATA['ATL'];
-        if (n.includes('dodgers')) return this.TEAM_DATA['LAD'];
-        if (n.includes('yankees')) return this.TEAM_DATA['NYY'];
-        if (n.includes('red sox')) return this.TEAM_DATA['BOS'];
-        if (n.includes('cubs')) return this.TEAM_DATA['CHC'];
-        if (n.includes('white sox')) return this.TEAM_DATA['CWS'];
-        if (n.includes('astros')) return this.TEAM_DATA['HOU'];
-        if (n.includes('phillies')) return this.TEAM_DATA['PHI'];
-        if (n.includes('cardinals')) return this.TEAM_DATA['STL'];
-        if (n.includes('giants')) return this.TEAM_DATA['SF'];
-        if (n.includes('padres')) return this.TEAM_DATA['SD'];
-        if (n.includes('mets')) return this.TEAM_DATA['NYM'];
-        if (n.includes('rangers')) return this.TEAM_DATA['TEX'];
-        if (n.includes('orioles')) return this.TEAM_DATA['BAL'];
-        if (n.includes('blue jays')) return this.TEAM_DATA['TOR'];
-        if (n.includes('mariners')) return this.TEAM_DATA['SEA'];
-        if (n.includes('twins')) return this.TEAM_DATA['MIN'];
-        if (n.includes('guardians')) return this.TEAM_DATA['CLE'];
-        if (n.includes('tigers')) return this.TEAM_DATA['DET'];
-        if (n.includes('royals')) return this.TEAM_DATA['KC'];
-        if (n.includes('rays')) return this.TEAM_DATA['TB'];
-        if (n.includes('marlins')) return this.TEAM_DATA['MIA'];
-        if (n.includes('nationals')) return this.TEAM_DATA['WSH'];
-        if (n.includes('reds')) return this.TEAM_DATA['CIN'];
-        if (n.includes('brewers')) return this.TEAM_DATA['MIL'];
-        if (n.includes('pirates')) return this.TEAM_DATA['PIT'];
-        if (n.includes('rockies')) return this.TEAM_DATA['COL'];
-        if (n.includes('diamondbacks') || n.includes('d-backs')) return this.TEAM_DATA['ARI'];
-        if (n.includes('athletics') || n.includes('a\'s')) return this.TEAM_DATA['OAK'];
-        if (n.includes('angels')) return this.TEAM_DATA['LAA'];
-        return null;
-      }
-
-      static drawPixelStar(ctx, cx, cy, r) {
-        ctx.beginPath();
-        for (let i = 0; i < 5; i++) {
-          ctx.lineTo(Math.cos((18 + i * 72) * Math.PI / 180) * r + cx, -Math.sin((18 + i * 72) * Math.PI / 180) * r + cy);
-          ctx.lineTo(Math.cos((54 + i * 72) * Math.PI / 180) * (r / 2) + cx, -Math.sin((54 + i * 72) * Math.PI / 180) * (r / 2) + cy);
-        }
-        ctx.closePath();
-        ctx.fill();
+      static updateLogo(imgId, teamObj = {}, teamAbbr = '', teamFullName = '') {
+        const img = document.getElementById(imgId);
+        if (!img) return;
+        const logoUrl = this.getLogoUrl(teamObj, teamAbbr, teamFullName);
+        img.src = logoUrl;
+        img.alt = teamFullName || teamAbbr || 'MLB Team Logo';
       }
     }
 
@@ -1774,8 +1507,8 @@
           document.getElementById('awayTeamName').textContent = awayAbbr.toUpperCase();
           document.getElementById('homeTeamName').textContent = homeAbbr.toUpperCase();
 
-          PixelTeamLogoRenderer.drawLogo('awayTeamLogo', awayAbbr, awayTeam.name);
-          PixelTeamLogoRenderer.drawLogo('homeTeamLogo', homeAbbr, homeTeam.name);
+          TeamLogoRenderer.updateLogo('awayTeamLogo', awayTeam, awayAbbr, awayTeam.name);
+          TeamLogoRenderer.updateLogo('homeTeamLogo', homeTeam, homeAbbr, homeTeam.name);
         }
 
         const linescore = liveData.linescore;
