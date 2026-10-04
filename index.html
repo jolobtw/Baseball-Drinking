@@ -217,13 +217,18 @@
       margin-bottom: 12px;
     }
 
+    .game-status-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      line-height: 1;
+    }
+
     /* Game Status Icons */
     .status-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 8px;
-      vertical-align: middle;
+      display: inline-block;
+      flex-shrink: 0;
+      margin: 0;
     }
 
     .status-icon.in-progress {
@@ -801,7 +806,7 @@
       <!-- Scoreboard Card -->
       <div class="scoreboard">
         <div class="game-status-bar">
-          <div><span class="status-icon none" id="liveDot"></span><span id="gameStatusText">NO GAME SELECTED</span></div>
+          <div class="game-status-title"><span class="status-icon none" id="liveDot"></span><span id="gameStatusText">NO GAME SELECTED</span></div>
           <div id="gameInningText"></div>
         </div>
 
