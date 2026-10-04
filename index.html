@@ -1484,26 +1484,39 @@
       }
 
       // NFL Scenes
+      // NFL Scenes
       drawTouchdown(ctx, w, h) {
-        const progress = ((this.frame * 0.8) % 100) / 100;
-        const ballX = progress * (w - 100) + 30;
-        const ballY = (h - 60) - Math.sin(progress * Math.PI) * 80;
+        const cycle = 90;
+        const progress = (this.frame % cycle) / cycle;
+        const ballX = progress * (w - 110) + 30;
+        const ballY = (h - 60) - Math.sin(progress * Math.PI) * 75;
 
-        // Football
+        // Receiver in End Zone throwing hands up
+        const wrX = w - 75;
+        const wrY = h - 65;
+        ctx.fillStyle = '#f0883e';
+        ctx.fillRect(wrX, wrY, 18, 26);
+        ctx.fillStyle = '#ffcca6';
+        ctx.fillRect(wrX + 3, wrY - 14, 12, 12);
+        ctx.fillStyle = '#f0883e';
+        ctx.fillRect(wrX - 4, wrY - 10, 6, 14);
+        ctx.fillRect(wrX + 16, wrY - 10, 6, 14);
+
+        // Parabolic Flying Football
         ctx.fillStyle = '#8b4513';
         ctx.fillRect(ballX, ballY, 14, 10);
         ctx.fillStyle = '#ffffff';
         ctx.fillRect(ballX + 5, ballY + 2, 4, 6);
 
-        // Fireworks burst in end zone
-        if (progress > 0.6) {
-          const fx = w - 60 + Math.sin(this.frame * 0.1) * 20;
-          const fy = 40 + Math.cos(this.frame * 0.1) * 15;
-          ctx.fillStyle = (this.frame % 4 === 0) ? '#f1e05a' : '#f0883e';
-          ctx.fillRect(fx - 10, fy, 4, 4);
-          ctx.fillRect(fx + 10, fy, 4, 4);
-          ctx.fillRect(fx, fy - 10, 4, 4);
-          ctx.fillRect(fx, fy + 10, 4, 4);
+        // Endzone Fireworks burst
+        if (progress > 0.5) {
+          const fx = w - 60 + Math.sin(this.frame * 0.15) * 25;
+          const fy = 35 + Math.cos(this.frame * 0.15) * 15;
+          ctx.fillStyle = (this.frame % 4 < 2) ? '#f1e05a' : '#f0883e';
+          ctx.fillRect(fx - 12, fy, 4, 4);
+          ctx.fillRect(fx + 12, fy, 4, 4);
+          ctx.fillRect(fx, fy - 12, 4, 4);
+          ctx.fillRect(fx, fy + 12, 4, 4);
         }
 
         const bannerColor = ['#f1e05a', '#f0883e', '#e63946'][Math.floor(this.frame / 8) % 3];
@@ -1513,22 +1526,25 @@
         ctx.fillText('🏈 TOUCHDOWN! 🏈', w / 2 + 2, 47);
         ctx.fillStyle = bannerColor;
         ctx.fillText('🏈 TOUCHDOWN! 🏈', w / 2, 45);
-
-        ctx.font = '16px "Press Start 2P", monospace';
-        ctx.fillStyle = '#da3633';
-        ctx.fillText('FINISH YOUR DRINK!', w / 2, 80);
       }
 
       drawInterception(ctx, w, h) {
-        const wobble = Math.sin(this.frame * 0.2) * 6;
-        const x = w / 2 + wobble;
-        const y = h - 65;
+        const cycle = 80;
+        const progress = (this.frame % cycle) / cycle;
+        const dbX = w / 2 - 40 + progress * 60;
+        const dbY = h - 65 - Math.sin(progress * Math.PI) * 25;
 
-        // DB Player Catch
-        ctx.fillStyle = '#f0883e';
-        ctx.fillRect(x - 10, y, 20, 26);
+        // DB Player leaping intercept catch
+        ctx.fillStyle = '#da3633';
+        ctx.fillRect(dbX, dbY, 20, 26);
+        ctx.fillStyle = '#ffcca6';
+        ctx.fillRect(dbX + 4, dbY - 12, 12, 12);
+
+        // Football grabbed mid-air
         ctx.fillStyle = '#8b4513';
-        ctx.fillRect(x - 5, y - 12, 10, 8); // Intercepted ball overhead
+        ctx.fillRect(dbX + 6, dbY - 18, 12, 8);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(dbX + 10, dbY - 17, 4, 5);
 
         ctx.font = '22px "Press Start 2P", monospace';
         ctx.fillStyle = '#000';
@@ -1536,15 +1552,13 @@
         ctx.fillText('⚡ INTERCEPTION! ⚡', w / 2 + 2, 47);
         ctx.fillStyle = '#da3633';
         ctx.fillText('⚡ INTERCEPTION! ⚡', w / 2, 45);
-
-        ctx.font = '18px "VT323", monospace';
-        ctx.fillStyle = '#f1e05a';
-        ctx.fillText('TURNOVER - TAKE 3 DRINKS!', w / 2, 75);
       }
 
       drawFumble(ctx, w, h) {
-        const bounceY = h - 60 - Math.abs(Math.sin(this.frame * 0.15)) * 30;
-        const ballX = w / 2 + Math.cos(this.frame * 0.1) * 40;
+        const cycle = 70;
+        const progress = (this.frame % cycle) / cycle;
+        const bounceY = h - 55 - Math.abs(Math.sin(progress * Math.PI * 3)) * 35;
+        const ballX = 60 + progress * (w - 120);
 
         // Bouncing Football
         ctx.fillStyle = '#8b4513';
@@ -1558,40 +1572,41 @@
         ctx.fillText('💥 FUMBLE! 💥', w / 2 + 2, 47);
         ctx.fillStyle = '#f0883e';
         ctx.fillText('💥 FUMBLE! 💥', w / 2, 45);
-
-        ctx.font = '18px "VT323", monospace';
-        ctx.fillStyle = '#f1e05a';
-        ctx.fillText('LOOSE BALL - TAKE 2 DRINKS!', w / 2, 75);
       }
 
       drawFieldGoal(ctx, w, h) {
-        const progress = ((this.frame * 0.7) % 100) / 100;
+        const cycle = 90;
+        const progress = (this.frame % cycle) / cycle;
         const ballX = w / 2;
-        const ballY = (h - 40) - progress * 100;
+        const ballY = (h - 45) - progress * 110;
 
-        // Football sailing into uprights
+        // Football sailing high into uprights
         ctx.fillStyle = '#8b4513';
-        ctx.fillRect(ballX - 6, ballY, 12, 8);
+        ctx.fillRect(ballX - 5, ballY, 10, 8);
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(ballX - 1, ballY + 2, 3, 4);
 
         ctx.font = '22px "Press Start 2P", monospace';
         ctx.fillStyle = '#000';
         ctx.textAlign = 'center';
-        ctx.fillText('⚽ FIELD GOAL GOOD! ⚽', w / 2 + 2, 47);
+        ctx.fillText('⚽ FIELD GOAL! ⚽', w / 2 + 2, 47);
         ctx.fillStyle = '#2ea043';
-        ctx.fillText('⚽ FIELD GOAL GOOD! ⚽', w / 2, 45);
-
-        ctx.font = '18px "VT323", monospace';
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText('IT IS GOOD! TAKE 2 DRINKS!', w / 2, 75);
+        ctx.fillText('⚽ FIELD GOAL! ⚽', w / 2, 45);
       }
 
       drawBigPlay(ctx, w, h) {
-        const slideX = (this.frame * 6) % w;
+        const slideX = (this.frame * 5) % w;
 
-        ctx.fillStyle = '#f0883e';
-        ctx.fillRect(slideX, h - 55, 24, 12);
-        ctx.fillStyle = '#ffffff';
-        ctx.fillRect(slideX + 8, h - 53, 8, 8);
+        // Runner sprite sprinting
+        ctx.fillStyle = '#58a6ff';
+        ctx.fillRect(slideX, h - 65, 26, 20);
+        ctx.fillStyle = '#ffcca6';
+        ctx.fillRect(slideX + 20, h - 70, 10, 10);
+
+        // Speed trail particles behind runner
+        ctx.fillStyle = '#f1e05a';
+        ctx.fillRect(slideX - 15, h - 60, 10, 4);
+        ctx.fillRect(slideX - 30, h - 56, 12, 3);
 
         ctx.font = '22px "Press Start 2P", monospace';
         ctx.fillStyle = '#000';
@@ -1599,29 +1614,24 @@
         ctx.fillText('🚀 BIG PLAY! 🚀', w / 2 + 2, 47);
         ctx.fillStyle = '#f0883e';
         ctx.fillText('🚀 BIG PLAY! 🚀', w / 2, 45);
-
-        ctx.font = '18px "VT323", monospace';
-        ctx.fillStyle = '#f1e05a';
-        ctx.fillText('1 DRINK PER 10 YARDS GAINED!', w / 2, 75);
       }
 
       drawFirstDown(ctx, w, h) {
-        const slideX = (this.frame * 4) % w;
+        const cycle = 100;
+        const progress = (this.frame % cycle) / cycle;
+        const slideX = 30 + progress * (w - 80);
 
+        // First down marker poles
         ctx.fillStyle = '#f1e05a';
-        ctx.fillRect(slideX, h - 50, 4, 30);
-        ctx.fillRect(slideX - 10, h - 50, 20, 4);
+        ctx.fillRect(slideX, h - 65, 5, 35);
+        ctx.fillRect(slideX - 12, h - 65, 28, 5);
 
         ctx.font = '22px "Press Start 2P", monospace';
         ctx.fillStyle = '#000';
         ctx.textAlign = 'center';
-        ctx.fillText('🏃 1ST DOWN! 🏃', w / 2 + 2, 47);
+        ctx.fillText('🏃 FIRST DOWN! 🏃', w / 2 + 2, 47);
         ctx.fillStyle = '#58a6ff';
-        ctx.fillText('🏃 1ST DOWN! 🏃', w / 2, 45);
-
-        ctx.font = '18px "VT323", monospace';
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText('CHAINS MOVE - TAKE 1 DRINK!', w / 2, 75);
+        ctx.fillText('🏃 FIRST DOWN! 🏃', w / 2, 45);
       }
 
       drawTimeout(ctx, w, h) {
@@ -1631,10 +1641,6 @@
         ctx.fillText('⏱️ TIMEOUT ⏱️', w / 2 + 2, 47);
         ctx.fillStyle = '#f1e05a';
         ctx.fillText('⏱️ TIMEOUT ⏱️', w / 2, 45);
-
-        ctx.font = '18px "VT323", monospace';
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText('CLOCK STOPPED - TAKE 1 DRINK!', w / 2, 75);
       }
 
       drawQuarterChange(ctx, w, h) {
@@ -1644,10 +1650,6 @@
         ctx.fillText('🏈 QUARTER ENDED 🏈', w / 2 + 2, 47);
         ctx.fillStyle = '#f0883e';
         ctx.fillText('🏈 QUARTER ENDED 🏈', w / 2, 45);
-
-        ctx.font = '18px "VT323", monospace';
-        ctx.fillStyle = '#f1e05a';
-        ctx.fillText('NEW QUARTER - TAKE 1 DRINK!', w / 2, 75);
       }
 
       drawSafety(ctx, w, h) {
@@ -1657,10 +1659,6 @@
         ctx.fillText('⚠️ SAFETY! ⚠️', w / 2 + 2, 47);
         ctx.fillStyle = '#da3633';
         ctx.fillText('⚠️ SAFETY! ⚠️', w / 2, 45);
-
-        ctx.font = '18px "Press Start 2P", monospace';
-        ctx.fillStyle = '#f1e05a';
-        ctx.fillText('TAKE A SHOT! 🥃', w / 2, 80);
       }
 
       drawGenericDrink(ctx, w, h) {
