@@ -373,40 +373,76 @@
       .vs-text { font-size: 9px; }
     }
 
-    /* MLB Diamond & Count Display */
+    /* MLB Diamond & Count Display Revamp */
     .field-status {
       display: flex;
-      justify-content: space-around;
+      justify-content: center;
       align-items: center;
-      background: rgba(255,255,255,0.03);
-      padding: 10px;
-      border-radius: 6px;
+      background: #040d1a;
+      border: 2px solid var(--panel-border);
+      border-radius: 8px;
+      padding: 10px 16px;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    .field-status-inner {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 32px;
     }
 
     .diamond-container {
       position: relative;
-      width: 60px;
-      height: 60px;
+      width: 64px;
+      height: 64px;
+      flex-shrink: 0;
+    }
+
+    .diamond-path {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      width: 36px;
+      height: 36px;
+      border: 2px dashed rgba(255, 255, 255, 0.2);
+      transform: rotate(45deg);
+      pointer-events: none;
     }
 
     .base {
       position: absolute;
-      width: 18px;
-      height: 18px;
-      background: #30363d;
+      width: 16px;
+      height: 16px;
+      background: #21262d;
       border: 2px solid #8b949e;
       transform: rotate(45deg);
+      transition: all 0.2s ease;
+      box-sizing: border-box;
+      z-index: 2;
     }
 
     .base.occupied {
       background: var(--accent-gold);
-      border-color: #fff;
-      box-shadow: 0 0 8px var(--accent-gold);
+      border-color: #ffffff;
+      box-shadow: 0 0 10px var(--accent-gold);
     }
 
-    .base-1st { top: 20px; right: 4px; }
-    .base-2nd { top: 2px; left: 20px; }
-    .base-3rd { top: 20px; left: 4px; }
+    .base-1st { top: 24px; right: 4px; }
+    .base-2nd { top: 4px; left: 24px; }
+    .base-3rd { top: 24px; left: 4px; }
+
+    .base-home {
+      position: absolute;
+      bottom: 6px;
+      left: 26px;
+      width: 12px;
+      height: 12px;
+      background: #8b949e;
+      clip-path: polygon(50% 100%, 0 35%, 0 0, 100% 0, 100% 35%);
+      z-index: 1;
+      opacity: 0.6;
+    }
 
     .count-box {
       font-family: var(--font-pixel);
@@ -414,28 +450,59 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
+      background: #0d1117;
+      border: 1px solid var(--panel-border);
+      border-radius: 6px;
+      padding: 8px 14px;
     }
 
     .count-row {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+    }
+
+    .count-label {
+      font-family: var(--font-pixel);
+      font-size: 11px;
+      color: var(--accent-gold);
+      width: 14px;
+      text-align: center;
     }
 
     .count-dots {
       display: flex;
-      gap: 4px;
+      gap: 6px;
+      align-items: center;
     }
 
     .dot {
-      width: 10px;
-      height: 10px;
+      width: 11px;
+      height: 11px;
       border-radius: 50%;
-      background: #30363d;
+      background: #161b22;
+      border: 1px solid #30363d;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.6);
+      transition: all 0.2s ease;
     }
-    .dot.ball.active { background: var(--accent-green); }
-    .dot.strike.active { background: var(--accent-red); }
-    .dot.out.active { background: var(--accent-gold); }
+
+    .dot.ball.active {
+      background: var(--accent-green);
+      border-color: #3fb950;
+      box-shadow: 0 0 8px rgba(63, 185, 80, 0.8);
+    }
+
+    .dot.strike.active {
+      background: var(--accent-red);
+      border-color: #da3633;
+      box-shadow: 0 0 8px rgba(218, 54, 51, 0.8);
+    }
+
+    .dot.out.active {
+      background: var(--accent-gold);
+      border-color: #f1e05a;
+      box-shadow: 0 0 8px rgba(241, 224, 90, 0.8);
+    }
 
     /* NFL Gridiron Status Display */
     .nfl-status-container {
@@ -834,33 +901,37 @@
 
         <!-- MLB Field Status -->
         <div class="field-status" id="mlbFieldStatus">
-          <div class="diamond-container">
-            <div class="base base-1st" id="base1"></div>
-            <div class="base base-2nd" id="base2"></div>
-            <div class="base base-3rd" id="base3"></div>
-          </div>
+          <div class="field-status-inner">
+            <div class="diamond-container">
+              <div class="diamond-path"></div>
+              <div class="base base-1st" id="base1" title="1st Base"></div>
+              <div class="base base-2nd" id="base2" title="2nd Base"></div>
+              <div class="base base-3rd" id="base3" title="3rd Base"></div>
+              <div class="base-home" title="Home Plate"></div>
+            </div>
 
-          <div class="count-box">
-            <div class="count-row">
-              <span style="width: 20px;">B:</span>
-              <div class="count-dots">
-                <div class="dot ball" id="ball1"></div>
-                <div class="dot ball" id="ball2"></div>
-                <div class="dot ball" id="ball3"></div>
+            <div class="count-box">
+              <div class="count-row">
+                <span class="count-label">B</span>
+                <div class="count-dots">
+                  <div class="dot ball" id="ball1"></div>
+                  <div class="dot ball" id="ball2"></div>
+                  <div class="dot ball" id="ball3"></div>
+                </div>
               </div>
-            </div>
-            <div class="count-row">
-              <span style="width: 20px;">S:</span>
-              <div class="count-dots">
-                <div class="dot strike" id="strike1"></div>
-                <div class="dot strike" id="strike2"></div>
+              <div class="count-row">
+                <span class="count-label">S</span>
+                <div class="count-dots">
+                  <div class="dot strike" id="strike1"></div>
+                  <div class="dot strike" id="strike2"></div>
+                </div>
               </div>
-            </div>
-            <div class="count-row">
-              <span style="width: 20px;">O:</span>
-              <div class="count-dots">
-                <div class="dot out" id="out1"></div>
-                <div class="dot out" id="out2"></div>
+              <div class="count-row">
+                <span class="count-label">O</span>
+                <div class="count-dots">
+                  <div class="dot out" id="out1"></div>
+                  <div class="dot out" id="out2"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -2352,6 +2423,40 @@
             const inning = linescore.currentInningOrdinal || (linescore.currentInning ? linescore.currentInning + 'TH' : '');
             document.getElementById('gameInningText').textContent = `${state} ${inning}`;
           }
+
+          // Update Base Runners & Balls/Strikes/Outs Count
+          const offense = linescore.offense || {};
+          const currentPlay = (liveData.plays && liveData.plays.currentPlay) ? liveData.plays.currentPlay : {};
+          const count = currentPlay.count || {};
+          const matchup = currentPlay.matchup || {};
+
+          const has1B = Boolean(offense.first || matchup.postOnFirst);
+          const has2B = Boolean(offense.second || matchup.postOnSecond);
+          const has3B = Boolean(offense.third || matchup.postOnThird);
+
+          const bCount = count.balls ?? linescore.balls ?? 0;
+          const sCount = count.strikes ?? linescore.strikes ?? 0;
+          const oCount = count.outs ?? linescore.outs ?? 0;
+
+          const base1 = document.getElementById('base1');
+          const base2 = document.getElementById('base2');
+          const base3 = document.getElementById('base3');
+          if (base1) base1.classList.toggle('occupied', has1B);
+          if (base2) base2.classList.toggle('occupied', has2B);
+          if (base3) base3.classList.toggle('occupied', has3B);
+
+          [1, 2, 3].forEach((i) => {
+            const dot = document.getElementById(`ball${i}`);
+            if (dot) dot.classList.toggle('active', i <= bCount);
+          });
+          [1, 2].forEach((i) => {
+            const dot = document.getElementById(`strike${i}`);
+            if (dot) dot.classList.toggle('active', i <= sCount);
+          });
+          [1, 2].forEach((i) => {
+            const dot = document.getElementById(`out${i}`);
+            if (dot) dot.classList.toggle('active', i <= oCount);
+          });
         }
 
         const liveDot = document.getElementById('liveDot');

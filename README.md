@@ -7,7 +7,8 @@ A standalone Progressive Web App (PWA) that connects directly to official live s
 ## Key Features
 
 - **Multi-Sport Support (MLB & NFL)**: Seamlessly switch between MLB Baseball and NFL Football with a dedicated sport selector screen and dynamic theme styling.
-- **Real-Time Stats API Polling**: Connects directly to MLB and NFL live game feeds with fast 3-second polling to update play feeds in real time.
+- **Real-Time Stats API Polling**: Connects directly to MLB and NFL live game feeds with fast 3-second polling to update play feeds, scores, live base runner indicators, and count dots in real time.
+- **Revamped MLB Scoreboard**: Sleek, tightly grouped retro base runner diamond (with 1st/2nd/3rd base glow and home plate) positioned right next to glowing Ball / Strike / Out LED count indicators.
 - **Complete Play-by-Play Feed**: Displays detailed official play descriptions for all plays, cleanly highlighting drink-assigning events with custom retro pixel badges.
 - **Standardized Pixel Drink Badges**: Every drink play features a custom retro pixel SVG beer mug badge displaying the exact numeric drink count (e.g. `1`, `2`, `3`, `6`).
 - **Static Retro Canvas Pixel Art**: Self-contained 8-bit retro stadium canvas graphics with stadium floodlights and distinct static play illustrations (with zero text repetition across the pop-up modal):
