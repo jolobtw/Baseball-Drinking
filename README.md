@@ -23,7 +23,7 @@ A standalone Progressive Web App (PWA) that connects directly to the official **
 The table below outlines the **default drinking ruleset** configured in the app. All drink assignments are fully customizable in real time via the **⚙️ RULES** editor in the app header (and live-synced in the **Current Ruleset** panel on the main page):
 
 | Play Event | Drink Assignment |
-| :--- | :--- |
+| :---: | :---: |
 | **Strikeout (K)** | 🍺 1 Drink |
 | **Walk (BB)** | 🍺 1 Drink |
 | **Single (1B)** | 🍺 2 Drinks |
