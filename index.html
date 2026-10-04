@@ -1807,6 +1807,11 @@
         const scoringType = play.scoringType ? play.scoringType.name : '';
         const isScoring = play.scoringPlay;
 
+        const startTeamId = play.start && play.start.team ? play.start.team.id : null;
+        const endTeamId = play.end && play.end.team ? play.end.team.id : null;
+        const isSameTeamPossession = !!(startTeamId && endTeamId && startTeamId === endTeamId);
+        const isPossessionChangePlay = play.isTurnover || typeText.includes('Punt') || typeText.includes('Kickoff') || typeText.includes('Interception') || typeText.includes('Fumble Recovery (Opponent)');
+
         let ruleKey = null;
 
         if (isScoring && (scoringType === 'touchdown' || typeText.toLowerCase().includes('touchdown') || text.toUpperCase().includes('TOUCHDOWN'))) {
@@ -1821,10 +1826,14 @@
           ruleKey = 'safety';
         } else if (typeText.toLowerCase().includes('timeout') || text.toLowerCase().includes('timeout')) {
           ruleKey = 'timeout';
-        } else if (typeText === 'End Period' || typeText === 'End of Half' || typeText === 'End of Quarter') {
+        } else if (typeText === 'End Period' || typeText === 'End of Half' || typeText === 'End of Quarter' || typeText === 'End of Regulation' || typeText === 'End of Game') {
           ruleKey = 'quarter_change';
-        } else if ((play.end && play.end.shortDownDistanceText && play.end.shortDownDistanceText.startsWith('1st')) || text.includes('1st Down') || (play.start && play.start.down && play.start.down <= 3 && play.statYardage >= play.start.distance)) {
-          ruleKey = 'first_down';
+        } else if (!isScoring && isSameTeamPossession && !isPossessionChangePlay) {
+          const endDownDist = (play.end && play.end.shortDownDistanceText) ? play.end.shortDownDistanceText : '';
+          const earnedFirstDown = endDownDist.startsWith('1st') || text.includes('1st Down') || (play.start && play.start.down && play.start.down <= 3 && play.statYardage >= play.start.distance);
+          if (earnedFirstDown) {
+            ruleKey = 'first_down';
+          }
         }
 
         const isDrink = !!(ruleKey && this.rules[ruleKey]);
