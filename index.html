@@ -139,6 +139,21 @@
       display: grid;
       grid-template-columns: 1fr 340px;
       gap: 16px;
+      box-sizing: border-box;
+    }
+
+    section.left-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 0;
+    }
+
+    .feed-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
     }
 
     @media (max-width: 900px) {
@@ -442,10 +457,12 @@
 
     /* Play Feed */
     .play-feed {
+      flex: 1;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      max-height: 480px;
+      min-height: 350px;
+      max-height: calc(100vh - 360px);
       overflow-y: auto;
       padding-right: 4px;
     }
@@ -578,7 +595,7 @@
 
   <main>
     <!-- Left Column: Scoreboard & Live Play Feed -->
-    <section>
+    <section class="left-col">
       <!-- Scoreboard Card -->
       <div class="scoreboard">
         <div class="game-status-bar">
@@ -643,7 +660,7 @@
       </div>
 
       <!-- Live Plays Panel -->
-      <div class="panel">
+      <div class="panel feed-panel">
         <div class="panel-title">
           <span>⚡ LIVE PLAY-BY-PLAY FEED</span>
           <span id="pollStatus" style="font-size: 10px; color: var(--accent-gold);">POLLING: PAUSED</span>
